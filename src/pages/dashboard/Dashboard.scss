@@ -1,0 +1,121 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.dashboard {
+    .welcome-section {
+        margin-bottom: $spacing-8;
+
+        h2 {
+            font-family: $font-heading;
+            font-size: $font-size-3xl;
+            font-weight: $font-weight-bold;
+            color: $text-primary;
+            margin-bottom: $spacing-2;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: $spacing-1 $spacing-3;
+            background: rgba($primary-color, 0.1);
+            color: $primary-color;
+            border-radius: $radius-full;
+            font-size: $font-size-sm;
+            font-weight: $font-weight-medium;
+        }
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: $spacing-6;
+        margin-bottom: $spacing-8;
+    }
+
+    .stat-card {
+        @include card;
+        display: flex;
+        align-items: center;
+        gap: $spacing-4;
+        transition: transform $transition-fast, box-shadow $transition-fast;
+
+        &:hover {
+            transform: translateY(-4px);
+            box-shadow: $shadow-lg;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: $radius-lg;
+            @include flex-center;
+
+            svg {
+                width: 24px;
+                height: 24px;
+                color: $white;
+            }
+
+            &.projects {
+                background: linear-gradient(135deg, #3B82F6, #1D4ED8);
+            }
+
+            &.applications {
+                background: linear-gradient(135deg, #10B981, #059669);
+            }
+
+            &.unread {
+                background: linear-gradient(135deg, #F59E0B, #D97706);
+            }
+
+            &.users {
+                background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+            }
+        }
+
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-family: $font-heading;
+            font-size: $font-size-2xl;
+            font-weight: $font-weight-bold;
+            color: $text-primary;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: $font-size-sm;
+            color: $text-muted;
+            margin-top: $spacing-1;
+        }
+    }
+
+    .quick-info {
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: $spacing-4;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: $spacing-1;
+
+            .info-label {
+                font-size: $font-size-xs;
+                color: $text-muted;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .info-value {
+                font-size: $font-size-base;
+                color: $text-primary;
+                font-weight: $font-weight-medium;
+            }
+        }
+    }
+}

@@ -1,0 +1,56 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.crud-page {
+    .page-header {
+        @include flex-between;
+        margin-bottom: $spacing-6;
+
+        .page-title {
+            margin-bottom: 0;
+        }
+    }
+
+    .truncate {
+        display: block;
+        max-width: 300px;
+        @include text-truncate;
+    }
+
+    .table-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: $radius-sm;
+        object-fit: cover;
+    }
+}
+
+// Shared form elements
+.custom-textarea {
+    @include input-base;
+    min-height: 100px;
+    resize: vertical;
+}
+
+.file-input {
+    display: block;
+    width: 100%;
+    padding: $spacing-3;
+    background: $light-gray;
+    border: 1px dashed $medium-gray;
+    border-radius: $radius-md;
+    cursor: pointer;
+    transition: all $transition-fast;
+
+    &:hover {
+        border-color: $primary-color;
+    }
+}
+
+.preview-image {
+    margin-top: $spacing-3;
+    max-width: 120px;
+    max-height: 80px;
+    border-radius: $radius-md;
+    object-fit: cover;
+}

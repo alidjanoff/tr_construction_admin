@@ -1,0 +1,94 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.profile-page {
+    .profile-container {
+        max-width: 720px;
+    }
+
+    .profile-image-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: $spacing-8;
+
+        .avatar-wrapper {
+            position: relative;
+            cursor: pointer;
+
+            &:hover .avatar-overlay {
+                opacity: 1;
+            }
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: $radius-full;
+            object-fit: cover;
+            border: 4px solid $white;
+            box-shadow: $shadow-lg;
+        }
+
+        .profile-avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: $radius-full;
+            background: $primary-gradient;
+            @include flex-center;
+            box-shadow: $shadow-lg;
+
+            svg {
+                width: 48px;
+                height: 48px;
+                color: $white;
+            }
+        }
+
+        .avatar-overlay {
+            position: absolute;
+            inset: 0;
+            border-radius: $radius-full;
+            background: rgba($black, 0.5);
+            @include flex-center;
+            opacity: 0;
+            transition: opacity $transition-base;
+
+            svg {
+                width: 32px;
+                height: 32px;
+                color: $white;
+            }
+        }
+
+        .avatar-hint {
+            margin-top: $spacing-3;
+            font-size: $font-size-sm;
+            color: $text-muted;
+        }
+    }
+
+    .role-display {
+        display: flex;
+        align-items: center;
+        gap: $spacing-3;
+        padding: $spacing-4;
+        background: $light-gray;
+        border-radius: $radius-md;
+        margin-bottom: $spacing-4;
+
+        .role-label {
+            font-size: $font-size-sm;
+            color: $text-muted;
+        }
+
+        .role-value {
+            font-weight: $font-weight-medium;
+            color: $text-primary;
+
+            &.superAdmin {
+                color: $primary-color;
+            }
+        }
+    }
+}

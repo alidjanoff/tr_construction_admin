@@ -1,0 +1,84 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.data-table-wrapper {
+    overflow-x: auto;
+    @include custom-scrollbar;
+}
+
+.data-table {
+    @include table-base;
+    min-width: 100%;
+
+    .actions-header {
+        width: 120px;
+        text-align: center;
+    }
+
+    .actions-cell {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: $spacing-2;
+    }
+
+    .action-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: none;
+        border: none;
+        border-radius: $radius-md;
+        cursor: pointer;
+        transition: all $transition-fast;
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        &.view {
+            color: $info;
+
+            &:hover {
+                background: rgba($info, 0.1);
+            }
+        }
+
+        &.edit {
+            color: $primary-color;
+
+            &:hover {
+                background: rgba($primary-color, 0.1);
+            }
+        }
+
+        &.delete {
+            color: $error;
+
+            &:hover {
+                background: rgba($error, 0.1);
+            }
+        }
+    }
+}
+
+.data-table-loading {
+    .skeleton-row {
+        height: 52px;
+        margin-bottom: $spacing-2;
+        @include skeleton;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+}
+
+.data-table-empty {
+    padding: $spacing-12;
+    text-align: center;
+    color: $text-muted;
+}

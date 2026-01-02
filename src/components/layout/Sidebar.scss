@@ -1,0 +1,196 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: $sidebar-width;
+    background: $sidebar-bg;
+    display: flex;
+    flex-direction: column;
+    z-index: $z-sidebar;
+    transition: width $transition-base;
+    @include custom-scrollbar;
+
+    &.collapsed {
+        width: $sidebar-collapsed-width;
+
+        .sidebar-header {
+            padding: $spacing-4;
+            justify-content: center;
+        }
+
+        .sidebar-logo {
+            width: 48px;
+            height: 48px;
+        }
+
+        .sidebar-title {
+            display: none;
+        }
+
+        .nav-item {
+            justify-content: center;
+            padding: $spacing-3;
+
+            .nav-icon {
+                margin-right: 0;
+            }
+
+            .nav-label {
+                display: none;
+            }
+        }
+
+        .sidebar-toggle {
+            right: 0;
+            transform: translateX(50%);
+        }
+    }
+
+    &-header {
+        display: flex;
+        align-items: center;
+        padding: $spacing-5 $spacing-6;
+        border-bottom: 1px solid rgba($white, 0.1);
+    }
+
+    &-logo {
+        width: 44px;
+        height: 44px;
+        border-radius: $radius-md;
+        object-fit: cover;
+        flex-shrink: 0;
+    }
+
+    &-title {
+        margin-left: $spacing-3;
+        font-size: $font-size-lg;
+        font-weight: $font-weight-semibold;
+        color: $white;
+        white-space: nowrap;
+    }
+
+    &-nav {
+        flex: 1;
+        padding: $spacing-4;
+        overflow-y: auto;
+        @include custom-scrollbar;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        padding: $spacing-3 $spacing-4;
+        margin-bottom: $spacing-1;
+        border-radius: $radius-md;
+        color: rgba($white, 0.7);
+        text-decoration: none;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: $sidebar-hover;
+            color: $white;
+        }
+
+        &.active {
+            background: $sidebar-active;
+            color: $white;
+        }
+
+        .nav-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: $spacing-3;
+            flex-shrink: 0;
+
+            svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+
+        .nav-label {
+            font-size: $font-size-sm;
+            font-weight: $font-weight-medium;
+            white-space: nowrap;
+        }
+    }
+
+    &-toggle {
+        position: absolute;
+        right: -12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: $primary-color;
+        border: none;
+        border-radius: $radius-full;
+        cursor: pointer;
+        color: $white;
+        box-shadow: $shadow-md;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: $primary-light;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        svg {
+            width: 14px;
+            height: 14px;
+        }
+    }
+
+    @include responsive(lg) {
+        position: fixed;
+        width: $sidebar-collapsed-width;
+
+        .sidebar-header {
+            padding: $spacing-4;
+            justify-content: center;
+        }
+
+        .sidebar-logo {
+            width: 48px;
+            height: 48px;
+        }
+
+        .sidebar-title {
+            display: none;
+        }
+
+        .nav-item {
+            justify-content: center;
+            padding: $spacing-3;
+
+            .nav-icon {
+                margin-right: 0;
+            }
+
+            .nav-label {
+                display: none;
+            }
+        }
+
+        .sidebar-toggle {
+            display: none;
+        }
+    }
+
+    @include responsive(md) {
+        transform: translateX(-100%);
+        width: $sidebar-width;
+
+        &.open {
+            transform: translateX(0);
+        }
+    }
+}

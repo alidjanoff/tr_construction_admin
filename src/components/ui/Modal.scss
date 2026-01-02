@@ -1,0 +1,85 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.modal-backdrop {
+    @include modal-backdrop;
+}
+
+.modal {
+    @include modal-content;
+    @include custom-scrollbar;
+
+    &.sm {
+        width: 400px;
+    }
+
+    &.md {
+        width: 560px;
+    }
+
+    &.lg {
+        width: 720px;
+    }
+
+    &.xl {
+        width: 900px;
+    }
+
+    @include responsive(md) {
+        width: calc(100% - #{$spacing-8}) !important;
+        margin: $spacing-4;
+    }
+
+    &-header {
+        @include flex-between;
+        padding: $spacing-5 $spacing-6;
+        border-bottom: 1px solid $light-gray;
+    }
+
+    &-title {
+        font-family: $font-heading;
+        font-size: $font-size-xl;
+        font-weight: $font-weight-semibold;
+        color: $text-primary;
+        margin: 0;
+    }
+
+    &-close {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background: none;
+        border: none;
+        border-radius: $radius-md;
+        cursor: pointer;
+        color: $text-muted;
+        transition: all $transition-fast;
+
+        &:hover {
+            background: $light-gray;
+            color: $text-primary;
+        }
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    &-body {
+        padding: $spacing-6;
+    }
+
+    &-footer {
+        @include flex-between;
+        padding: $spacing-4 $spacing-6;
+        border-top: 1px solid $light-gray;
+        gap: $spacing-3;
+
+        &.right {
+            justify-content: flex-end;
+        }
+    }
+}

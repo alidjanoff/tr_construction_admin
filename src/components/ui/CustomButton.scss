@@ -1,0 +1,95 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.custom-button {
+    @include button-base;
+
+    // Variants
+    &.primary {
+        background: $primary-gradient;
+        color: $white;
+
+        &:hover:not(:disabled) {
+            background: $primary-light;
+            box-shadow: $shadow-md;
+            transform: translateY(-1px);
+        }
+
+        &:active:not(:disabled) {
+            transform: translateY(0);
+        }
+    }
+
+    &.secondary {
+        background: transparent;
+        color: $primary-color;
+        border: 1px solid $primary-color;
+
+        &:hover:not(:disabled) {
+            background: rgba($primary-color, 0.1);
+        }
+    }
+
+    &.danger {
+        background: $error;
+        color: $white;
+
+        &:hover:not(:disabled) {
+            background: darken($error, 10%);
+            box-shadow: $shadow-md;
+        }
+    }
+
+    &.ghost {
+        background: transparent;
+        color: $text-secondary;
+
+        &:hover:not(:disabled) {
+            background: $light-gray;
+            color: $text-primary;
+        }
+    }
+
+    // Sizes
+    &.sm {
+        padding: $spacing-2 $spacing-4;
+        font-size: $font-size-xs;
+    }
+
+    &.md {
+        padding: $spacing-3 $spacing-6;
+        font-size: $font-size-sm;
+    }
+
+    &.lg {
+        padding: $spacing-4 $spacing-8;
+        font-size: $font-size-base;
+    }
+
+    // Full Width
+    &.full-width {
+        width: 100%;
+    }
+
+    // Icon
+    .icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+
+    // Loader
+    .loader {
+        width: 18px;
+        height: 18px;
+        border: 2px solid transparent;
+        border-top-color: currentColor;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+}

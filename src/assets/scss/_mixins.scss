@@ -1,0 +1,268 @@
+// ===================================
+// TR Construction Dashboard - SCSS Mixins
+// ===================================
+
+@use 'variables' as *;
+
+// Flexbox
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+@mixin flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+// Button Base
+@mixin button-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: $spacing-2;
+    padding: $spacing-3 $spacing-6;
+    font-family: $font-primary;
+    font-size: $font-size-sm;
+    font-weight: $font-weight-medium;
+    border-radius: $radius-md;
+    border: none;
+    cursor: pointer;
+    transition: all $transition-base;
+    text-decoration: none;
+
+    &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+}
+
+@mixin button-primary {
+    @include button-base;
+    background: $primary-gradient;
+    color: $white;
+
+    &:hover:not(:disabled) {
+        background: $primary-light;
+        box-shadow: $shadow-md;
+        transform: translateY(-1px);
+    }
+
+    &:active:not(:disabled) {
+        transform: translateY(0);
+    }
+}
+
+@mixin button-secondary {
+    @include button-base;
+    background: transparent;
+    color: $primary-color;
+    border: 1px solid $primary-color;
+
+    &:hover:not(:disabled) {
+        background: rgba($primary-color, 0.1);
+    }
+}
+
+@mixin button-danger {
+    @include button-base;
+    background: $error;
+    color: $white;
+
+    &:hover:not(:disabled) {
+        background: darken($error, 10%);
+        box-shadow: $shadow-md;
+    }
+}
+
+// Input Base
+@mixin input-base {
+    width: 100%;
+    padding: $spacing-3 $spacing-4;
+    font-family: $font-primary;
+    font-size: $font-size-sm;
+    color: $text-primary;
+    background: $white;
+    border: 1px solid $medium-gray;
+    border-radius: $radius-md;
+    transition: all $transition-fast;
+    outline: none;
+
+    &::placeholder {
+        color: $text-muted;
+    }
+
+    &:focus {
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+    }
+
+    &:disabled {
+        background: $light-gray;
+        cursor: not-allowed;
+    }
+
+    &.error {
+        border-color: $error;
+
+        &:focus {
+            box-shadow: 0 0 0 3px rgba($error, 0.1);
+        }
+    }
+}
+
+// Card
+@mixin card {
+    background: $white;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-sm;
+    padding: $spacing-6;
+}
+
+// Table
+@mixin table-base {
+    width: 100%;
+    border-collapse: collapse;
+
+    th,
+    td {
+        padding: $spacing-3 $spacing-4;
+        text-align: left;
+        border-bottom: 1px solid $light-gray;
+    }
+
+    th {
+        font-weight: $font-weight-semibold;
+        color: $text-secondary;
+        font-size: $font-size-xs;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: $off-white;
+    }
+
+    tbody tr {
+        transition: background $transition-fast;
+
+        &:hover {
+            background: $light-gray;
+        }
+    }
+}
+
+// Responsive
+@mixin responsive($breakpoint) {
+    @if $breakpoint ==sm {
+        @media (max-width: $breakpoint-sm) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==md {
+        @media (max-width: $breakpoint-md) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==lg {
+        @media (max-width: $breakpoint-lg) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==xl {
+        @media (max-width: $breakpoint-xl) {
+            @content;
+        }
+    }
+}
+
+// Scrollbar
+@mixin custom-scrollbar {
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba($dark-gray, 0.3);
+        border-radius: $radius-full;
+
+        &:hover {
+            background: rgba($dark-gray, 0.5);
+        }
+    }
+}
+
+// Text Truncate
+@mixin text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Skeleton Loading
+@mixin skeleton {
+    background: linear-gradient(90deg,
+            $light-gray 25%,
+            $medium-gray 50%,
+            $light-gray 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: $radius-sm;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+// Modal
+@mixin modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($black, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: $z-modal-backdrop;
+    @include flex-center;
+}
+
+@mixin modal-content {
+    background: $white;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-xl;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}

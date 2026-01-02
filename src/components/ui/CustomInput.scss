@@ -1,0 +1,92 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.custom-input-wrapper {
+    margin-bottom: $spacing-4;
+
+    label {
+        display: block;
+        margin-bottom: $spacing-2;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $text-primary;
+
+        .required {
+            color: $error;
+            margin-left: $spacing-1;
+        }
+    }
+
+    .input-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        &.has-icon {
+            input {
+                padding-left: 44px;
+            }
+        }
+
+        .left-icon {
+            position: absolute;
+            left: $spacing-4;
+            display: flex;
+            align-items: center;
+            color: $text-muted;
+
+            svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        .right-icon {
+            position: absolute;
+            right: $spacing-3;
+            display: flex;
+            align-items: center;
+            padding: $spacing-2;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: $text-muted;
+            transition: color $transition-fast;
+
+            &:hover {
+                color: $text-primary;
+            }
+
+            svg {
+                width: 18px;
+                height: 18px;
+            }
+        }
+
+        input {
+            @include input-base;
+            padding-right: 44px;
+        }
+
+        &.has-error {
+            input {
+                border-color: $error;
+
+                &:focus {
+                    box-shadow: 0 0 0 3px rgba($error, 0.1);
+                }
+            }
+
+            .left-icon {
+                color: $error;
+            }
+        }
+    }
+
+    .error-message {
+        display: block;
+        margin-top: $spacing-1;
+        font-size: $font-size-xs;
+        color: $error;
+    }
+}

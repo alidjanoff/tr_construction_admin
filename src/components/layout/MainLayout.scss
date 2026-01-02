@@ -1,0 +1,63 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.layout {
+    min-height: 100vh;
+
+    &.sidebar-collapsed {
+        .main-wrapper {
+            margin-left: $sidebar-collapsed-width;
+        }
+
+        .header {
+            left: $sidebar-collapsed-width;
+        }
+    }
+
+    @include responsive(lg) {
+        .main-wrapper {
+            margin-left: $sidebar-collapsed-width;
+        }
+
+        .header {
+            left: $sidebar-collapsed-width;
+        }
+    }
+
+    @include responsive(md) {
+        .main-wrapper {
+            margin-left: 0;
+        }
+
+        .header {
+            left: 0;
+        }
+    }
+}
+
+.main-wrapper {
+    margin-left: $sidebar-width;
+    min-height: 100vh;
+    transition: margin-left $transition-base;
+}
+
+.main-content {
+    padding-top: $header-height;
+    min-height: calc(100vh - #{$header-height});
+    background: $off-white;
+}
+
+.mobile-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($black, 0.5);
+    z-index: calc(#{$z-sidebar} - 1);
+
+    @include responsive(md) {
+        display: block;
+    }
+}

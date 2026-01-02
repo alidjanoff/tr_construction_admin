@@ -1,0 +1,326 @@
+// ===================================
+// TR Construction Dashboard - Main Styles
+// ===================================
+
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// Google Fonts Import
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+// Reset
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: $font-primary;
+    font-size: $font-size-base;
+    color: $text-primary;
+    background-color: $off-white;
+    line-height: $line-height-normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+    min-height: 100vh;
+}
+
+// Links
+a {
+    color: $primary-color;
+    text-decoration: none;
+    transition: color $transition-fast;
+
+    &:hover {
+        color: $primary-light;
+    }
+}
+
+// Focus Styles
+:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 2px;
+}
+
+// Scrollbar
+body {
+    @include custom-scrollbar;
+}
+
+// Utility Classes
+.text-center {
+    text-align: center;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-primary {
+    color: $primary-color;
+}
+
+.text-success {
+    color: $success;
+}
+
+.text-warning {
+    color: $warning;
+}
+
+.text-error {
+    color: $error;
+}
+
+.text-muted {
+    color: $text-muted;
+}
+
+.font-semibold {
+    font-weight: $font-weight-semibold;
+}
+
+.font-bold {
+    font-weight: $font-weight-bold;
+}
+
+.mb-0 {
+    margin-bottom: 0;
+}
+
+.mb-2 {
+    margin-bottom: $spacing-2;
+}
+
+.mb-4 {
+    margin-bottom: $spacing-4;
+}
+
+.mb-6 {
+    margin-bottom: $spacing-6;
+}
+
+.mt-auto {
+    margin-top: auto;
+}
+
+.ml-auto {
+    margin-left: auto;
+}
+
+// Page Title
+.page-title {
+    font-family: $font-heading;
+    font-size: $font-size-2xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+    margin-bottom: $spacing-6;
+}
+
+// Page Layout
+.page-content {
+    padding: $spacing-6;
+
+    @include responsive(md) {
+        padding: $spacing-4;
+    }
+}
+
+// Card Component
+.card {
+    @include card;
+
+    &-header {
+        @include flex-between;
+        margin-bottom: $spacing-4;
+        padding-bottom: $spacing-4;
+        border-bottom: 1px solid $light-gray;
+
+        h3 {
+            font-size: $font-size-lg;
+            font-weight: $font-weight-semibold;
+        }
+    }
+
+    &-body {
+        // Default styles
+    }
+}
+
+// Form Groups
+.form-group {
+    margin-bottom: $spacing-4;
+
+    label {
+        display: block;
+        margin-bottom: $spacing-2;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-medium;
+        color: $text-primary;
+    }
+
+    .error-message {
+        margin-top: $spacing-1;
+        font-size: $font-size-xs;
+        color: $error;
+    }
+}
+
+// Form Row (side by side)
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: $spacing-4;
+
+    @include responsive(md) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// Button Group
+.button-group {
+    display: flex;
+    gap: $spacing-3;
+    margin-top: $spacing-6;
+
+    &.right {
+        justify-content: flex-end;
+    }
+}
+
+// Empty State
+.empty-state {
+    @include flex-center;
+    flex-direction: column;
+    padding: $spacing-12;
+    text-align: center;
+
+    svg {
+        width: 64px;
+        height: 64px;
+        color: $text-muted;
+        margin-bottom: $spacing-4;
+    }
+
+    h3 {
+        font-size: $font-size-lg;
+        color: $text-primary;
+        margin-bottom: $spacing-2;
+    }
+
+    p {
+        color: $text-muted;
+        margin-bottom: $spacing-4;
+    }
+}
+
+// Status Badge
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: $spacing-1 $spacing-3;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-medium;
+    border-radius: $radius-full;
+
+    &.success {
+        background: rgba($success, 0.1);
+        color: $success;
+    }
+
+    &.warning {
+        background: rgba($warning, 0.1);
+        color: $warning;
+    }
+
+    &.error {
+        background: rgba($error, 0.1);
+        color: $error;
+    }
+
+    &.info {
+        background: rgba($info, 0.1);
+        color: $info;
+    }
+
+    &.primary {
+        background: rgba($primary-color, 0.1);
+        color: $primary-color;
+    }
+}
+
+// Avatar
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-full;
+    object-fit: cover;
+    background: $light-gray;
+
+    &.sm {
+        width: 32px;
+        height: 32px;
+    }
+
+    &.lg {
+        width: 56px;
+        height: 56px;
+    }
+
+    &.xl {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+// Animations
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease;
+}
+
+.slide-in-up {
+    animation: slideInUp 0.3s ease;
+}

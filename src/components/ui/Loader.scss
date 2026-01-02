@@ -1,0 +1,43 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.loader {
+    @include flex-center;
+
+    &.sm .spinner {
+        width: 20px;
+        height: 20px;
+        border-width: 2px;
+    }
+
+    &.md .spinner {
+        width: 32px;
+        height: 32px;
+        border-width: 3px;
+    }
+
+    &.lg .spinner {
+        width: 48px;
+        height: 48px;
+        border-width: 4px;
+    }
+
+    .spinner {
+        border: 3px solid $light-gray;
+        border-top-color: $primary-color;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+}
+
+.loader-fullpage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($white, 0.9);
+    backdrop-filter: blur(4px);
+    z-index: $z-modal;
+    @include flex-center;
+}

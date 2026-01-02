@@ -1,0 +1,16 @@
+@use '../../assets/scss/variables' as *;
+
+.confirm-dialog {
+    .confirm-message {
+        font-size: $font-size-base;
+        color: $text-primary;
+        line-height: $line-height-relaxed;
+        margin-bottom: $spacing-6;
+    }
+
+    .confirm-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: $spacing-3;
+    }
+}
