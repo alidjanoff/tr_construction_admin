@@ -18,5 +18,5 @@ jobs:
             docker stop tr_construction_admin || true
             docker rm tr_construction_admin || true
             docker build -t tr-admin-image .
-            docker run -d --name tr_construction_admin -p 3000:80 tr-admin-image
+            docker run -d --name tr_construction_admin -p 3000:4175 tr-admin-image
             docker image prune -f
