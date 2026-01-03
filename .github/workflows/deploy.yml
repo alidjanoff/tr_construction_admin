@@ -15,4 +15,4 @@ jobs:
           script: |
             cd /var/www/tr_construction_admin
             git pull origin main
-            docker-compose up -d --build tr_construction_admin
+            docker compose up -d --build tr_construction_admin
