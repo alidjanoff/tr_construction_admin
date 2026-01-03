@@ -15,4 +15,8 @@ jobs:
           script: |
             cd /var/www/tr_construction_admin
             git pull origin main
-            docker compose up -d --build tr_construction_admin
+            docker stop tr_construction_admin || true
+            docker rm tr_construction_admin || true
+            docker build -t tr-admin-image .
+            docker run -d --name tr_construction_admin -p 3000:80 tr-admin-image
+            docker image prune -f
