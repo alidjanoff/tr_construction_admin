@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { servicesAPI, languagesAPI } from '../../services/api';
-import type { Service, Language, MultiLang } from '../../types';
+import { statsAPI, languagesAPI } from '../../services/api';
+import type { Stat, Language, MultiLang } from '../../types';
 import { createEmptyMultiLang, ensureMultiLang } from '../../utils/lang';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
@@ -11,16 +11,16 @@ import MultiLangInput from '../../components/ui/MultiLangInput';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
-const Services: React.FC = () => {
-    const [services, setServices] = useState<Service[]>([]);
+const Stats: React.FC = () => {
+    const [stats, setStats] = useState<Stat[]>([]);
     const [languages, setLanguages] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<Service | null>(null);
+    const [selectedItem, setSelectedItem] = useState<Stat | null>(null);
     const [formData, setFormData] = useState({
-        title: {} as MultiLang,
-        info: {} as MultiLang,
+        count: {} as MultiLang,
+        detail: {} as MultiLang,
     });
     const [formLoading, setFormLoading] = useState(false);
 
@@ -41,10 +41,10 @@ const Services: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await servicesAPI.getAll();
-            setServices(response.data || []);
+            const response = await statsAPI.getAll();
+            setStats(response.data || []);
         } catch (error) {
-            showToast('error', 'Xidmətlər yüklənə bilmədi');
+            showToast('error', 'Statistikalar yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
@@ -61,22 +61,22 @@ const Services: React.FC = () => {
     const handleAdd = () => {
         setSelectedItem(null);
         setFormData({
-            title: createEmptyMultiLang(languages),
-            info: createEmptyMultiLang(languages),
+            count: createEmptyMultiLang(languages),
+            detail: createEmptyMultiLang(languages),
         });
         setModalOpen(true);
     };
 
-    const handleEdit = (item: Service) => {
+    const handleEdit = (item: Stat) => {
         setSelectedItem(item);
         setFormData({
-            title: ensureMultiLang(item.title, languages),
-            info: ensureMultiLang(item.info, languages),
+            count: ensureMultiLang(item.count, languages),
+            detail: ensureMultiLang(item.detail, languages),
         });
         setModalOpen(true);
     };
 
-    const handleDelete = (item: Service) => {
+    const handleDelete = (item: Stat) => {
         setSelectedItem(item);
         setDeleteDialogOpen(true);
     };
@@ -87,11 +87,11 @@ const Services: React.FC = () => {
         setFormLoading(true);
         try {
             if (selectedItem) {
-                await servicesAPI.update({ id: selectedItem.id, ...formData });
-                showToast('success', 'Xidmət yeniləndi');
+                await statsAPI.update({ id: selectedItem.id, ...formData });
+                showToast('success', 'Statistika yeniləndi');
             } else {
-                await servicesAPI.create(formData);
-                showToast('success', 'Xidmət əlavə edildi');
+                await statsAPI.create(formData);
+                showToast('success', 'Statistika əlavə edildi');
             }
 
             setModalOpen(false);
@@ -108,8 +108,8 @@ const Services: React.FC = () => {
 
         setFormLoading(true);
         try {
-            await servicesAPI.delete(selectedItem.id);
-            showToast('success', 'Xidmət silindi');
+            await statsAPI.delete(selectedItem.id);
+            showToast('success', 'Statistika silindi');
             setDeleteDialogOpen(false);
             fetchData();
         } catch (error) {
@@ -126,21 +126,21 @@ const Services: React.FC = () => {
 
     const columns = [
         {
-            key: 'title' as const,
-            header: 'Başlıq',
-            render: (item: Service) => <strong>{getDisplayValue(item.title)}</strong>
+            key: 'count' as const,
+            header: 'Sayı/Göstərici',
+            render: (item: Stat) => <strong>{getDisplayValue(item.count)}</strong>
         },
         {
-            key: 'info' as const,
-            header: 'Məlumat',
-            render: (item: Service) => <span className="truncate">{getDisplayValue(item.info).slice(0, 60)}...</span>
+            key: 'detail' as const,
+            header: 'Məzmun',
+            render: (item: Stat) => getDisplayValue(item.detail)
         },
     ];
 
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Xidmətlər</h1>
+                <h1 className="page-title">Statistikalar</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd} disabled={languages.length === 0}>
                     Əlavə et
                 </CustomButton>
@@ -149,40 +149,37 @@ const Services: React.FC = () => {
             <div className="card">
                 <DataTable
                     columns={columns}
-                    data={services}
+                    data={stats}
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Xidmət tapılmadı"
+                    emptyMessage="Statistika yoxdur"
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Xidməti Redaktə Et' : 'Yeni Xidmət'}
+                title={selectedItem ? 'Statistikanı Redaktə Et' : 'Yeni Statistika'}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <MultiLangInput
-                        label="Başlıq"
-                        name="title"
-                        value={formData.title}
-                        onChange={(val) => setFormData({ ...formData, title: val })}
-                        placeholder="Xidmət başlığı"
-                        required
+                        label="Göstərici (Məs: 15+, 500)"
+                        name="count"
+                        value={formData.count}
+                        onChange={(val) => setFormData({ ...formData, count: val })}
                         languages={languages}
+                        required
                     />
 
                     <MultiLangInput
-                        label="Məlumat"
-                        name="info"
-                        value={formData.info}
-                        onChange={(val) => setFormData({ ...formData, info: val })}
-                        placeholder="Xidmət haqqında məlumat"
-                        type="textarea"
-                        rows={4}
+                        label="Məzmun (Məs: İllik Təcrübə)"
+                        name="detail"
+                        value={formData.detail}
+                        onChange={(val) => setFormData({ ...formData, detail: val })}
                         languages={languages}
+                        required
                     />
 
                     <div className="button-group right">
@@ -200,11 +197,11 @@ const Services: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getDisplayValue(selectedItem?.title || {} as MultiLang)}" xidmətini silmək istədiyinizə əminsiniz?`}
+                message="Bu statistikanı silmək istədiyinizə əminsiniz?"
                 loading={formLoading}
             />
         </div>
     );
 };
 
-export default Services;
+export default Stats;

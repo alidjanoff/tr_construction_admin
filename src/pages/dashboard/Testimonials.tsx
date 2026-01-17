@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { servicesAPI, languagesAPI } from '../../services/api';
-import type { Service, Language, MultiLang } from '../../types';
+import { testimonialsAPI, languagesAPI } from '../../services/api';
+import type { Testimonial, Language, MultiLang } from '../../types';
 import { createEmptyMultiLang, ensureMultiLang } from '../../utils/lang';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
+import CustomInput from '../../components/ui/CustomInput';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import MultiLangInput from '../../components/ui/MultiLangInput';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
-const Services: React.FC = () => {
-    const [services, setServices] = useState<Service[]>([]);
+const Testimonials: React.FC = () => {
+    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
     const [languages, setLanguages] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<Service | null>(null);
+    const [selectedItem, setSelectedItem] = useState<Testimonial | null>(null);
     const [formData, setFormData] = useState({
-        title: {} as MultiLang,
-        info: {} as MultiLang,
+        customer_full_name: '',
+        customer_type: {} as MultiLang,
+        customer_review: {} as MultiLang,
     });
     const [formLoading, setFormLoading] = useState(false);
 
@@ -41,10 +43,10 @@ const Services: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await servicesAPI.getAll();
-            setServices(response.data || []);
+            const response = await testimonialsAPI.getAll();
+            setTestimonials(response.data || []);
         } catch (error) {
-            showToast('error', 'Xidmətlər yüklənə bilmədi');
+            showToast('error', 'Rəylər yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
@@ -61,22 +63,24 @@ const Services: React.FC = () => {
     const handleAdd = () => {
         setSelectedItem(null);
         setFormData({
-            title: createEmptyMultiLang(languages),
-            info: createEmptyMultiLang(languages),
+            customer_full_name: '',
+            customer_type: createEmptyMultiLang(languages),
+            customer_review: createEmptyMultiLang(languages),
         });
         setModalOpen(true);
     };
 
-    const handleEdit = (item: Service) => {
+    const handleEdit = (item: Testimonial) => {
         setSelectedItem(item);
         setFormData({
-            title: ensureMultiLang(item.title, languages),
-            info: ensureMultiLang(item.info, languages),
+            customer_full_name: item.customer_full_name,
+            customer_type: ensureMultiLang(item.customer_type, languages),
+            customer_review: ensureMultiLang(item.customer_review, languages),
         });
         setModalOpen(true);
     };
 
-    const handleDelete = (item: Service) => {
+    const handleDelete = (item: Testimonial) => {
         setSelectedItem(item);
         setDeleteDialogOpen(true);
     };
@@ -84,14 +88,19 @@ const Services: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!formData.customer_full_name.trim()) {
+            showToast('error', 'Müştəri adını daxil edin');
+            return;
+        }
+
         setFormLoading(true);
         try {
             if (selectedItem) {
-                await servicesAPI.update({ id: selectedItem.id, ...formData });
-                showToast('success', 'Xidmət yeniləndi');
+                await testimonialsAPI.update({ id: selectedItem.id, ...formData });
+                showToast('success', 'Rəy yeniləndi');
             } else {
-                await servicesAPI.create(formData);
-                showToast('success', 'Xidmət əlavə edildi');
+                await testimonialsAPI.create(formData);
+                showToast('success', 'Rəy əlavə edildi');
             }
 
             setModalOpen(false);
@@ -108,8 +117,8 @@ const Services: React.FC = () => {
 
         setFormLoading(true);
         try {
-            await servicesAPI.delete(selectedItem.id);
-            showToast('success', 'Xidmət silindi');
+            await testimonialsAPI.delete(selectedItem.id);
+            showToast('success', 'Rəy silindi');
             setDeleteDialogOpen(false);
             fetchData();
         } catch (error) {
@@ -125,22 +134,25 @@ const Services: React.FC = () => {
     };
 
     const columns = [
+        { key: 'customer_full_name' as const, header: 'Müştəri' },
         {
-            key: 'title' as const,
-            header: 'Başlıq',
-            render: (item: Service) => <strong>{getDisplayValue(item.title)}</strong>
+            key: 'customer_type' as const,
+            header: 'Vəzifə/Tip',
+            render: (item: Testimonial) => getDisplayValue(item.customer_type)
         },
         {
-            key: 'info' as const,
-            header: 'Məlumat',
-            render: (item: Service) => <span className="truncate">{getDisplayValue(item.info).slice(0, 60)}...</span>
+            key: 'customer_review' as const,
+            header: 'Rəy',
+            render: (item: Testimonial) => (
+                <span className="truncate">{getDisplayValue(item.customer_review).slice(0, 50)}...</span>
+            )
         },
     ];
 
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Xidmətlər</h1>
+                <h1 className="page-title">Müştəri Rəyləri</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd} disabled={languages.length === 0}>
                     Əlavə et
                 </CustomButton>
@@ -149,37 +161,45 @@ const Services: React.FC = () => {
             <div className="card">
                 <DataTable
                     columns={columns}
-                    data={services}
+                    data={testimonials}
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Xidmət tapılmadı"
+                    emptyMessage="Rəy tapılmadı"
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Xidməti Redaktə Et' : 'Yeni Xidmət'}
+                title={selectedItem ? 'Rəyi Redaktə Et' : 'Yeni Rəy'}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
-                    <MultiLangInput
-                        label="Başlıq"
-                        name="title"
-                        value={formData.title}
-                        onChange={(val) => setFormData({ ...formData, title: val })}
-                        placeholder="Xidmət başlığı"
+                    <CustomInput
+                        name="customer_full_name"
+                        label="Müştəri Adı"
+                        placeholder="Məs: Əli Əliyev"
+                        value={formData.customer_full_name}
+                        onChange={(e) => setFormData({ ...formData, customer_full_name: e.target.value })}
                         required
+                    />
+
+                    <MultiLangInput
+                        label="Müştəri Vəzifəsi / Tipi"
+                        name="customer_type"
+                        value={formData.customer_type}
+                        onChange={(val) => setFormData({ ...formData, customer_type: val })}
+                        placeholder="Məs: CEO, Müştəri"
                         languages={languages}
                     />
 
                     <MultiLangInput
-                        label="Məlumat"
-                        name="info"
-                        value={formData.info}
-                        onChange={(val) => setFormData({ ...formData, info: val })}
-                        placeholder="Xidmət haqqında məlumat"
+                        label="Rəy"
+                        name="customer_review"
+                        value={formData.customer_review}
+                        onChange={(val) => setFormData({ ...formData, customer_review: val })}
+                        placeholder="Müştəri rəyi..."
                         type="textarea"
                         rows={4}
                         languages={languages}
@@ -200,11 +220,11 @@ const Services: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getDisplayValue(selectedItem?.title || {} as MultiLang)}" xidmətini silmək istədiyinizə əminsiniz?`}
+                message={`"${selectedItem?.customer_full_name}" tərəfindən yazılan rəyi silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>
     );
 };
 
-export default Services;
+export default Testimonials;

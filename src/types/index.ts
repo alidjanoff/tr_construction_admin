@@ -1,3 +1,10 @@
+// Multi-Language Support
+export interface MultiLang {
+    az: string;
+    en: string;
+    [key: string]: string;
+}
+
 // User Types
 export interface User {
     id: string;
@@ -39,35 +46,35 @@ export interface ChangeUserRoleRequest {
 // Hero Types
 export interface Hero {
     id: string;
-    title: string;
-    subtitle: string;
-    background_image: string;
+    title: MultiLang;
+    info: MultiLang;
+    image_url: string;
+    button_text: MultiLang;
+    button_url: string;
 }
 
 // About Types
 export interface About {
-    id: string;
-    title: string;
-    description: string;
+    title: MultiLang;
+    info: MultiLang;
+    description: MultiLang;
     image: string;
-    experience_years: number;
-    projects_completed: number;
+    our_mission: MultiLang;
+    our_vision: MultiLang;
 }
 
 // Service Types
 export interface Service {
     id: string;
-    title: string;
-    description: string;
-    icon: string;
+    title: MultiLang;
+    info: MultiLang;
 }
 
 // Stat Types
 export interface Stat {
     id: string;
-    title: string;
-    value: string;
-    icon: string;
+    count: MultiLang;
+    detail: MultiLang;
 }
 
 // Project Types
@@ -78,10 +85,11 @@ export interface ProjectImage {
 
 export interface Project {
     id: string;
-    title: string;
-    details: string;
-    badge: string;
-    address: string;
+    slug?: string;
+    title: MultiLang;
+    details: MultiLang;
+    badge: MultiLang;
+    address: MultiLang;
     map_url: string;
     cover_image: string;
     image_gallery: ProjectImage[];
@@ -90,14 +98,14 @@ export interface Project {
 // Workflow Types
 export interface Workflow {
     id: string;
-    title: string;
-    details: string;
+    title: MultiLang;
+    details: MultiLang;
 }
 
 // Partner Types
 export interface Partner {
     id: string;
-    title: string;
+    title: MultiLang;
     image: string;
 }
 
@@ -105,16 +113,15 @@ export interface Partner {
 export interface Testimonial {
     id: string;
     customer_full_name: string;
-    customer_type: string;
-    customer_review: string;
-    rating: number;
+    customer_type: MultiLang;
+    customer_review: MultiLang;
 }
 
 // Contact Info Types
 export interface ContactInfo {
     id: string;
-    title: string;
-    detail: string;
+    title: MultiLang;
+    detail: MultiLang;
     url?: string;
     contact_type: string;
 }
@@ -152,3 +159,8 @@ export interface Language {
 export interface ApiError {
     message: string;
 }
+
+// Helper type for form data
+export type MultiLangFormData = {
+    [K in keyof MultiLang]?: string;
+};

@@ -12,6 +12,7 @@ interface CustomButtonProps {
     icon?: React.ReactNode;
     onClick?: () => void;
     className?: string;
+    title?: string;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
@@ -25,6 +26,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     icon,
     onClick,
     className = '',
+    title,
 }) => {
     return (
         <button
@@ -32,6 +34,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
             className={`custom-button ${variant} ${size} ${fullWidth ? 'full-width' : ''} ${className}`}
             disabled={disabled || loading}
             onClick={onClick}
+            title={title}
         >
             {loading ? (
                 <span className="loader"></span>

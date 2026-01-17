@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { servicesAPI, languagesAPI } from '../../services/api';
-import type { Service, Language, MultiLang } from '../../types';
+import { partnersAPI, languagesAPI } from '../../services/api';
+import type { Partner, Language, MultiLang } from '../../types';
 import { createEmptyMultiLang, ensureMultiLang } from '../../utils/lang';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
@@ -11,17 +11,17 @@ import MultiLangInput from '../../components/ui/MultiLangInput';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
-const Services: React.FC = () => {
-    const [services, setServices] = useState<Service[]>([]);
+const Partners: React.FC = () => {
+    const [partners, setPartners] = useState<Partner[]>([]);
     const [languages, setLanguages] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<Service | null>(null);
+    const [selectedItem, setSelectedItem] = useState<Partner | null>(null);
     const [formData, setFormData] = useState({
         title: {} as MultiLang,
-        info: {} as MultiLang,
     });
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
@@ -41,10 +41,10 @@ const Services: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await servicesAPI.getAll();
-            setServices(response.data || []);
+            const response = await partnersAPI.getAll();
+            setPartners(response.data || []);
         } catch (error) {
-            showToast('error', 'Xidmətlər yüklənə bilmədi');
+            showToast('error', 'Partnyorlar yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
@@ -62,36 +62,44 @@ const Services: React.FC = () => {
         setSelectedItem(null);
         setFormData({
             title: createEmptyMultiLang(languages),
-            info: createEmptyMultiLang(languages),
         });
+        setImageFile(null);
         setModalOpen(true);
     };
 
-    const handleEdit = (item: Service) => {
+    const handleEdit = (item: Partner) => {
         setSelectedItem(item);
         setFormData({
             title: ensureMultiLang(item.title, languages),
-            info: ensureMultiLang(item.info, languages),
         });
+        setImageFile(null);
         setModalOpen(true);
     };
 
-    const handleDelete = (item: Service) => {
+    const handleDelete = (item: Partner) => {
         setSelectedItem(item);
         setDeleteDialogOpen(true);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         setFormLoading(true);
+
         try {
+            const data = new FormData();
+            data.append('title', JSON.stringify(formData.title));
+
+            if (imageFile) {
+                data.append('image', imageFile);
+            }
+
             if (selectedItem) {
-                await servicesAPI.update({ id: selectedItem.id, ...formData });
-                showToast('success', 'Xidmət yeniləndi');
+                data.append('id', selectedItem.id);
+                await partnersAPI.update(data);
+                showToast('success', 'Partnyor yeniləndi');
             } else {
-                await servicesAPI.create(formData);
-                showToast('success', 'Xidmət əlavə edildi');
+                await partnersAPI.create(data);
+                showToast('success', 'Partnyor əlavə edildi');
             }
 
             setModalOpen(false);
@@ -105,11 +113,10 @@ const Services: React.FC = () => {
 
     const handleConfirmDelete = async () => {
         if (!selectedItem) return;
-
         setFormLoading(true);
         try {
-            await servicesAPI.delete(selectedItem.id);
-            showToast('success', 'Xidmət silindi');
+            await partnersAPI.delete(selectedItem.id);
+            showToast('success', 'Partnyor silindi');
             setDeleteDialogOpen(false);
             fetchData();
         } catch (error) {
@@ -126,21 +133,23 @@ const Services: React.FC = () => {
 
     const columns = [
         {
-            key: 'title' as const,
-            header: 'Başlıq',
-            render: (item: Service) => <strong>{getDisplayValue(item.title)}</strong>
+            key: 'image' as const,
+            header: 'Logo',
+            render: (item: Partner) => (
+                item.image ? <img src={item.image} alt="" className="table-img" /> : '-'
+            )
         },
         {
-            key: 'info' as const,
-            header: 'Məlumat',
-            render: (item: Service) => <span className="truncate">{getDisplayValue(item.info).slice(0, 60)}...</span>
+            key: 'title' as const,
+            header: 'Adı',
+            render: (item: Partner) => getDisplayValue(item.title)
         },
     ];
 
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Xidmətlər</h1>
+                <h1 className="page-title">Partnyorlar</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd} disabled={languages.length === 0}>
                     Əlavə et
                 </CustomButton>
@@ -149,41 +158,46 @@ const Services: React.FC = () => {
             <div className="card">
                 <DataTable
                     columns={columns}
-                    data={services}
+                    data={partners}
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Xidmət tapılmadı"
+                    emptyMessage="Partnyor tapılmadı"
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Xidməti Redaktə Et' : 'Yeni Xidmət'}
+                title={selectedItem ? 'Partnyoru Redaktə Et' : 'Yeni Partnyor'}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <MultiLangInput
-                        label="Başlıq"
+                        label="Partnyor Adı"
                         name="title"
                         value={formData.title}
                         onChange={(val) => setFormData({ ...formData, title: val })}
-                        placeholder="Xidmət başlığı"
-                        required
                         languages={languages}
+                        required
                     />
 
-                    <MultiLangInput
-                        label="Məlumat"
-                        name="info"
-                        value={formData.info}
-                        onChange={(val) => setFormData({ ...formData, info: val })}
-                        placeholder="Xidmət haqqında məlumat"
-                        type="textarea"
-                        rows={4}
-                        languages={languages}
-                    />
+                    <div className="form-group mt-3">
+                        <label>Logo</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                            className="file-input"
+                        />
+                        {(imageFile || selectedItem?.image) && (
+                            <img
+                                src={imageFile ? URL.createObjectURL(imageFile) : selectedItem?.image}
+                                alt="Logo"
+                                className="img-preview mt-2"
+                            />
+                        )}
+                    </div>
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
@@ -200,11 +214,11 @@ const Services: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getDisplayValue(selectedItem?.title || {} as MultiLang)}" xidmətini silmək istədiyinizə əminsiniz?`}
+                message="Bu partnyoru silmək istədiyinizə əminsiniz?"
                 loading={formLoading}
             />
         </div>
     );
 };
 
-export default Services;
+export default Partners;

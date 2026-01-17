@@ -16,6 +16,7 @@ interface CustomInputProps {
     rightIcon?: React.ReactNode;
     onRightIconClick?: () => void;
     className?: string;
+    maxLength?: number;
 }
 
 const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(({
@@ -33,6 +34,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(({
     rightIcon,
     onRightIconClick,
     className = '',
+    maxLength,
 }, ref) => {
     return (
         <div className={`custom-input-wrapper ${className}`}>
@@ -56,6 +58,7 @@ const CustomInput = forwardRef<HTMLInputElement, CustomInputProps>(({
                     disabled={disabled}
                     required={required}
                     className={error ? 'error' : ''}
+                    maxLength={maxLength}
                 />
                 {rightIcon && (
                     <button

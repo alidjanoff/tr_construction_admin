@@ -1,5 +1,6 @@
 import axios, { type AxiosInstance, type InternalAxiosRequestConfig, type AxiosResponse, type AxiosError } from 'axios';
 import { secureStorage, STORAGE_KEYS } from '../utils/secureStorage';
+import type { MultiLang } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
@@ -88,7 +89,10 @@ export const authAPI = {
 export const heroAPI = {
     getAll: () => api.get('/hero'),
     create: (formData: FormData) => api.post('/hero', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-    update: (formData: FormData) => api.put('/hero', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+    update: (formData: FormData) => {
+        const id = formData.get('id');
+        return api.put(`/hero/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    },
     delete: (id: string) => api.delete(`/hero/${id}`),
 };
 
@@ -102,36 +106,44 @@ export const aboutAPI = {
 // Services API
 export const servicesAPI = {
     getAll: () => api.get('/services'),
-    create: (formData: FormData) => api.post('/services', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-    update: (formData: FormData) => api.put('/services', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+    getOne: (id: string) => api.get(`/services/${id}`),
+    create: (data: { title: MultiLang; info: MultiLang }) => api.post('/services', data),
+    update: (data: { id: string; title: MultiLang; info: MultiLang }) => api.put('/services', data),
     delete: (id: string) => api.delete(`/services/${id}`),
 };
 
 // Stats API
 export const statsAPI = {
     getAll: () => api.get('/stats'),
-    create: (data: { title: string; value: string; icon: string }) => api.post('/stats', data),
-    update: (data: { id: string; title: string; value: string; icon: string }) => api.put('/stats', data),
+    getOne: (id: string) => api.get(`/stats/${id}`),
+    create: (data: { count: MultiLang; detail: MultiLang }) => api.post('/stats', data),
+    update: (data: { id: string; count: MultiLang; detail: MultiLang }) => api.put('/stats', data),
     delete: (id: string) => api.delete(`/stats/${id}`),
 };
 
 // Projects API
 export const projectsAPI = {
-    getAll: () => api.get('/projects'),
+    getAll: (page: number = 1) => api.get(`/projects?page=${page}`),
     getOne: (id: string) => api.get(`/projects/${id}`),
     create: (formData: FormData) => api.post('/projects', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-    update: (formData: FormData) => api.put('/projects', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-    addImages: (projectId: string, formData: FormData) => api.post(`/projects/images/${projectId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-    updateImage: (projectId: string, formData: FormData) => api.put(`/projects/images/${projectId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-    deleteImage: (projectId: string, imageId: string) => api.delete(`/projects/${projectId}/${imageId}`),
+    update: (formData: FormData) => {
+        const id = formData.get('id');
+        return api.put(`/projects/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    },
+    uploadGallery: (formData: FormData) => {
+        const id = formData.get('id');
+        return api.post(`/projects/${id}/gallery`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    },
+    deleteGalleryImage: (projectId: string, imageId: string) => api.delete(`/projects/${projectId}/gallery/${imageId}`),
     delete: (id: string) => api.delete(`/projects/${id}`),
 };
 
 // Workflow API
 export const workflowAPI = {
     getAll: () => api.get('/workflow'),
-    create: (data: { title: string; details: string }) => api.post('/workflow', data),
-    update: (data: { id: string; title: string; details: string }) => api.put('/workflow', data),
+    getOne: (id: string) => api.get(`/workflow/${id}`),
+    create: (data: { title: MultiLang; details: MultiLang }) => api.post('/workflow', data),
+    update: (data: { id: string; title: MultiLang; details: MultiLang }) => api.put('/workflow', data),
     delete: (id: string) => api.delete(`/workflow/${id}`),
 };
 
@@ -139,23 +151,32 @@ export const workflowAPI = {
 export const partnersAPI = {
     getAll: () => api.get('/partners'),
     create: (formData: FormData) => api.post('/partners', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-    update: (formData: FormData) => api.put('/partners', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+    update: (formData: FormData) => {
+        const id = formData.get('id');
+        return api.put(`/partners/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+    },
     delete: (id: string) => api.delete(`/partners/${id}`),
 };
 
 // Testimonials API
 export const testimonialsAPI = {
     getAll: () => api.get('/testimonials'),
-    create: (data: { customer_full_name: string; customer_type: string; customer_review: string; rating: number }) => api.post('/testimonials', data),
-    update: (data: { id: string; customer_full_name: string; customer_type: string; customer_review: string; rating: number }) => api.put('/testimonials', data),
+    getOne: (id: string) => api.get(`/testimonials/${id}`),
+    create: (data: { customer_full_name: string; customer_type: MultiLang; customer_review: MultiLang }) =>
+        api.post('/testimonials', data),
+    update: (data: { id: string; customer_full_name: string; customer_type: MultiLang; customer_review: MultiLang }) =>
+        api.put(`/testimonials/${data.id}`, data),
     delete: (id: string) => api.delete(`/testimonials/${id}`),
 };
 
 // Contact Info API
 export const contactInfoAPI = {
     getAll: () => api.get('/contact_info'),
-    create: (data: { title: string; detail: string; url?: string; contact_type: string }) => api.post('/contact_info', data),
-    update: (data: { id: string; title: string; detail: string; url?: string; contact_type: string }) => api.put('/contact_info', data),
+    getOne: (id: string) => api.get(`/contact_info/${id}`),
+    create: (data: { title: MultiLang; detail: MultiLang; url?: string; contact_type: string }) =>
+        api.post('/contact_info', data),
+    update: (data: { id: string; title: MultiLang; detail: MultiLang; url?: string; contact_type: string }) =>
+        api.put('/contact_info', data),
     delete: (id: string) => api.delete(`/contact_info/${id}`),
 };
 
@@ -177,6 +198,7 @@ export const mapUrlAPI = {
 export const applicationsAPI = {
     getAll: () => api.get('/applications'),
     markViewed: (id: string, is_viewed: boolean) => api.put('/applications', { id, is_viewed }),
+    markViewedById: (id: string) => api.put(`/applications/${id}`),
     delete: (id: string) => api.delete(`/applications/${id}`),
 };
 

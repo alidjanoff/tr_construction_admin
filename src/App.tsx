@@ -17,20 +17,18 @@ import Applications from './pages/dashboard/Applications';
 import Users from './pages/dashboard/Users';
 import RegisterUser from './pages/dashboard/RegisterUser';
 
-// Placeholder Pages (to be fully implemented)
-import {
-  Hero,
-  About,
-  Stats,
-  Projects,
-  Workflow,
-  Partners,
-  Testimonials,
-  ContactInfo,
-  Socials,
-  MapUrl,
-  Languages,
-} from './pages/dashboard/PlaceholderPages';
+// Content Management Pages
+import Hero from './pages/dashboard/Hero';
+import About from './pages/dashboard/About';
+import Stats from './pages/dashboard/Stats';
+import Projects from './pages/dashboard/Projects';
+import Workflow from './pages/dashboard/Workflow';
+import Partners from './pages/dashboard/Partners';
+import Testimonials from './pages/dashboard/Testimonials';
+import ContactInfo from './pages/dashboard/ContactInfo';
+import Socials from './pages/dashboard/Socials';
+import MapUrl from './pages/dashboard/MapUrl';
+import Languages from './pages/dashboard/Languages';
 
 // Global styles
 import './assets/scss/main.scss';

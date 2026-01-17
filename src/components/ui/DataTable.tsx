@@ -17,6 +17,7 @@ interface DataTableProps<T> {
     onView?: (item: T) => void;
     loading?: boolean;
     emptyMessage?: string;
+    renderActions?: (item: T) => React.ReactNode;
 }
 
 function DataTable<T extends { id: string }>({
@@ -27,8 +28,9 @@ function DataTable<T extends { id: string }>({
     onView,
     loading = false,
     emptyMessage = 'Məlumat tapılmadı',
+    renderActions,
 }: DataTableProps<T>) {
-    const hasActions = onEdit || onDelete || onView;
+    const hasActions = onEdit || onDelete || onView || renderActions;
 
     if (loading) {
         return (
@@ -73,6 +75,7 @@ function DataTable<T extends { id: string }>({
                             ))}
                             {hasActions && (
                                 <td className="actions-cell">
+                                    {renderActions && renderActions(item)}
                                     {onView && (
                                         <button
                                             className="action-btn view"
