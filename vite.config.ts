@@ -4,9 +4,17 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: true, 
+    host: true,
+    port: 4175,
+  },
+
+  preview: {
+    host: true,
+    port: 4175,
     allowedHosts: [
       'stg-api-admin.trmmc.az'
     ]
-  }
+  },
 })
+
+
