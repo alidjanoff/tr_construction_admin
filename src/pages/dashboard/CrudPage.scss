@@ -82,6 +82,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: $spacing-4;
+    align-items: end;
 
     @media (max-width: 768px) {
         grid-template-columns: 1fr;

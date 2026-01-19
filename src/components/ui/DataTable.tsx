@@ -19,7 +19,19 @@ interface DataTableProps<T> {
     emptyMessage?: string;
 }
 
-function DataTable<T extends { id: string }>({
+// Helper to get stable string key from id
+const getItemKey = (id: any, index: number): string => {
+    if (typeof id === 'string') return id;
+    if (typeof id === 'number') return String(id);
+    if (id?.buffer) {
+        const buffer = id.buffer;
+        const bytes = Object.values(buffer) as number[];
+        return bytes.map((b: number) => b.toString(16).padStart(2, '0')).join('');
+    }
+    return `item-${index}`;
+};
+
+function DataTable<T extends { id: any }>({
     columns,
     data,
     onEdit,
@@ -65,8 +77,8 @@ function DataTable<T extends { id: string }>({
                     </tr>
                 </thead>
                 <tbody>
-                    {safeData.map((item) => (
-                        <tr key={item.id}>
+                    {safeData.map((item, index) => (
+                        <tr key={getItemKey(item.id, index)}>
                             {columns.map((column) => (
                                 <td key={String(column.key)}>
                                     {column.render

@@ -11,6 +11,17 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import { FiPlus, FiGlobe } from 'react-icons/fi';
 import './CrudPage.scss';
 
+// Helper to convert ObjectId buffer to string
+const getIdString = (id: any): string => {
+    if (typeof id === 'string') return id;
+    if (id?.buffer) {
+        const buffer = id.buffer;
+        const bytes = Object.values(buffer) as number[];
+        return bytes.map((b: number) => b.toString(16).padStart(2, '0')).join('');
+    }
+    return String(id);
+};
+
 const Languages: React.FC = () => {
     const [languages, setLanguages] = useState<Language[]>([]);
     const [loading, setLoading] = useState(true);
@@ -127,7 +138,7 @@ const Languages: React.FC = () => {
             header: 'ID',
             render: (item: Language) => (
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    {item.id.slice(-8)}
+                    {getIdString(item.id).slice(-8)}
                 </span>
             )
         },
