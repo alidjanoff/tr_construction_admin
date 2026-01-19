@@ -1,3 +1,6 @@
+// Generic translation type for translatable fields
+export type TranslatedString = Record<string, string>;
+
 // User Types
 export interface User {
     id: string;
@@ -38,36 +41,33 @@ export interface ChangeUserRoleRequest {
 
 // Hero Types
 export interface Hero {
-    id: string;
-    title: string;
-    subtitle: string;
-    background_image: string;
+    title: TranslatedString;
+    info: TranslatedString;
+    images: string[];
 }
 
 // About Types
 export interface About {
-    id: string;
-    title: string;
-    description: string;
+    title: TranslatedString;
+    info: TranslatedString;
+    description: TranslatedString;
     image: string;
-    experience_years: number;
-    projects_completed: number;
+    our_mission: TranslatedString;
+    our_vision: TranslatedString;
 }
 
 // Service Types
 export interface Service {
     id: string;
-    title: string;
-    description: string;
-    icon: string;
+    title: TranslatedString;
+    info: TranslatedString;
 }
 
 // Stat Types
 export interface Stat {
     id: string;
-    title: string;
-    value: string;
-    icon: string;
+    count: TranslatedString;
+    detail: TranslatedString;
 }
 
 // Project Types
@@ -78,61 +78,60 @@ export interface ProjectImage {
 
 export interface Project {
     id: string;
-    title: string;
-    details: string;
-    badge: string;
-    address: string;
+    title: TranslatedString;
+    details: TranslatedString;
+    badge: TranslatedString;
+    address: TranslatedString;
     map_url: string;
     cover_image: string;
-    image_gallery: ProjectImage[];
+    image_gallery?: ProjectImage[];
 }
 
 // Workflow Types
 export interface Workflow {
     id: string;
-    title: string;
-    details: string;
+    title: TranslatedString;
+    details: TranslatedString;
 }
 
 // Partner Types
 export interface Partner {
     id: string;
-    title: string;
+    title: TranslatedString;
     image: string;
 }
 
-// Testimonial Types
+// Testimonial Types (removed rating)
 export interface Testimonial {
     id: string;
     customer_full_name: string;
-    customer_type: string;
-    customer_review: string;
-    rating: number;
+    customer_type: TranslatedString;
+    customer_review: TranslatedString;
 }
 
 // Contact Info Types
 export interface ContactInfo {
     id: string;
-    title: string;
-    detail: string;
+    title: TranslatedString;
+    detail: TranslatedString;
     url?: string;
     contact_type: string;
 }
 
-// Social Types
+// Social Types (not translatable)
 export interface Social {
     id: string;
     url: string;
     type: string;
 }
 
-// Map URL Types
+// Map URL Types (not translatable)
 export interface MapUrl {
     long: string;
     lat: string;
 }
 
-// Application Types
+// Application Types (not translatable)
 export interface Application {
     id: string;
     full_name: string;
@@ -152,3 +151,22 @@ export interface Language {
 export interface ApiError {
     message: string;
 }
+
+// Helper function to create empty translation object
+export const createEmptyTranslation = (languages: Language[]): TranslatedString => {
+    const result: TranslatedString = {};
+    languages.forEach(lang => {
+        result[lang.lang] = '';
+    });
+    return result;
+};
+
+// Helper function to get display value from translation
+export const getTranslationValue = (
+    translation: TranslatedString | string | undefined,
+    preferredLang: string = 'az'
+): string => {
+    if (!translation) return '';
+    if (typeof translation === 'string') return translation;
+    return translation[preferredLang] || translation['en'] || Object.values(translation)[0] || '';
+};

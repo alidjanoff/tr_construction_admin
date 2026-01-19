@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { servicesAPI } from '../../services/api';
+import { workflowAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
-import type { Service, TranslatedString } from '../../types';
+import type { Workflow as WorkflowType, TranslatedString } from '../../types';
 import { createEmptyTranslation, getTranslationValue } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
@@ -12,18 +12,18 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
-interface ServiceFormData {
+interface WorkflowFormData {
     title: TranslatedString;
-    info: TranslatedString;
+    details: TranslatedString;
 }
 
-const Services: React.FC = () => {
-    const [services, setServices] = useState<Service[]>([]);
+const Workflow: React.FC = () => {
+    const [workflows, setWorkflows] = useState<WorkflowType[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<Service | null>(null);
-    const [formData, setFormData] = useState<ServiceFormData>({ title: {}, info: {} });
+    const [selectedItem, setSelectedItem] = useState<WorkflowType | null>(null);
+    const [formData, setFormData] = useState<WorkflowFormData>({ title: {}, details: {} });
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
@@ -31,10 +31,10 @@ const Services: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await servicesAPI.getAll();
-            setServices(response.data || []);
+            const response = await workflowAPI.getAll();
+            setWorkflows(response.data || []);
         } catch (error) {
-            showToast('error', 'Xidmətlər yüklənə bilmədi');
+            showToast('error', 'İş axını yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
@@ -48,21 +48,21 @@ const Services: React.FC = () => {
         setSelectedItem(null);
         setFormData({
             title: createEmptyTranslation(languages),
-            info: createEmptyTranslation(languages),
+            details: createEmptyTranslation(languages),
         });
         setModalOpen(true);
     };
 
-    const handleEdit = (item: Service) => {
+    const handleEdit = (item: WorkflowType) => {
         setSelectedItem(item);
         setFormData({
             title: item.title || {},
-            info: item.info || {},
+            details: item.details || {},
         });
         setModalOpen(true);
     };
 
-    const handleDelete = (item: Service) => {
+    const handleDelete = (item: WorkflowType) => {
         setSelectedItem(item);
         setDeleteDialogOpen(true);
     };
@@ -70,30 +70,29 @@ const Services: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate at least one language has content
         const hasTitle = Object.values(formData.title).some(v => v && v.trim());
-        const hasInfo = Object.values(formData.info).some(v => v && v.trim());
+        const hasDetails = Object.values(formData.details).some(v => v && v.trim());
 
-        if (!hasTitle || !hasInfo) {
-            showToast('error', 'Ən azı bir dildə başlıq və təsvir daxil edin');
+        if (!hasTitle || !hasDetails) {
+            showToast('error', 'Ən azı bir dildə başlıq və detalları daxil edin');
             return;
         }
 
         setFormLoading(true);
         try {
             if (selectedItem) {
-                await servicesAPI.update({
+                await workflowAPI.update({
                     id: selectedItem.id,
                     title: formData.title,
-                    info: formData.info,
+                    details: formData.details,
                 });
-                showToast('success', 'Xidmət yeniləndi');
+                showToast('success', 'İş axını yeniləndi');
             } else {
-                await servicesAPI.create({
+                await workflowAPI.create({
                     title: formData.title,
-                    info: formData.info,
+                    details: formData.details,
                 });
-                showToast('success', 'Xidmət əlavə edildi');
+                showToast('success', 'İş axını əlavə edildi');
             }
 
             setModalOpen(false);
@@ -110,8 +109,8 @@ const Services: React.FC = () => {
 
         setFormLoading(true);
         try {
-            await servicesAPI.delete(selectedItem.id);
-            showToast('success', 'Xidmət silindi');
+            await workflowAPI.delete(selectedItem.id);
+            showToast('success', 'İş axını silindi');
             setDeleteDialogOpen(false);
             fetchData();
         } catch (error) {
@@ -125,13 +124,13 @@ const Services: React.FC = () => {
         {
             key: 'title' as const,
             header: 'Başlıq',
-            render: (item: Service) => getTranslationValue(item.title, 'az')
+            render: (item: WorkflowType) => getTranslationValue(item.title, 'az')
         },
         {
-            key: 'info' as const,
-            header: 'Məlumat',
-            render: (item: Service) => {
-                const text = getTranslationValue(item.info, 'az');
+            key: 'details' as const,
+            header: 'Detallar',
+            render: (item: WorkflowType) => {
+                const text = getTranslationValue(item.details, 'az');
                 return <span className="truncate">{text.slice(0, 60)}{text.length > 60 ? '...' : ''}</span>;
             }
         },
@@ -140,7 +139,7 @@ const Services: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Xidmətlər</h1>
+                <h1 className="page-title">İş Axını</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
                     Əlavə et
                 </CustomButton>
@@ -149,18 +148,18 @@ const Services: React.FC = () => {
             <div className="card">
                 <DataTable
                     columns={columns}
-                    data={services}
+                    data={workflows}
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Xidmət tapılmadı"
+                    emptyMessage="İş axını tapılmadı"
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Xidməti Redaktə Et' : 'Yeni Xidmət'}
+                title={selectedItem ? 'İş Axınını Redaktə Et' : 'Yeni İş Axını'}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
@@ -169,17 +168,17 @@ const Services: React.FC = () => {
                         label="Başlıq"
                         value={formData.title}
                         onChange={(value) => setFormData({ ...formData, title: value })}
-                        placeholder="Xidmət başlığı"
+                        placeholder="məs: Planlama, Dizayn, Tikinti"
                         required
                     />
 
                     <TranslatableInput
-                        name="info"
-                        label="Məlumat"
-                        value={formData.info}
-                        onChange={(value) => setFormData({ ...formData, info: value })}
+                        name="details"
+                        label="Detallar"
+                        value={formData.details}
+                        onChange={(value) => setFormData({ ...formData, details: value })}
                         type="textarea"
-                        placeholder="Xidmət haqqında məlumat"
+                        placeholder="İş axını haqqında ətraflı məlumat"
                         rows={4}
                         required
                     />
@@ -199,11 +198,11 @@ const Services: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getTranslationValue(selectedItem?.title, 'az')}" xidmətini silmək istədiyinizə əminsiniz?`}
+                message={`"${getTranslationValue(selectedItem?.title, 'az')}" iş axınını silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>
     );
 };
 
-export default Services;
+export default Workflow;

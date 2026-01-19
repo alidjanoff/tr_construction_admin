@@ -1,0 +1,147 @@
+.translatable-input-wrapper {
+    margin-bottom: 1.25rem;
+
+    > label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+
+        .required {
+            color: var(--error);
+            margin-left: 2px;
+        }
+    }
+
+    .language-tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 8px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 0;
+    }
+
+    .language-tab {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px 6px 0 0;
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        font-weight: 600;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        position: relative;
+        bottom: -2px;
+
+        &:hover:not(:disabled) {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        &.active {
+            background: var(--primary);
+            color: white;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        &.has-content:not(.active) {
+            background: rgba(34, 197, 94, 0.1);
+            color: var(--success);
+        }
+
+        .content-indicator {
+            font-size: 0.65rem;
+            margin-left: 2px;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    .input-container {
+        .custom-input,
+        .custom-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+
+            &:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+            }
+
+            &::placeholder {
+                color: var(--text-muted);
+            }
+
+            &:disabled {
+                background: var(--bg-secondary);
+                cursor: not-allowed;
+            }
+        }
+
+        .custom-textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+    }
+
+    .error-message {
+        display: block;
+        color: var(--error);
+        font-size: 0.75rem;
+        margin-top: 4px;
+    }
+
+    .translation-status {
+        display: flex;
+        gap: 4px;
+        margin-top: 8px;
+        justify-content: flex-end;
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+
+            &.filled {
+                background: var(--success);
+            }
+
+            &.empty {
+                background: var(--border-color);
+            }
+        }
+    }
+
+    .loading-state {
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 8px;
+        color: var(--text-muted);
+        text-align: center;
+        font-size: 0.875rem;
+    }
+
+    &.has-error {
+        .custom-input,
+        .custom-textarea {
+            border-color: var(--error);
+        }
+    }
+}

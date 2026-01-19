@@ -30,6 +30,9 @@ function DataTable<T extends { id: string }>({
 }: DataTableProps<T>) {
     const hasActions = onEdit || onDelete || onView;
 
+    // Ensure data is always an array
+    const safeData = Array.isArray(data) ? data : [];
+
     if (loading) {
         return (
             <div className="data-table-loading">
@@ -40,7 +43,7 @@ function DataTable<T extends { id: string }>({
         );
     }
 
-    if (data.length === 0) {
+    if (safeData.length === 0) {
         return (
             <div className="data-table-empty">
                 <p>{emptyMessage}</p>
@@ -62,7 +65,7 @@ function DataTable<T extends { id: string }>({
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((item) => (
+                    {safeData.map((item) => (
                         <tr key={item.id}>
                             {columns.map((column) => (
                                 <td key={String(column.key)}>

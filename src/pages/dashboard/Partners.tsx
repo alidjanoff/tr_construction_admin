@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { servicesAPI } from '../../services/api';
+import { partnersAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
-import type { Service, TranslatedString } from '../../types';
+import type { Partner, TranslatedString } from '../../types';
 import { createEmptyTranslation, getTranslationValue } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
@@ -12,18 +12,18 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
-interface ServiceFormData {
+interface PartnerFormData {
     title: TranslatedString;
-    info: TranslatedString;
 }
 
-const Services: React.FC = () => {
-    const [services, setServices] = useState<Service[]>([]);
+const Partners: React.FC = () => {
+    const [partners, setPartners] = useState<Partner[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<Service | null>(null);
-    const [formData, setFormData] = useState<ServiceFormData>({ title: {}, info: {} });
+    const [selectedItem, setSelectedItem] = useState<Partner | null>(null);
+    const [formData, setFormData] = useState<PartnerFormData>({ title: {} });
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
@@ -31,10 +31,10 @@ const Services: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await servicesAPI.getAll();
-            setServices(response.data || []);
+            const response = await partnersAPI.getAll();
+            setPartners(response.data || []);
         } catch (error) {
-            showToast('error', 'Xidmətlər yüklənə bilmədi');
+            showToast('error', 'Partnyorlar yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
@@ -48,21 +48,21 @@ const Services: React.FC = () => {
         setSelectedItem(null);
         setFormData({
             title: createEmptyTranslation(languages),
-            info: createEmptyTranslation(languages),
         });
+        setImageFile(null);
         setModalOpen(true);
     };
 
-    const handleEdit = (item: Service) => {
+    const handleEdit = (item: Partner) => {
         setSelectedItem(item);
         setFormData({
             title: item.title || {},
-            info: item.info || {},
         });
+        setImageFile(null);
         setModalOpen(true);
     };
 
-    const handleDelete = (item: Service) => {
+    const handleDelete = (item: Partner) => {
         setSelectedItem(item);
         setDeleteDialogOpen(true);
     };
@@ -70,30 +70,37 @@ const Services: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate at least one language has content
         const hasTitle = Object.values(formData.title).some(v => v && v.trim());
-        const hasInfo = Object.values(formData.info).some(v => v && v.trim());
 
-        if (!hasTitle || !hasInfo) {
-            showToast('error', 'Ən azı bir dildə başlıq və təsvir daxil edin');
+        if (!hasTitle) {
+            showToast('error', 'Ən azı bir dildə başlıq daxil edin');
+            return;
+        }
+
+        if (!selectedItem && !imageFile) {
+            showToast('error', 'Şəkil yükləyin');
             return;
         }
 
         setFormLoading(true);
         try {
+            const data = new FormData();
+            data.append('title', JSON.stringify(formData.title));
+
             if (selectedItem) {
-                await servicesAPI.update({
-                    id: selectedItem.id,
-                    title: formData.title,
-                    info: formData.info,
-                });
-                showToast('success', 'Xidmət yeniləndi');
+                data.append('id', selectedItem.id);
+            }
+
+            if (imageFile) {
+                data.append('image', imageFile);
+            }
+
+            if (selectedItem) {
+                await partnersAPI.update(data);
+                showToast('success', 'Partnyor yeniləndi');
             } else {
-                await servicesAPI.create({
-                    title: formData.title,
-                    info: formData.info,
-                });
-                showToast('success', 'Xidmət əlavə edildi');
+                await partnersAPI.create(data);
+                showToast('success', 'Partnyor əlavə edildi');
             }
 
             setModalOpen(false);
@@ -110,8 +117,8 @@ const Services: React.FC = () => {
 
         setFormLoading(true);
         try {
-            await servicesAPI.delete(selectedItem.id);
-            showToast('success', 'Xidmət silindi');
+            await partnersAPI.delete(selectedItem.id);
+            showToast('success', 'Partnyor silindi');
             setDeleteDialogOpen(false);
             fetchData();
         } catch (error) {
@@ -123,24 +130,22 @@ const Services: React.FC = () => {
 
     const columns = [
         {
-            key: 'title' as const,
-            header: 'Başlıq',
-            render: (item: Service) => getTranslationValue(item.title, 'az')
+            key: 'image' as const,
+            header: 'Logo',
+            render: (item: Partner) =>
+                item.image ? <img src={item.image} alt="" className="table-icon" style={{ width: 60, height: 40, objectFit: 'contain' }} /> : '-'
         },
         {
-            key: 'info' as const,
-            header: 'Məlumat',
-            render: (item: Service) => {
-                const text = getTranslationValue(item.info, 'az');
-                return <span className="truncate">{text.slice(0, 60)}{text.length > 60 ? '...' : ''}</span>;
-            }
+            key: 'title' as const,
+            header: 'Ad',
+            render: (item: Partner) => getTranslationValue(item.title, 'az')
         },
     ];
 
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Xidmətlər</h1>
+                <h1 className="page-title">Partnyorlar</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
                     Əlavə et
                 </CustomButton>
@@ -149,40 +154,42 @@ const Services: React.FC = () => {
             <div className="card">
                 <DataTable
                     columns={columns}
-                    data={services}
+                    data={partners}
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Xidmət tapılmadı"
+                    emptyMessage="Partnyor tapılmadı"
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Xidməti Redaktə Et' : 'Yeni Xidmət'}
+                title={selectedItem ? 'Partnyoru Redaktə Et' : 'Yeni Partnyor'}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <TranslatableInput
                         name="title"
-                        label="Başlıq"
+                        label="Ad"
                         value={formData.title}
                         onChange={(value) => setFormData({ ...formData, title: value })}
-                        placeholder="Xidmət başlığı"
+                        placeholder="Partnyor şirkət adı"
                         required
                     />
 
-                    <TranslatableInput
-                        name="info"
-                        label="Məlumat"
-                        value={formData.info}
-                        onChange={(value) => setFormData({ ...formData, info: value })}
-                        type="textarea"
-                        placeholder="Xidmət haqqında məlumat"
-                        rows={4}
-                        required
-                    />
+                    <div className="form-group">
+                        <label>Logo</label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                            className="file-input"
+                        />
+                        {selectedItem?.image && !imageFile && (
+                            <img src={selectedItem.image} alt="" className="preview-image" style={{ maxHeight: 80 }} />
+                        )}
+                    </div>
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
@@ -199,11 +206,11 @@ const Services: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getTranslationValue(selectedItem?.title, 'az')}" xidmətini silmək istədiyinizə əminsiniz?`}
+                message={`"${getTranslationValue(selectedItem?.title, 'az')}" partnyorunu silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>
     );
 };
 
-export default Services;
+export default Partners;

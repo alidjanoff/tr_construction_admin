@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { servicesAPI } from '../../services/api';
+import { statsAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
-import type { Service, TranslatedString } from '../../types';
+import type { Stat, TranslatedString } from '../../types';
 import { createEmptyTranslation, getTranslationValue } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
@@ -12,18 +12,18 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
-interface ServiceFormData {
-    title: TranslatedString;
-    info: TranslatedString;
+interface StatFormData {
+    count: TranslatedString;
+    detail: TranslatedString;
 }
 
-const Services: React.FC = () => {
-    const [services, setServices] = useState<Service[]>([]);
+const Stats: React.FC = () => {
+    const [stats, setStats] = useState<Stat[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState<Service | null>(null);
-    const [formData, setFormData] = useState<ServiceFormData>({ title: {}, info: {} });
+    const [selectedItem, setSelectedItem] = useState<Stat | null>(null);
+    const [formData, setFormData] = useState<StatFormData>({ count: {}, detail: {} });
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
@@ -31,10 +31,10 @@ const Services: React.FC = () => {
 
     const fetchData = async () => {
         try {
-            const response = await servicesAPI.getAll();
-            setServices(response.data || []);
+            const response = await statsAPI.getAll();
+            setStats(response.data || []);
         } catch (error) {
-            showToast('error', 'Xidmətlər yüklənə bilmədi');
+            showToast('error', 'Statistikalar yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
@@ -47,22 +47,22 @@ const Services: React.FC = () => {
     const handleAdd = () => {
         setSelectedItem(null);
         setFormData({
-            title: createEmptyTranslation(languages),
-            info: createEmptyTranslation(languages),
+            count: createEmptyTranslation(languages),
+            detail: createEmptyTranslation(languages),
         });
         setModalOpen(true);
     };
 
-    const handleEdit = (item: Service) => {
+    const handleEdit = (item: Stat) => {
         setSelectedItem(item);
         setFormData({
-            title: item.title || {},
-            info: item.info || {},
+            count: item.count || {},
+            detail: item.detail || {},
         });
         setModalOpen(true);
     };
 
-    const handleDelete = (item: Service) => {
+    const handleDelete = (item: Stat) => {
         setSelectedItem(item);
         setDeleteDialogOpen(true);
     };
@@ -70,30 +70,29 @@ const Services: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate at least one language has content
-        const hasTitle = Object.values(formData.title).some(v => v && v.trim());
-        const hasInfo = Object.values(formData.info).some(v => v && v.trim());
+        const hasCount = Object.values(formData.count).some(v => v && v.trim());
+        const hasDetail = Object.values(formData.detail).some(v => v && v.trim());
 
-        if (!hasTitle || !hasInfo) {
-            showToast('error', 'Ən azı bir dildə başlıq və təsvir daxil edin');
+        if (!hasCount || !hasDetail) {
+            showToast('error', 'Ən azı bir dildə rəqəm və detalı daxil edin');
             return;
         }
 
         setFormLoading(true);
         try {
             if (selectedItem) {
-                await servicesAPI.update({
+                await statsAPI.update({
                     id: selectedItem.id,
-                    title: formData.title,
-                    info: formData.info,
+                    count: formData.count,
+                    detail: formData.detail,
                 });
-                showToast('success', 'Xidmət yeniləndi');
+                showToast('success', 'Statistika yeniləndi');
             } else {
-                await servicesAPI.create({
-                    title: formData.title,
-                    info: formData.info,
+                await statsAPI.create({
+                    count: formData.count,
+                    detail: formData.detail,
                 });
-                showToast('success', 'Xidmət əlavə edildi');
+                showToast('success', 'Statistika əlavə edildi');
             }
 
             setModalOpen(false);
@@ -110,8 +109,8 @@ const Services: React.FC = () => {
 
         setFormLoading(true);
         try {
-            await servicesAPI.delete(selectedItem.id);
-            showToast('success', 'Xidmət silindi');
+            await statsAPI.delete(selectedItem.id);
+            showToast('success', 'Statistika silindi');
             setDeleteDialogOpen(false);
             fetchData();
         } catch (error) {
@@ -123,24 +122,21 @@ const Services: React.FC = () => {
 
     const columns = [
         {
-            key: 'title' as const,
-            header: 'Başlıq',
-            render: (item: Service) => getTranslationValue(item.title, 'az')
+            key: 'count' as const,
+            header: 'Rəqəm',
+            render: (item: Stat) => <strong>{getTranslationValue(item.count, 'az')}</strong>
         },
         {
-            key: 'info' as const,
-            header: 'Məlumat',
-            render: (item: Service) => {
-                const text = getTranslationValue(item.info, 'az');
-                return <span className="truncate">{text.slice(0, 60)}{text.length > 60 ? '...' : ''}</span>;
-            }
+            key: 'detail' as const,
+            header: 'Detal',
+            render: (item: Stat) => getTranslationValue(item.detail, 'az')
         },
     ];
 
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Xidmətlər</h1>
+                <h1 className="page-title">Statistika</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
                     Əlavə et
                 </CustomButton>
@@ -149,38 +145,36 @@ const Services: React.FC = () => {
             <div className="card">
                 <DataTable
                     columns={columns}
-                    data={services}
+                    data={stats}
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Xidmət tapılmadı"
+                    emptyMessage="Statistika tapılmadı"
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Xidməti Redaktə Et' : 'Yeni Xidmət'}
+                title={selectedItem ? 'Statistikanı Redaktə Et' : 'Yeni Statistika'}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <TranslatableInput
-                        name="title"
-                        label="Başlıq"
-                        value={formData.title}
-                        onChange={(value) => setFormData({ ...formData, title: value })}
-                        placeholder="Xidmət başlığı"
+                        name="count"
+                        label="Rəqəm"
+                        value={formData.count}
+                        onChange={(value) => setFormData({ ...formData, count: value })}
+                        placeholder="məs: 150+, 10+, 200"
                         required
                     />
 
                     <TranslatableInput
-                        name="info"
-                        label="Məlumat"
-                        value={formData.info}
-                        onChange={(value) => setFormData({ ...formData, info: value })}
-                        type="textarea"
-                        placeholder="Xidmət haqqında məlumat"
-                        rows={4}
+                        name="detail"
+                        label="Detal"
+                        value={formData.detail}
+                        onChange={(value) => setFormData({ ...formData, detail: value })}
+                        placeholder="məs: Uğurlu Layihə, İllik Təcrübə"
                         required
                     />
 
@@ -199,11 +193,11 @@ const Services: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getTranslationValue(selectedItem?.title, 'az')}" xidmətini silmək istədiyinizə əminsiniz?`}
+                message={`"${getTranslationValue(selectedItem?.count, 'az')}" statistikasını silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>
     );
 };
 
-export default Services;
+export default Stats;
