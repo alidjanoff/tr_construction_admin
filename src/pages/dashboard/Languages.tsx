@@ -12,10 +12,10 @@ import { FiPlus, FiGlobe } from 'react-icons/fi';
 import './CrudPage.scss';
 
 // Helper to convert ObjectId buffer to string
-const getIdString = (id: any): string => {
+const getIdString = (id: unknown): string => {
     if (typeof id === 'string') return id;
-    if (id?.buffer) {
-        const buffer = id.buffer;
+    if (id && typeof id === 'object' && 'buffer' in id) {
+        const buffer = id.buffer as Record<string, number>;
         const bytes = Object.values(buffer) as number[];
         return bytes.map((b: number) => b.toString(16).padStart(2, '0')).join('');
     }
@@ -34,20 +34,20 @@ const Languages: React.FC = () => {
     const { showToast } = useToast();
     const { refreshLanguages } = useLanguages();
 
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await languagesAPI.getAll();
             setLanguages(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'Dillər yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -97,8 +97,9 @@ const Languages: React.FC = () => {
             setModalOpen(false);
             fetchData();
             refreshLanguages(); // Refresh global language context
-        } catch (error: any) {
-            const message = error.response?.data?.message || 'Əməliyyat uğursuz oldu';
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { message?: string } } };
+            const message = err.response?.data?.message || 'Əməliyyat uğursuz oldu';
             showToast('error', message);
         } finally {
             setFormLoading(false);
@@ -115,7 +116,7 @@ const Languages: React.FC = () => {
             setDeleteDialogOpen(false);
             fetchData();
             refreshLanguages(); // Refresh global language context
-        } catch (error) {
+        } catch {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);

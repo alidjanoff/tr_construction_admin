@@ -33,16 +33,18 @@ const Partners: React.FC = () => {
         try {
             const response = await partnersAPI.getAll();
             setPartners(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'Partnyorlar yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchDataCallback = React.useCallback(fetchData, [showToast]);
+
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchDataCallback();
+    }, [fetchDataCallback]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -105,7 +107,7 @@ const Partners: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -121,7 +123,7 @@ const Partners: React.FC = () => {
             showToast('success', 'Partnyor silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);

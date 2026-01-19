@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLanguages } from '../../contexts/LanguageContext';
 import './TranslatableInput.scss';
 
@@ -33,13 +33,13 @@ const TranslatableInput: React.FC<TranslatableInputProps> = ({
     const [activeTab, setActiveTab] = useState<string>('');
 
     // Set initial active tab when languages load
-    useEffect(() => {
-        if (languages.length > 0 && !activeTab) {
-            // Prefer 'az' as default, otherwise first language
-            const defaultLang = languages.find(l => l.lang === 'az')?.lang || languages[0]?.lang;
+    if (languages.length > 0 && !activeTab) {
+        // Prefer 'az' as default, otherwise first language
+        const defaultLang = languages.find(l => l.lang === 'az')?.lang || languages[0]?.lang;
+        if (defaultLang) {
             setActiveTab(defaultLang);
         }
-    }, [languages, activeTab]);
+    }
 
     const handleInputChange = (lang: string, inputValue: string) => {
         onChange({

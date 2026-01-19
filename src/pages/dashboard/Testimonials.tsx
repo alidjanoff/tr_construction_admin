@@ -35,20 +35,20 @@ const Testimonials: React.FC = () => {
     const { showToast } = useToast();
     const { languages } = useLanguages();
 
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await testimonialsAPI.getAll();
             setTestimonials(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'Müştəri rəyləri yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -112,7 +112,7 @@ const Testimonials: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -128,7 +128,7 @@ const Testimonials: React.FC = () => {
             showToast('success', 'Rəy silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);

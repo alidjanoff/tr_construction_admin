@@ -29,20 +29,20 @@ const Stats: React.FC = () => {
     const { showToast } = useToast();
     const { languages } = useLanguages();
 
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await statsAPI.getAll();
             setStats(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'Statistikalar yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -97,7 +97,7 @@ const Stats: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -113,7 +113,7 @@ const Stats: React.FC = () => {
             showToast('success', 'Statistika silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);

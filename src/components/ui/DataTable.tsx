@@ -21,18 +21,18 @@ interface DataTableProps<T> {
 }
 
 // Helper to get stable string key from id
-const getItemKey = (id: any, index: number): string => {
+const getItemKey = (id: unknown, index: number): string => {
     if (typeof id === 'string') return id;
     if (typeof id === 'number') return String(id);
-    if (id?.buffer) {
-        const buffer = id.buffer;
+    if (id && typeof id === 'object' && 'buffer' in id) {
+        const buffer = (id as { buffer: Record<string, number> }).buffer;
         const bytes = Object.values(buffer) as number[];
         return bytes.map((b: number) => b.toString(16).padStart(2, '0')).join('');
     }
     return `item-${index}`;
 };
 
-function DataTable<T extends { id: any }>({
+function DataTable<T extends { id: unknown }>({
     columns,
     data,
     onEdit,

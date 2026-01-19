@@ -15,7 +15,7 @@ const MapUrl: React.FC = () => {
 
     const { showToast } = useToast();
 
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await mapUrlAPI.get();
             if (response.data) {
@@ -24,16 +24,16 @@ const MapUrl: React.FC = () => {
                     lat: response.data.lat || '',
                 });
             }
-        } catch (error) {
+        } catch {
             showToast('error', 'Xəritə koordinatları yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -50,7 +50,7 @@ const MapUrl: React.FC = () => {
                 lat: formData.lat,
             });
             showToast('success', 'Xəritə koordinatları yeniləndi');
-        } catch (error) {
+        } catch {
             showToast('error', 'Yeniləmə uğursuz oldu');
         } finally {
             setSaving(false);
