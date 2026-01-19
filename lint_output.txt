@@ -1,0 +1,32 @@
+
+> tr_construction_dashboard@0.0.0 lint
+> eslint .
+
+
+/Users/alidjanoff/Desktop/Projects/Typescript/React/tr_construction_project/tr_construction_dashboard/src/components/ui/DataTable.tsx
+  23:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/alidjanoff/Desktop/Projects/Typescript/React/tr_construction_project/tr_construction_dashboard/src/components/ui/Toast.tsx
+  67:14  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+/Users/alidjanoff/Desktop/Projects/Typescript/React/tr_construction_project/tr_construction_dashboard/src/components/ui/TranslatableInput.tsx
+  40:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/alidjanoff/Desktop/Projects/Typescript/React/tr_construction_project/tr_construction_dashboard/src/components/ui/TranslatableInput.tsx:40:13
+  38 |             // Prefer 'az' as default, otherwise first language
+  39 |             const defaultLang = languages.find(l => l.lang === 'az')?.lang || languages[0]?.lang;
+> 40 |             setActiveTab(defaultLang);
+     |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  41 |         }
+  42 |     }, [languages, activeTab]);
+  43 |  react-hooks/set-state-in-effect
+
+✖ 4 problems (4 errors, 0 warnings)
+

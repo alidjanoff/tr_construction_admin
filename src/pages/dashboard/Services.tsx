@@ -29,20 +29,20 @@ const Services: React.FC = () => {
     const { showToast } = useToast();
     const { languages } = useLanguages();
 
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await servicesAPI.getAll();
             setServices(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'Xidmətlər yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -98,7 +98,7 @@ const Services: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -114,7 +114,7 @@ const Services: React.FC = () => {
             showToast('success', 'Xidmət silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);

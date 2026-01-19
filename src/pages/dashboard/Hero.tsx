@@ -25,7 +25,7 @@ const Hero: React.FC = () => {
     const { showToast } = useToast();
     const { languages } = useLanguages();
 
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await heroAPI.getAll();
             if (response.data) {
@@ -40,18 +40,18 @@ const Hero: React.FC = () => {
                     info: createEmptyTranslation(languages),
                 });
             }
-        } catch (error) {
+        } catch {
             showToast('error', 'Hero bölməsi yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
-    };
+    }, [languages, showToast]);
 
     useEffect(() => {
         if (languages.length > 0) {
             fetchData();
         }
-    }, [languages]);
+    }, [languages, fetchData]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -85,7 +85,7 @@ const Hero: React.FC = () => {
             showToast('success', 'Hero bölməsi yeniləndi');
             fetchData();
             setNewImageFiles([]);
-        } catch (error) {
+        } catch {
             showToast('error', 'Yeniləmə uğursuz oldu');
         } finally {
             setSaving(false);

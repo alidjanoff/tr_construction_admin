@@ -34,7 +34,7 @@ const About: React.FC = () => {
     const { showToast } = useToast();
     const { languages } = useLanguages();
 
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await aboutAPI.get();
             if (response.data) {
@@ -55,18 +55,18 @@ const About: React.FC = () => {
                     our_vision: createEmptyTranslation(languages),
                 });
             }
-        } catch (error) {
+        } catch {
             showToast('error', 'Haqqımızda bölməsi yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
-    };
+    }, [languages, showToast]);
 
     useEffect(() => {
         if (languages.length > 0) {
             fetchData();
         }
-    }, [languages]);
+    }, [languages, fetchData]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -100,7 +100,7 @@ const About: React.FC = () => {
             showToast('success', 'Haqqımızda bölməsi yeniləndi');
             fetchData();
             setImageFile(null);
-        } catch (error) {
+        } catch {
             showToast('error', 'Yeniləmə uğursuz oldu');
         } finally {
             setSaving(false);

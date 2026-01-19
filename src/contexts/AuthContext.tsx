@@ -32,7 +32,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
                     const response = await authAPI.getMe();
                     setUser(response.data);
                     secureStorage.setItem(STORAGE_KEYS.USER_DATA, response.data);
-                } catch (error) {
+                } catch {
                     // Token invalid, clear storage
                     secureStorage.clear();
                     setUser(null);
@@ -61,7 +61,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const logout = async (): Promise<void> => {
         try {
             await authAPI.logout();
-        } catch (error) {
+        } catch {
             // Ignore logout API errors
         } finally {
             secureStorage.clear();
@@ -91,6 +91,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = (): AuthContextType => {
     const context = useContext(AuthContext);
     if (context === undefined) {

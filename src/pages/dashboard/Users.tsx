@@ -26,16 +26,18 @@ const Users: React.FC = () => {
         try {
             const response = await authAPI.getUsers();
             setUsers(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'İstifadəçilər yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchUsersCallback = React.useCallback(fetchUsers, [showToast]);
+
     useEffect(() => {
-        fetchUsers();
-    }, []);
+        fetchUsersCallback();
+    }, [fetchUsersCallback]);
 
     const handleAddUser = () => {
         navigate('/users/new');
@@ -61,7 +63,7 @@ const Users: React.FC = () => {
             showToast('success', 'Rol uğurla dəyişdirildi');
             setRoleModalOpen(false);
             fetchUsers();
-        } catch (error) {
+        } catch {
             showToast('error', 'Rol dəyişdirilə bilmədi');
         } finally {
             setFormLoading(false);
@@ -77,7 +79,7 @@ const Users: React.FC = () => {
             showToast('success', 'İstifadəçi silindi');
             setDeleteDialogOpen(false);
             fetchUsers();
-        } catch (error) {
+        } catch {
             showToast('error', 'İstifadəçi silinə bilmədi');
         } finally {
             setFormLoading(false);

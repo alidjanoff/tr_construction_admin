@@ -24,16 +24,18 @@ const Applications: React.FC = () => {
         try {
             const response = await applicationsAPI.getAll();
             setApplications(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'Müraciətlər yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchApplicationsCallback = React.useCallback(fetchApplications, [showToast]);
+
     useEffect(() => {
-        fetchApplications();
-    }, []);
+        fetchApplicationsCallback();
+    }, [fetchApplicationsCallback]);
 
     const handleView = async (app: Application) => {
         setSelectedApp(app);
@@ -44,7 +46,7 @@ const Applications: React.FC = () => {
             try {
                 await applicationsAPI.markViewed(app.id, true);
                 fetchApplications();
-            } catch (error) {
+            } catch {
                 console.error('Failed to mark as viewed');
             }
         }
@@ -64,7 +66,7 @@ const Applications: React.FC = () => {
             showToast('success', 'Müraciət silindi');
             setDeleteDialogOpen(false);
             fetchApplications();
-        } catch (error) {
+        } catch {
             showToast('error', 'Müraciət silinə bilmədi');
         } finally {
             setFormLoading(false);

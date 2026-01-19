@@ -38,16 +38,18 @@ const Socials: React.FC = () => {
         try {
             const response = await socialsAPI.getAll();
             setSocials(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'Sosial şəbəkələr yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchDataCallback = React.useCallback(fetchData, [showToast]);
+
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchDataCallback();
+    }, [fetchDataCallback]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -93,7 +95,7 @@ const Socials: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -109,7 +111,7 @@ const Socials: React.FC = () => {
             showToast('success', 'Sosial şəbəkə silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);

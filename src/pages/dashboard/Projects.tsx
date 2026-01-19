@@ -40,20 +40,20 @@ const Projects: React.FC = () => {
     const { showToast } = useToast();
     const { languages } = useLanguages();
 
-    const fetchData = async () => {
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await projectsAPI.getAll();
             setProjects(response.data.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'Layihələr yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
-    };
+    }, [showToast]);
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -129,7 +129,7 @@ const Projects: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -145,7 +145,7 @@ const Projects: React.FC = () => {
             showToast('success', 'Layihə silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);

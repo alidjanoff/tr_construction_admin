@@ -33,16 +33,18 @@ const Workflow: React.FC = () => {
         try {
             const response = await workflowAPI.getAll();
             setWorkflows(response.data || []);
-        } catch (error) {
+        } catch {
             showToast('error', 'İş axını yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
     };
 
+    const fetchDataCallback = React.useCallback(fetchData, [showToast]);
+
     useEffect(() => {
-        fetchData();
-    }, []);
+        fetchDataCallback();
+    }, [fetchDataCallback]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -97,7 +99,7 @@ const Workflow: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -113,7 +115,7 @@ const Workflow: React.FC = () => {
             showToast('success', 'İş axını silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch (error) {
+        } catch {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);
