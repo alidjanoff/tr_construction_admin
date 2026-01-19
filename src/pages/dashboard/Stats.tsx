@@ -1,43 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { statsAPI, languagesAPI } from '../../services/api';
-import type { Stat, Language, MultiLang } from '../../types';
-import { createEmptyMultiLang, ensureMultiLang } from '../../utils/lang';
+import { statsAPI } from '../../services/api';
+import { useLanguages } from '../../contexts/LanguageContext';
+import type { Stat, TranslatedString } from '../../types';
+import { createEmptyTranslation, getTranslationValue } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
+import TranslatableInput from '../../components/ui/TranslatableInput';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import MultiLangInput from '../../components/ui/MultiLangInput';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
+interface StatFormData {
+    count: TranslatedString;
+    detail: TranslatedString;
+}
+
 const Stats: React.FC = () => {
     const [stats, setStats] = useState<Stat[]>([]);
-    const [languages, setLanguages] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Stat | null>(null);
-    const [formData, setFormData] = useState({
-        count: {} as MultiLang,
-        detail: {} as MultiLang,
-    });
+    const [formData, setFormData] = useState<StatFormData>({ count: {}, detail: {} });
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
-
-    const fetchLanguages = async () => {
-        try {
-            const response = await languagesAPI.getAll();
-            const langs = response.data?.map((l: Language) => l.lang) || ['az', 'en'];
-            setLanguages(langs);
-            return langs;
-        } catch {
-            const fallback = ['az', 'en'];
-            setLanguages(fallback);
-            return fallback;
-        }
-    };
+    const { languages } = useLanguages();
 
     const fetchData = async () => {
         try {
@@ -51,18 +41,14 @@ const Stats: React.FC = () => {
     };
 
     useEffect(() => {
-        const init = async () => {
-            await fetchLanguages();
-            await fetchData();
-        };
-        init();
+        fetchData();
     }, []);
 
     const handleAdd = () => {
         setSelectedItem(null);
         setFormData({
-            count: createEmptyMultiLang(languages),
-            detail: createEmptyMultiLang(languages),
+            count: createEmptyTranslation(languages),
+            detail: createEmptyTranslation(languages),
         });
         setModalOpen(true);
     };
@@ -70,8 +56,8 @@ const Stats: React.FC = () => {
     const handleEdit = (item: Stat) => {
         setSelectedItem(item);
         setFormData({
-            count: ensureMultiLang(item.count, languages),
-            detail: ensureMultiLang(item.detail, languages),
+            count: item.count || {},
+            detail: item.detail || {},
         });
         setModalOpen(true);
     };
@@ -84,13 +70,28 @@ const Stats: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        const hasCount = Object.values(formData.count).some(v => v && v.trim());
+        const hasDetail = Object.values(formData.detail).some(v => v && v.trim());
+
+        if (!hasCount || !hasDetail) {
+            showToast('error', 'Ən azı bir dildə rəqəm və detalı daxil edin');
+            return;
+        }
+
         setFormLoading(true);
         try {
             if (selectedItem) {
-                await statsAPI.update({ id: selectedItem.id, ...formData });
+                await statsAPI.update({
+                    id: selectedItem.id,
+                    count: formData.count,
+                    detail: formData.detail,
+                });
                 showToast('success', 'Statistika yeniləndi');
             } else {
-                await statsAPI.create(formData);
+                await statsAPI.create({
+                    count: formData.count,
+                    detail: formData.detail,
+                });
                 showToast('success', 'Statistika əlavə edildi');
             }
 
@@ -119,29 +120,24 @@ const Stats: React.FC = () => {
         }
     };
 
-    const getDisplayValue = (multiLang: MultiLang) => {
-        if (!multiLang) return '-';
-        return multiLang.az || multiLang.en || Object.values(multiLang).find(v => v) || '-';
-    };
-
     const columns = [
         {
             key: 'count' as const,
-            header: 'Sayı/Göstərici',
-            render: (item: Stat) => <strong>{getDisplayValue(item.count)}</strong>
+            header: 'Rəqəm',
+            render: (item: Stat) => <strong>{getTranslationValue(item.count, 'az')}</strong>
         },
         {
             key: 'detail' as const,
-            header: 'Məzmun',
-            render: (item: Stat) => getDisplayValue(item.detail)
+            header: 'Detal',
+            render: (item: Stat) => getTranslationValue(item.detail, 'az')
         },
     ];
 
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Statistikalar</h1>
-                <CustomButton icon={<FiPlus />} onClick={handleAdd} disabled={languages.length === 0}>
+                <h1 className="page-title">Statistika</h1>
+                <CustomButton icon={<FiPlus />} onClick={handleAdd}>
                     Əlavə et
                 </CustomButton>
             </div>
@@ -153,7 +149,7 @@ const Stats: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Statistika yoxdur"
+                    emptyMessage="Statistika tapılmadı"
                 />
             </div>
 
@@ -164,21 +160,21 @@ const Stats: React.FC = () => {
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
-                    <MultiLangInput
-                        label="Göstərici (Məs: 15+, 500)"
+                    <TranslatableInput
                         name="count"
+                        label="Rəqəm"
                         value={formData.count}
-                        onChange={(val) => setFormData({ ...formData, count: val })}
-                        languages={languages}
+                        onChange={(value) => setFormData({ ...formData, count: value })}
+                        placeholder="məs: 150+, 10+, 200"
                         required
                     />
 
-                    <MultiLangInput
-                        label="Məzmun (Məs: İllik Təcrübə)"
+                    <TranslatableInput
                         name="detail"
+                        label="Detal"
                         value={formData.detail}
-                        onChange={(val) => setFormData({ ...formData, detail: val })}
-                        languages={languages}
+                        onChange={(value) => setFormData({ ...formData, detail: value })}
+                        placeholder="məs: Uğurlu Layihə, İllik Təcrübə"
                         required
                     />
 
@@ -197,7 +193,7 @@ const Stats: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message="Bu statistikanı silmək istədiyinizə əminsiniz?"
+                message={`"${getTranslationValue(selectedItem?.count, 'az')}" statistikasını silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

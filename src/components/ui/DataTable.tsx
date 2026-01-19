@@ -20,7 +20,19 @@ interface DataTableProps<T> {
     renderActions?: (item: T) => React.ReactNode;
 }
 
-function DataTable<T extends { id: string }>({
+// Helper to get stable string key from id
+const getItemKey = (id: any, index: number): string => {
+    if (typeof id === 'string') return id;
+    if (typeof id === 'number') return String(id);
+    if (id?.buffer) {
+        const buffer = id.buffer;
+        const bytes = Object.values(buffer) as number[];
+        return bytes.map((b: number) => b.toString(16).padStart(2, '0')).join('');
+    }
+    return `item-${index}`;
+};
+
+function DataTable<T extends { id: any }>({
     columns,
     data,
     onEdit,
@@ -32,6 +44,9 @@ function DataTable<T extends { id: string }>({
 }: DataTableProps<T>) {
     const hasActions = onEdit || onDelete || onView || renderActions;
 
+    // Ensure data is always an array
+    const safeData = Array.isArray(data) ? data : [];
+
     if (loading) {
         return (
             <div className="data-table-loading">
@@ -42,7 +57,7 @@ function DataTable<T extends { id: string }>({
         );
     }
 
-    if (data.length === 0) {
+    if (safeData.length === 0) {
         return (
             <div className="data-table-empty">
                 <p>{emptyMessage}</p>
@@ -64,8 +79,8 @@ function DataTable<T extends { id: string }>({
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((item) => (
-                        <tr key={item.id}>
+                    {safeData.map((item, index) => (
+                        <tr key={getItemKey(item.id, index)}>
                             {columns.map((column) => (
                                 <td key={String(column.key)}>
                                     {column.render

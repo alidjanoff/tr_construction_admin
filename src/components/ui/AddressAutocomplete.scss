@@ -1,0 +1,104 @@
+@use '../../assets/scss/variables' as *;
+@use '../../assets/scss/mixins' as *;
+
+.address-autocomplete {
+    .autocomplete-wrapper {
+        position: relative;
+
+        .autocomplete-input {
+            @include input-base;
+            padding-left: $spacing-10;
+            width: 100%;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: $spacing-3;
+            top: 50%;
+            transform: translateY(-50%);
+            color: $text-muted;
+            pointer-events: none;
+        }
+    }
+
+    .label-icon {
+        margin-right: $spacing-2;
+        vertical-align: middle;
+    }
+
+    .loading-state,
+    .error-state {
+        display: flex;
+        align-items: center;
+        gap: $spacing-2;
+        padding: $spacing-3;
+        background: $light-gray;
+        border-radius: $radius-md;
+        color: $text-muted;
+        font-size: $font-size-sm;
+    }
+
+    .error-state {
+        background: rgba($error, 0.1);
+        color: $error;
+    }
+
+    .spinner {
+        animation: spin 1s linear infinite;
+    }
+
+    &.has-error {
+        .autocomplete-input {
+            border-color: $error;
+
+            &:focus {
+                box-shadow: 0 0 0 3px rgba($error, 0.15);
+            }
+        }
+    }
+
+    .error-message {
+        display: block;
+        margin-top: $spacing-1;
+        font-size: $font-size-xs;
+        color: $error;
+    }
+}
+
+// Google Places Autocomplete dropdown styling
+.pac-container {
+    font-family: inherit;
+    border-radius: $radius-md;
+    border: 1px solid $medium-gray;
+    box-shadow: $shadow-lg;
+    margin-top: $spacing-1;
+    z-index: 10000;
+
+    .pac-item {
+        padding: $spacing-3;
+        cursor: pointer;
+        border-top: 1px solid $light-gray;
+
+        &:first-child {
+            border-top: none;
+        }
+
+        &:hover,
+        &.pac-item-selected {
+            background: rgba($primary-color, 0.08);
+        }
+
+        .pac-icon {
+            margin-right: $spacing-2;
+        }
+
+        .pac-item-query {
+            font-weight: 500;
+            color: $text-primary;
+        }
+
+        span {
+            color: $text-secondary;
+        }
+    }
+}

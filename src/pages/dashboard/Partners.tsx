@@ -1,43 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { partnersAPI, languagesAPI } from '../../services/api';
-import type { Partner, Language, MultiLang } from '../../types';
-import { createEmptyMultiLang, ensureMultiLang } from '../../utils/lang';
+import { partnersAPI } from '../../services/api';
+import { useLanguages } from '../../contexts/LanguageContext';
+import type { Partner, TranslatedString } from '../../types';
+import { createEmptyTranslation, getTranslationValue } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
+import TranslatableInput from '../../components/ui/TranslatableInput';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import MultiLangInput from '../../components/ui/MultiLangInput';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
+interface PartnerFormData {
+    title: TranslatedString;
+}
+
 const Partners: React.FC = () => {
     const [partners, setPartners] = useState<Partner[]>([]);
-    const [languages, setLanguages] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Partner | null>(null);
-    const [formData, setFormData] = useState({
-        title: {} as MultiLang,
-    });
+    const [formData, setFormData] = useState<PartnerFormData>({ title: {} });
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
-
-    const fetchLanguages = async () => {
-        try {
-            const response = await languagesAPI.getAll();
-            const langs = response.data?.map((l: Language) => l.lang) || ['az', 'en'];
-            setLanguages(langs);
-            return langs;
-        } catch {
-            const fallback = ['az', 'en'];
-            setLanguages(fallback);
-            return fallback;
-        }
-    };
+    const { languages } = useLanguages();
 
     const fetchData = async () => {
         try {
@@ -51,17 +41,13 @@ const Partners: React.FC = () => {
     };
 
     useEffect(() => {
-        const init = async () => {
-            await fetchLanguages();
-            await fetchData();
-        };
-        init();
+        fetchData();
     }, []);
 
     const handleAdd = () => {
         setSelectedItem(null);
         setFormData({
-            title: createEmptyMultiLang(languages),
+            title: createEmptyTranslation(languages),
         });
         setImageFile(null);
         setModalOpen(true);
@@ -70,7 +56,7 @@ const Partners: React.FC = () => {
     const handleEdit = (item: Partner) => {
         setSelectedItem(item);
         setFormData({
-            title: ensureMultiLang(item.title, languages),
+            title: item.title || {},
         });
         setImageFile(null);
         setModalOpen(true);
@@ -83,18 +69,33 @@ const Partners: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setFormLoading(true);
 
+        const hasTitle = Object.values(formData.title).some(v => v && v.trim());
+
+        if (!hasTitle) {
+            showToast('error', 'Ən azı bir dildə başlıq daxil edin');
+            return;
+        }
+
+        if (!selectedItem && !imageFile) {
+            showToast('error', 'Şəkil yükləyin');
+            return;
+        }
+
+        setFormLoading(true);
         try {
             const data = new FormData();
             data.append('title', JSON.stringify(formData.title));
+
+            if (selectedItem) {
+                data.append('id', selectedItem.id);
+            }
 
             if (imageFile) {
                 data.append('image', imageFile);
             }
 
             if (selectedItem) {
-                data.append('id', selectedItem.id);
                 await partnersAPI.update(data);
                 showToast('success', 'Partnyor yeniləndi');
             } else {
@@ -113,6 +114,7 @@ const Partners: React.FC = () => {
 
     const handleConfirmDelete = async () => {
         if (!selectedItem) return;
+
         setFormLoading(true);
         try {
             await partnersAPI.delete(selectedItem.id);
@@ -126,23 +128,17 @@ const Partners: React.FC = () => {
         }
     };
 
-    const getDisplayValue = (multiLang: MultiLang) => {
-        if (!multiLang) return '-';
-        return multiLang.az || multiLang.en || Object.values(multiLang).find(v => v) || '-';
-    };
-
     const columns = [
         {
             key: 'image' as const,
             header: 'Logo',
-            render: (item: Partner) => (
-                item.image ? <img src={item.image} alt="" className="table-img" /> : '-'
-            )
+            render: (item: Partner) =>
+                item.image ? <img src={item.image} alt="" className="table-icon" style={{ width: 60, height: 40, objectFit: 'contain' }} /> : '-'
         },
         {
             key: 'title' as const,
-            header: 'Adı',
-            render: (item: Partner) => getDisplayValue(item.title)
+            header: 'Ad',
+            render: (item: Partner) => getTranslationValue(item.title, 'az')
         },
     ];
 
@@ -150,7 +146,7 @@ const Partners: React.FC = () => {
         <div className="page-content crud-page">
             <div className="page-header">
                 <h1 className="page-title">Partnyorlar</h1>
-                <CustomButton icon={<FiPlus />} onClick={handleAdd} disabled={languages.length === 0}>
+                <CustomButton icon={<FiPlus />} onClick={handleAdd}>
                     Əlavə et
                 </CustomButton>
             </div>
@@ -173,16 +169,16 @@ const Partners: React.FC = () => {
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
-                    <MultiLangInput
-                        label="Partnyor Adı"
+                    <TranslatableInput
                         name="title"
+                        label="Ad"
                         value={formData.title}
-                        onChange={(val) => setFormData({ ...formData, title: val })}
-                        languages={languages}
+                        onChange={(value) => setFormData({ ...formData, title: value })}
+                        placeholder="Partnyor şirkət adı"
                         required
                     />
 
-                    <div className="form-group mt-3">
+                    <div className="form-group">
                         <label>Logo</label>
                         <input
                             type="file"
@@ -190,12 +186,8 @@ const Partners: React.FC = () => {
                             onChange={(e) => setImageFile(e.target.files?.[0] || null)}
                             className="file-input"
                         />
-                        {(imageFile || selectedItem?.image) && (
-                            <img
-                                src={imageFile ? URL.createObjectURL(imageFile) : selectedItem?.image}
-                                alt="Logo"
-                                className="img-preview mt-2"
-                            />
+                        {selectedItem?.image && !imageFile && (
+                            <img src={selectedItem.image} alt="" className="preview-image" style={{ maxHeight: 80 }} />
                         )}
                     </div>
 
@@ -214,7 +206,7 @@ const Partners: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message="Bu partnyoru silmək istədiyinizə əminsiniz?"
+                message={`"${getTranslationValue(selectedItem?.title, 'az')}" partnyorunu silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

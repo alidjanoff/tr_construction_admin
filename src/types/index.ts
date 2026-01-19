@@ -1,9 +1,5 @@
-// Multi-Language Support
-export interface MultiLang {
-    az: string;
-    en: string;
-    [key: string]: string;
-}
+// Generic translation type for translatable fields
+export type TranslatedString = Record<string, string>;
 
 // User Types
 export interface User {
@@ -45,36 +41,33 @@ export interface ChangeUserRoleRequest {
 
 // Hero Types
 export interface Hero {
-    id: string;
-    title: MultiLang;
-    info: MultiLang;
-    image_url: string;
-    button_text: MultiLang;
-    button_url: string;
+    title: TranslatedString;
+    info: TranslatedString;
+    images: string[];
 }
 
 // About Types
 export interface About {
-    title: MultiLang;
-    info: MultiLang;
-    description: MultiLang;
+    title: TranslatedString;
+    info: TranslatedString;
+    description: TranslatedString;
     image: string;
-    our_mission: MultiLang;
-    our_vision: MultiLang;
+    our_mission: TranslatedString;
+    our_vision: TranslatedString;
 }
 
 // Service Types
 export interface Service {
     id: string;
-    title: MultiLang;
-    info: MultiLang;
+    title: TranslatedString;
+    info: TranslatedString;
 }
 
 // Stat Types
 export interface Stat {
     id: string;
-    count: MultiLang;
-    detail: MultiLang;
+    count: TranslatedString;
+    detail: TranslatedString;
 }
 
 // Project Types
@@ -85,61 +78,60 @@ export interface ProjectImage {
 
 export interface Project {
     id: string;
-    slug?: string;
-    title: MultiLang;
-    details: MultiLang;
-    badge: MultiLang;
-    address: MultiLang;
+    title: TranslatedString;
+    details: TranslatedString;
+    badge: TranslatedString;
+    address: TranslatedString;
     map_url: string;
     cover_image: string;
-    image_gallery: ProjectImage[];
+    image_gallery?: ProjectImage[];
 }
 
 // Workflow Types
 export interface Workflow {
     id: string;
-    title: MultiLang;
-    details: MultiLang;
+    title: TranslatedString;
+    details: TranslatedString;
 }
 
 // Partner Types
 export interface Partner {
     id: string;
-    title: MultiLang;
+    title: TranslatedString;
     image: string;
 }
 
-// Testimonial Types
+// Testimonial Types (removed rating)
 export interface Testimonial {
     id: string;
     customer_full_name: string;
-    customer_type: MultiLang;
-    customer_review: MultiLang;
+    customer_type: TranslatedString;
+    customer_review: TranslatedString;
 }
 
 // Contact Info Types
 export interface ContactInfo {
     id: string;
-    title: MultiLang;
-    detail: MultiLang;
+    title: TranslatedString;
+    detail: TranslatedString;
     url?: string;
     contact_type: string;
 }
 
-// Social Types
+// Social Types (not translatable)
 export interface Social {
     id: string;
     url: string;
     type: string;
 }
 
-// Map URL Types
+// Map URL Types (not translatable)
 export interface MapUrl {
     long: string;
     lat: string;
 }
 
-// Application Types
+// Application Types (not translatable)
 export interface Application {
     id: string;
     full_name: string;
@@ -160,7 +152,21 @@ export interface ApiError {
     message: string;
 }
 
-// Helper type for form data
-export type MultiLangFormData = {
-    [K in keyof MultiLang]?: string;
+// Helper function to create empty translation object
+export const createEmptyTranslation = (languages: Language[]): TranslatedString => {
+    const result: TranslatedString = {};
+    languages.forEach(lang => {
+        result[lang.lang] = '';
+    });
+    return result;
+};
+
+// Helper function to get display value from translation
+export const getTranslationValue = (
+    translation: TranslatedString | string | undefined,
+    preferredLang: string = 'az'
+): string => {
+    if (!translation) return '';
+    if (typeof translation === 'string') return translation;
+    return translation[preferredLang] || translation['en'] || Object.values(translation)[0] || '';
 };

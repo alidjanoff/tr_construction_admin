@@ -32,6 +32,22 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+// CSS Custom Properties for components
+:root {
+    --primary: #{$primary-color};
+    --primary-rgb: 27, 94, 58;
+    --text-primary: #{$text-primary};
+    --text-secondary: #{$text-secondary};
+    --text-muted: #{$text-muted};
+    --bg-primary: #{$white};
+    --bg-secondary: #{$light-gray};
+    --bg-tertiary: #{$medium-gray};
+    --border-color: #{$medium-gray};
+    --error: #{$error};
+    --success: #{$success};
+    --warning: #{$warning};
+}
+
 #root {
     min-height: 100vh;
 }

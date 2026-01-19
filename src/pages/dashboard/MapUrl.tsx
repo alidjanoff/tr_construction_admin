@@ -4,16 +4,14 @@ import { mapUrlAPI } from '../../services/api';
 import type { MapUrl as MapUrlType } from '../../types';
 import CustomButton from '../../components/ui/CustomButton';
 import CustomInput from '../../components/ui/CustomInput';
-import { FiSave, FiMapPin } from 'react-icons/fi';
+import Loader from '../../components/ui/Loader';
+import { FiMapPin, FiSave } from 'react-icons/fi';
 import './CrudPage.scss';
 
 const MapUrl: React.FC = () => {
     const [loading, setLoading] = useState(true);
-    const [formLoading, setFormLoading] = useState(false);
-    const [formData, setFormData] = useState<MapUrlType>({
-        long: '',
-        lat: '',
-    });
+    const [saving, setSaving] = useState(false);
+    const [formData, setFormData] = useState<MapUrlType>({ long: '', lat: '' });
 
     const { showToast } = useToast();
 
@@ -26,8 +24,8 @@ const MapUrl: React.FC = () => {
                     lat: response.data.lat || '',
                 });
             }
-        } catch {
-            // No data yet
+        } catch (error) {
+            showToast('error', 'Xəritə koordinatları yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
@@ -41,38 +39,35 @@ const MapUrl: React.FC = () => {
         e.preventDefault();
 
         if (!formData.long.trim() || !formData.lat.trim()) {
-            showToast('error', 'Koordinatları daxil edin');
+            showToast('error', 'Bütün koordinatları daxil edin');
             return;
         }
 
-        setFormLoading(true);
+        setSaving(true);
         try {
             await mapUrlAPI.update({
                 long: formData.long,
                 lat: formData.lat,
             });
-            showToast('success', 'Koordinatlar yadda saxlanıldı');
-        } catch {
-            showToast('error', 'Əməliyyat uğursuz oldu');
+            showToast('success', 'Xəritə koordinatları yeniləndi');
+        } catch (error) {
+            showToast('error', 'Yeniləmə uğursuz oldu');
         } finally {
-            setFormLoading(false);
+            setSaving(false);
         }
-    };
-
-    const getMapPreviewUrl = () => {
-        if (formData.lat && formData.long) {
-            return `https://www.google.com/maps?q=${formData.lat},${formData.long}&z=15&output=embed`;
-        }
-        return '';
     };
 
     if (loading) {
         return (
             <div className="page-content">
-                <div className="loading-spinner">Yüklənir...</div>
+                <Loader size="lg" />
             </div>
         );
     }
+
+    const mapPreviewUrl = formData.lat && formData.long
+        ? `https://www.google.com/maps?q=${formData.lat},${formData.long}&z=15&output=embed`
+        : null;
 
     return (
         <div className="page-content crud-page">
@@ -81,50 +76,59 @@ const MapUrl: React.FC = () => {
             </div>
 
             <div className="card">
-                <form onSubmit={handleSubmit}>
-                    <div className="form-row">
-                        <CustomInput
-                            name="lat"
-                            label="Enlik (Latitude)"
-                            placeholder="Məsələn: 40.4093"
-                            value={formData.lat}
-                            onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
-                            required
-                        />
-
-                        <CustomInput
-                            name="long"
-                            label="Uzunluq (Longitude)"
-                            placeholder="Məsələn: 49.8671"
-                            value={formData.long}
-                            onChange={(e) => setFormData({ ...formData, long: e.target.value })}
-                            required
-                        />
+                <div className="card-body">
+                    <div className="info-banner">
+                        <FiMapPin />
+                        <p>
+                            Burada şirkətin ofis yerləşməsinin Google Maps koordinatlarını daxil edin.
+                            Bu koordinatlar saytdakı xəritədə göstəriləcək.
+                        </p>
                     </div>
 
-                    {/* Map Preview */}
-                    {formData.lat && formData.long && (
-                        <div className="map-preview">
-                            <label><FiMapPin /> Xəritə Önizləməsi</label>
-                            <iframe
-                                src={getMapPreviewUrl()}
-                                width="100%"
-                                height="300"
-                                style={{ border: 0, borderRadius: '0.5rem' }}
-                                allowFullScreen
-                                loading="lazy"
-                                referrerPolicy="no-referrer-when-downgrade"
-                                title="Map Preview"
+                    <form onSubmit={handleSubmit}>
+                        <div className="form-row">
+                            <CustomInput
+                                name="lat"
+                                label="Latitude (Enlıq)"
+                                value={formData.lat}
+                                onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
+                                placeholder="məs: 40.4093"
+                                required
+                            />
+
+                            <CustomInput
+                                name="long"
+                                label="Longitude (Boylam)"
+                                value={formData.long}
+                                onChange={(e) => setFormData({ ...formData, long: e.target.value })}
+                                placeholder="məs: 49.8671"
+                                required
                             />
                         </div>
-                    )}
 
-                    <div className="button-group right">
-                        <CustomButton type="submit" loading={formLoading} icon={<FiSave />}>
-                            Yadda Saxla
-                        </CustomButton>
-                    </div>
-                </form>
+                        {mapPreviewUrl && (
+                            <div className="map-preview">
+                                <label>Xəritə Önizləmə</label>
+                                <iframe
+                                    src={mapPreviewUrl}
+                                    width="100%"
+                                    height="300"
+                                    style={{ border: 0, borderRadius: '8px' }}
+                                    allowFullScreen
+                                    loading="lazy"
+                                    referrerPolicy="no-referrer-when-downgrade"
+                                    title="Map Preview"
+                                />
+                            </div>
+                        )}
+
+                        <div className="button-group right" style={{ marginTop: '1.5rem' }}>
+                            <CustomButton type="submit" icon={<FiSave />} loading={saving}>
+                                Yadda saxla
+                            </CustomButton>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

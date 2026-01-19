@@ -1,71 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { testimonialsAPI, languagesAPI } from '../../services/api';
-import type { Testimonial, Language, MultiLang } from '../../types';
-import { createEmptyMultiLang, ensureMultiLang } from '../../utils/lang';
+import { testimonialsAPI } from '../../services/api';
+import { useLanguages } from '../../contexts/LanguageContext';
+import type { Testimonial, TranslatedString } from '../../types';
+import { createEmptyTranslation, getTranslationValue } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
 import CustomInput from '../../components/ui/CustomInput';
+import TranslatableInput from '../../components/ui/TranslatableInput';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import MultiLangInput from '../../components/ui/MultiLangInput';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
+interface TestimonialFormData {
+    customer_full_name: string;
+    customer_type: TranslatedString;
+    customer_review: TranslatedString;
+}
+
 const Testimonials: React.FC = () => {
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-    const [languages, setLanguages] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Testimonial | null>(null);
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<TestimonialFormData>({
         customer_full_name: '',
-        customer_type: {} as MultiLang,
-        customer_review: {} as MultiLang,
+        customer_type: {},
+        customer_review: {},
     });
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
-
-    const fetchLanguages = async () => {
-        try {
-            const response = await languagesAPI.getAll();
-            const langs = response.data?.map((l: Language) => l.lang) || ['az', 'en'];
-            setLanguages(langs);
-            return langs;
-        } catch {
-            const fallback = ['az', 'en'];
-            setLanguages(fallback);
-            return fallback;
-        }
-    };
+    const { languages } = useLanguages();
 
     const fetchData = async () => {
         try {
             const response = await testimonialsAPI.getAll();
             setTestimonials(response.data || []);
         } catch (error) {
-            showToast('error', 'Rəylər yüklənə bilmədi');
+            showToast('error', 'Müştəri rəyləri yüklənə bilmədi');
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        const init = async () => {
-            await fetchLanguages();
-            await fetchData();
-        };
-        init();
+        fetchData();
     }, []);
 
     const handleAdd = () => {
         setSelectedItem(null);
         setFormData({
             customer_full_name: '',
-            customer_type: createEmptyMultiLang(languages),
-            customer_review: createEmptyMultiLang(languages),
+            customer_type: createEmptyTranslation(languages),
+            customer_review: createEmptyTranslation(languages),
         });
         setModalOpen(true);
     };
@@ -74,8 +64,8 @@ const Testimonials: React.FC = () => {
         setSelectedItem(item);
         setFormData({
             customer_full_name: item.customer_full_name,
-            customer_type: ensureMultiLang(item.customer_type, languages),
-            customer_review: ensureMultiLang(item.customer_review, languages),
+            customer_type: item.customer_type || {},
+            customer_review: item.customer_review || {},
         });
         setModalOpen(true);
     };
@@ -93,13 +83,30 @@ const Testimonials: React.FC = () => {
             return;
         }
 
+        const hasType = Object.values(formData.customer_type).some(v => v && v.trim());
+        const hasReview = Object.values(formData.customer_review).some(v => v && v.trim());
+
+        if (!hasType || !hasReview) {
+            showToast('error', 'Ən azı bir dildə müştəri tipi və rəyi daxil edin');
+            return;
+        }
+
         setFormLoading(true);
         try {
             if (selectedItem) {
-                await testimonialsAPI.update({ id: selectedItem.id, ...formData });
+                await testimonialsAPI.update({
+                    id: selectedItem.id,
+                    customer_full_name: formData.customer_full_name,
+                    customer_type: formData.customer_type,
+                    customer_review: formData.customer_review,
+                });
                 showToast('success', 'Rəy yeniləndi');
             } else {
-                await testimonialsAPI.create(formData);
+                await testimonialsAPI.create({
+                    customer_full_name: formData.customer_full_name,
+                    customer_type: formData.customer_type,
+                    customer_review: formData.customer_review,
+                });
                 showToast('success', 'Rəy əlavə edildi');
             }
 
@@ -128,24 +135,23 @@ const Testimonials: React.FC = () => {
         }
     };
 
-    const getDisplayValue = (multiLang: MultiLang) => {
-        if (!multiLang) return '-';
-        return multiLang.az || multiLang.en || Object.values(multiLang).find(v => v) || '-';
-    };
-
     const columns = [
-        { key: 'customer_full_name' as const, header: 'Müştəri' },
+        {
+            key: 'customer_full_name' as const,
+            header: 'Müştəri Adı',
+        },
         {
             key: 'customer_type' as const,
-            header: 'Vəzifə/Tip',
-            render: (item: Testimonial) => getDisplayValue(item.customer_type)
+            header: 'Müştəri Tipi',
+            render: (item: Testimonial) => getTranslationValue(item.customer_type, 'az')
         },
         {
             key: 'customer_review' as const,
             header: 'Rəy',
-            render: (item: Testimonial) => (
-                <span className="truncate">{getDisplayValue(item.customer_review).slice(0, 50)}...</span>
-            )
+            render: (item: Testimonial) => {
+                const text = getTranslationValue(item.customer_review, 'az');
+                return <span className="truncate">{text.slice(0, 50)}{text.length > 50 ? '...' : ''}</span>;
+            }
         },
     ];
 
@@ -153,7 +159,7 @@ const Testimonials: React.FC = () => {
         <div className="page-content crud-page">
             <div className="page-header">
                 <h1 className="page-title">Müştəri Rəyləri</h1>
-                <CustomButton icon={<FiPlus />} onClick={handleAdd} disabled={languages.length === 0}>
+                <CustomButton icon={<FiPlus />} onClick={handleAdd}>
                     Əlavə et
                 </CustomButton>
             </div>
@@ -179,30 +185,30 @@ const Testimonials: React.FC = () => {
                     <CustomInput
                         name="customer_full_name"
                         label="Müştəri Adı"
-                        placeholder="Məs: Əli Əliyev"
                         value={formData.customer_full_name}
                         onChange={(e) => setFormData({ ...formData, customer_full_name: e.target.value })}
+                        placeholder="Ad Soyad"
                         required
                     />
 
-                    <MultiLangInput
-                        label="Müştəri Vəzifəsi / Tipi"
+                    <TranslatableInput
                         name="customer_type"
+                        label="Müştəri Tipi"
                         value={formData.customer_type}
-                        onChange={(val) => setFormData({ ...formData, customer_type: val })}
-                        placeholder="Məs: CEO, Müştəri"
-                        languages={languages}
+                        onChange={(value) => setFormData({ ...formData, customer_type: value })}
+                        placeholder="məs: Ev sahibi, Şirkət, Investor"
+                        required
                     />
 
-                    <MultiLangInput
-                        label="Rəy"
+                    <TranslatableInput
                         name="customer_review"
+                        label="Rəy"
                         value={formData.customer_review}
-                        onChange={(val) => setFormData({ ...formData, customer_review: val })}
-                        placeholder="Müştəri rəyi..."
+                        onChange={(value) => setFormData({ ...formData, customer_review: value })}
                         type="textarea"
-                        rows={4}
-                        languages={languages}
+                        placeholder="Müştəri rəyi..."
+                        rows={5}
+                        required
                     />
 
                     <div className="button-group right">
@@ -220,7 +226,7 @@ const Testimonials: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${selectedItem?.customer_full_name}" tərəfindən yazılan rəyi silmək istədiyinizə əminsiniz?`}
+                message={`"${selectedItem?.customer_full_name}" müştərisinin rəyini silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

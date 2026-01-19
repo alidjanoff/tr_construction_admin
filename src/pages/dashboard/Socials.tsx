@@ -7,19 +7,20 @@ import CustomButton from '../../components/ui/CustomButton';
 import CustomInput from '../../components/ui/CustomInput';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import { FiPlus, FiFacebook, FiInstagram, FiTwitter, FiLinkedin, FiYoutube, FiGlobe } from 'react-icons/fi';
+import { FiPlus, FiFacebook, FiInstagram, FiYoutube, FiLinkedin, FiTwitter, FiGlobe } from 'react-icons/fi';
+import { FaTiktok, FaWhatsapp, FaTelegram } from 'react-icons/fa';
 import './CrudPage.scss';
 
-const SOCIAL_TYPES = [
-    { value: 'facebook', label: 'Facebook', icon: FiFacebook },
-    { value: 'instagram', label: 'Instagram', icon: FiInstagram },
-    { value: 'twitter', label: 'Twitter/X', icon: FiTwitter },
-    { value: 'linkedin', label: 'LinkedIn', icon: FiLinkedin },
-    { value: 'youtube', label: 'YouTube', icon: FiYoutube },
-    { value: 'tiktok', label: 'TikTok', icon: FiGlobe },
-    { value: 'telegram', label: 'Telegram', icon: FiGlobe },
-    { value: 'whatsapp', label: 'WhatsApp', icon: FiGlobe },
-    { value: 'other', label: 'Digər', icon: FiGlobe },
+const socialTypes = [
+    { value: 'facebook', label: 'Facebook', icon: <FiFacebook /> },
+    { value: 'instagram', label: 'Instagram', icon: <FiInstagram /> },
+    { value: 'youtube', label: 'YouTube', icon: <FiYoutube /> },
+    { value: 'linkedin', label: 'LinkedIn', icon: <FiLinkedin /> },
+    { value: 'twitter', label: 'Twitter/X', icon: <FiTwitter /> },
+    { value: 'tiktok', label: 'TikTok', icon: <FaTiktok /> },
+    { value: 'whatsapp', label: 'WhatsApp', icon: <FaWhatsapp /> },
+    { value: 'telegram', label: 'Telegram', icon: <FaTelegram /> },
+    { value: 'other', label: 'Digər', icon: <FiGlobe /> },
 ];
 
 const Socials: React.FC = () => {
@@ -28,10 +29,7 @@ const Socials: React.FC = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Social | null>(null);
-    const [formData, setFormData] = useState({
-        url: '',
-        type: 'facebook',
-    });
+    const [formData, setFormData] = useState({ url: '', type: 'facebook' });
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
@@ -40,7 +38,7 @@ const Socials: React.FC = () => {
         try {
             const response = await socialsAPI.getAll();
             setSocials(response.data || []);
-        } catch {
+        } catch (error) {
             showToast('error', 'Sosial şəbəkələr yüklənə bilmədi');
         } finally {
             setLoading(false);
@@ -95,7 +93,7 @@ const Socials: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch {
+        } catch (error) {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -111,28 +109,28 @@ const Socials: React.FC = () => {
             showToast('success', 'Sosial şəbəkə silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch {
+        } catch (error) {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);
         }
     };
 
-    const getTypeInfo = (type: string) => {
-        return SOCIAL_TYPES.find(t => t.value === type) || SOCIAL_TYPES[SOCIAL_TYPES.length - 1];
+    const getSocialTypeInfo = (type: string) => {
+        return socialTypes.find(t => t.value === type) || socialTypes[socialTypes.length - 1];
     };
 
     const columns = [
         {
             key: 'type' as const,
-            header: 'Platforma',
+            header: 'Platform',
             render: (item: Social) => {
-                const typeInfo = getTypeInfo(item.type);
-                const Icon = typeInfo.icon;
+                const typeInfo = getSocialTypeInfo(item.type);
                 return (
-                    <span className="social-type">
-                        <Icon /> {typeInfo.label}
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {typeInfo.icon}
+                        <span>{typeInfo.label}</span>
+                    </div>
                 );
             }
         },
@@ -140,8 +138,8 @@ const Socials: React.FC = () => {
             key: 'url' as const,
             header: 'URL',
             render: (item: Social) => (
-                <a href={item.url} target="_blank" rel="noreferrer" className="truncate">
-                    {item.url.slice(0, 50)}...
+                <a href={item.url} target="_blank" rel="noopener noreferrer" className="truncate" style={{ color: 'var(--primary)' }}>
+                    {item.url.length > 50 ? item.url.slice(0, 50) + '...' : item.url}
                 </a>
             )
         },
@@ -170,19 +168,21 @@ const Socials: React.FC = () => {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Sosial Şəbəkə Redaktə Et' : 'Yeni Sosial Şəbəkə'}
+                title={selectedItem ? 'Sosial Şəbəkəni Redaktə Et' : 'Yeni Sosial Şəbəkə'}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Platforma</label>
+                        <label>Platform</label>
                         <select
                             value={formData.type}
                             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                             className="custom-select"
                         >
-                            {SOCIAL_TYPES.map(type => (
-                                <option key={type.value} value={type.value}>{type.label}</option>
+                            {socialTypes.map((type) => (
+                                <option key={type.value} value={type.value}>
+                                    {type.label}
+                                </option>
                             ))}
                         </select>
                     </div>
@@ -190,9 +190,10 @@ const Socials: React.FC = () => {
                     <CustomInput
                         name="url"
                         label="URL"
-                        placeholder="https://facebook.com/..."
                         value={formData.url}
                         onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                        placeholder="https://..."
+                        type="url"
                         required
                     />
 
@@ -211,7 +212,7 @@ const Socials: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`Bu sosial şəbəkəni silmək istədiyinizə əminsiniz?`}
+                message={`"${getSocialTypeInfo(selectedItem?.type || '').label}" sosial şəbəkəsini silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

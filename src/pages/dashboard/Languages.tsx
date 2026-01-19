@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
 import { languagesAPI } from '../../services/api';
+import { useLanguages } from '../../contexts/LanguageContext';
 import type { Language } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
@@ -10,15 +11,16 @@ import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import { FiPlus, FiGlobe } from 'react-icons/fi';
 import './CrudPage.scss';
 
-const COMMON_LANGUAGES = [
-    { code: 'az', name: 'Azərbaycan' },
-    { code: 'en', name: 'English' },
-    { code: 'ru', name: 'Русский' },
-    { code: 'tr', name: 'Türkçe' },
-    { code: 'de', name: 'Deutsch' },
-    { code: 'fr', name: 'Français' },
-    { code: 'ar', name: 'العربية' },
-];
+// Helper to convert ObjectId buffer to string
+const getIdString = (id: any): string => {
+    if (typeof id === 'string') return id;
+    if (id?.buffer) {
+        const buffer = id.buffer;
+        const bytes = Object.values(buffer) as number[];
+        return bytes.map((b: number) => b.toString(16).padStart(2, '0')).join('');
+    }
+    return String(id);
+};
 
 const Languages: React.FC = () => {
     const [languages, setLanguages] = useState<Language[]>([]);
@@ -26,18 +28,17 @@ const Languages: React.FC = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Language | null>(null);
-    const [formData, setFormData] = useState({
-        lang: '',
-    });
+    const [formData, setFormData] = useState({ lang: '' });
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
+    const { refreshLanguages } = useLanguages();
 
     const fetchData = async () => {
         try {
             const response = await languagesAPI.getAll();
             setLanguages(response.data || []);
-        } catch {
+        } catch (error) {
             showToast('error', 'Dillər yüklənə bilmədi');
         } finally {
             setLoading(false);
@@ -68,19 +69,15 @@ const Languages: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.lang.trim()) {
-            showToast('error', 'Dil kodu daxil edin');
+        const langCode = formData.lang.trim().toLowerCase();
+
+        if (!langCode || langCode.length < 2 || langCode.length > 3) {
+            showToast('error', 'Dil kodu 2-3 simvoldan ibarət olmalıdır (məs: az, en, tr)');
             return;
         }
 
-        // Check if already exists
-        const exists = languages.some(l =>
-            l.lang.toLowerCase() === formData.lang.toLowerCase() &&
-            l.id !== selectedItem?.id
-        );
-
-        if (exists) {
-            showToast('error', 'Bu dil artıq mövcuddur');
+        if (!/^[a-z]{2,3}$/.test(langCode)) {
+            showToast('error', 'Dil kodu yalnız kiçik hərflərdən ibarət olmalıdır');
             return;
         }
 
@@ -89,20 +86,20 @@ const Languages: React.FC = () => {
             if (selectedItem) {
                 await languagesAPI.update({
                     id: selectedItem.id,
-                    lang: formData.lang.toLowerCase(),
+                    lang: langCode,
                 });
                 showToast('success', 'Dil yeniləndi');
             } else {
-                await languagesAPI.create({
-                    lang: formData.lang.toLowerCase(),
-                });
+                await languagesAPI.create({ lang: langCode });
                 showToast('success', 'Dil əlavə edildi');
             }
 
             setModalOpen(false);
             fetchData();
-        } catch {
-            showToast('error', 'Əməliyyat uğursuz oldu');
+            refreshLanguages(); // Refresh global language context
+        } catch (error: any) {
+            const message = error.response?.data?.message || 'Əməliyyat uğursuz oldu';
+            showToast('error', message);
         } finally {
             setFormLoading(false);
         }
@@ -111,28 +108,18 @@ const Languages: React.FC = () => {
     const handleConfirmDelete = async () => {
         if (!selectedItem) return;
 
-        // Prevent deleting 'az' or 'en'
-        if (selectedItem.lang === 'az' || selectedItem.lang === 'en') {
-            showToast('error', 'Əsas dilləri (AZ, EN) silmək olmaz');
-            setDeleteDialogOpen(false);
-            return;
-        }
-
         setFormLoading(true);
         try {
             await languagesAPI.delete(selectedItem.id);
             showToast('success', 'Dil silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch {
+            refreshLanguages(); // Refresh global language context
+        } catch (error) {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);
         }
-    };
-
-    const getLangName = (code: string) => {
-        return COMMON_LANGUAGES.find(l => l.code === code)?.name || code.toUpperCase();
     };
 
     const columns = [
@@ -140,30 +127,38 @@ const Languages: React.FC = () => {
             key: 'lang' as const,
             header: 'Dil Kodu',
             render: (item: Language) => (
-                <span className="lang-code">
-                    <FiGlobe /> {item.lang.toUpperCase()}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <FiGlobe />
+                    <strong>{item.lang.toUpperCase()}</strong>
+                </div>
             )
         },
         {
-            key: 'name' as const,
-            header: 'Dil Adı',
-            render: (item: Language) => getLangName(item.lang)
+            key: 'id' as const,
+            header: 'ID',
+            render: (item: Language) => (
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    {getIdString(item.id).slice(-8)}
+                </span>
+            )
         },
     ];
-
-    // Filter available languages for quick add
-    const availableLangs = COMMON_LANGUAGES.filter(
-        cl => !languages.some(l => l.lang === cl.code)
-    );
 
     return (
         <div className="page-content crud-page">
             <div className="page-header">
                 <h1 className="page-title">Dillər</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Əlavə et
+                    Yeni Dil
                 </CustomButton>
+            </div>
+
+            <div className="info-banner">
+                <FiGlobe />
+                <p>
+                    Burada əlavə etdiyiniz dillər bütün məzmun idarəetmə səhifələrində görünəcək.
+                    Hər bir məzmun sahəsində (başlıq, təsvir və s.) bu dillərdə məlumat daxil edə biləcəksiniz.
+                </p>
             </div>
 
             <div className="card">
@@ -180,37 +175,23 @@ const Languages: React.FC = () => {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Dil Redaktə Et' : 'Yeni Dil'}
+                title={selectedItem ? 'Dili Redaktə Et' : 'Yeni Dil'}
                 size="sm"
             >
                 <form onSubmit={handleSubmit}>
-                    {!selectedItem && availableLangs.length > 0 && (
-                        <div className="quick-add">
-                            <label>Sürətli Əlavə:</label>
-                            <div className="quick-add-buttons">
-                                {availableLangs.map(lang => (
-                                    <button
-                                        key={lang.code}
-                                        type="button"
-                                        className="quick-add-btn"
-                                        onClick={() => setFormData({ lang: lang.code })}
-                                    >
-                                        {lang.name}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
                     <CustomInput
                         name="lang"
                         label="Dil Kodu"
-                        placeholder="Məsələn: ru"
+                        placeholder="məs: az, en, tr, ru"
                         value={formData.lang}
-                        onChange={(e) => setFormData({ lang: e.target.value })}
+                        onChange={(e) => setFormData({ lang: e.target.value.toLowerCase() })}
                         required
-                        maxLength={5}
                     />
+
+                    <div className="form-hint">
+                        <p>İSO 639-1 standartına uyğun 2-3 simvollu dil kodu daxil edin.</p>
+                        <p>Nümunələr: az (Azərbaycan), en (İngilis), tr (Türk), ru (Rus)</p>
+                    </div>
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
@@ -227,7 +208,7 @@ const Languages: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${selectedItem?.lang.toUpperCase()}" dilini silmək istədiyinizə əminsiniz?`}
+                message={`"${selectedItem?.lang.toUpperCase()}" dilini silmək istədiyinizə əminsiniz? Bu dildəki bütün tərcümələr əlçatmaz olacaq.`}
                 loading={formLoading}
             />
         </div>

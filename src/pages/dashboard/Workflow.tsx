@@ -1,47 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
-import { workflowAPI, languagesAPI } from '../../services/api';
-import type { Workflow as WorkflowType, Language, MultiLang } from '../../types';
+import { workflowAPI } from '../../services/api';
+import { useLanguages } from '../../contexts/LanguageContext';
+import type { Workflow as WorkflowType, TranslatedString } from '../../types';
+import { createEmptyTranslation, getTranslationValue } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
+import TranslatableInput from '../../components/ui/TranslatableInput';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import MultiLangInput from '../../components/ui/MultiLangInput';
 import { FiPlus } from 'react-icons/fi';
 import './CrudPage.scss';
 
-const emptyMultiLang = (): MultiLang => ({ az: '', en: '' });
+interface WorkflowFormData {
+    title: TranslatedString;
+    details: TranslatedString;
+}
 
 const Workflow: React.FC = () => {
     const [workflows, setWorkflows] = useState<WorkflowType[]>([]);
-    const [languages, setLanguages] = useState<string[]>(['az', 'en']);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<WorkflowType | null>(null);
-    const [formData, setFormData] = useState({
-        title: emptyMultiLang(),
-        details: emptyMultiLang(),
-    });
+    const [formData, setFormData] = useState<WorkflowFormData>({ title: {}, details: {} });
     const [formLoading, setFormLoading] = useState(false);
 
     const { showToast } = useToast();
-
-    const fetchLanguages = async () => {
-        try {
-            const response = await languagesAPI.getAll();
-            const langs = response.data?.map((l: Language) => l.lang) || ['az', 'en'];
-            setLanguages(langs);
-        } catch {
-            // Use default
-        }
-    };
+    const { languages } = useLanguages();
 
     const fetchData = async () => {
         try {
             const response = await workflowAPI.getAll();
             setWorkflows(response.data || []);
-        } catch {
+        } catch (error) {
             showToast('error', 'İş axını yüklənə bilmədi');
         } finally {
             setLoading(false);
@@ -49,21 +41,23 @@ const Workflow: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchLanguages();
         fetchData();
     }, []);
 
     const handleAdd = () => {
         setSelectedItem(null);
-        setFormData({ title: emptyMultiLang(), details: emptyMultiLang() });
+        setFormData({
+            title: createEmptyTranslation(languages),
+            details: createEmptyTranslation(languages),
+        });
         setModalOpen(true);
     };
 
     const handleEdit = (item: WorkflowType) => {
         setSelectedItem(item);
         setFormData({
-            title: item.title || emptyMultiLang(),
-            details: item.details || emptyMultiLang(),
+            title: item.title || {},
+            details: item.details || {},
         });
         setModalOpen(true);
     };
@@ -76,8 +70,11 @@ const Workflow: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!formData.title.az && !formData.title.en) {
-            showToast('error', 'Başlıq daxil edin');
+        const hasTitle = Object.values(formData.title).some(v => v && v.trim());
+        const hasDetails = Object.values(formData.details).some(v => v && v.trim());
+
+        if (!hasTitle || !hasDetails) {
+            showToast('error', 'Ən azı bir dildə başlıq və detalları daxil edin');
             return;
         }
 
@@ -100,7 +97,7 @@ const Workflow: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch {
+        } catch (error) {
             showToast('error', 'Əməliyyat uğursuz oldu');
         } finally {
             setFormLoading(false);
@@ -116,27 +113,26 @@ const Workflow: React.FC = () => {
             showToast('success', 'İş axını silindi');
             setDeleteDialogOpen(false);
             fetchData();
-        } catch {
+        } catch (error) {
             showToast('error', 'Silmə uğursuz oldu');
         } finally {
             setFormLoading(false);
         }
     };
 
-    const getDisplayValue = (multiLang: MultiLang) => {
-        return multiLang?.az || multiLang?.en || '-';
-    };
-
     const columns = [
         {
             key: 'title' as const,
             header: 'Başlıq',
-            render: (item: WorkflowType) => <strong>{getDisplayValue(item.title)}</strong>
+            render: (item: WorkflowType) => getTranslationValue(item.title, 'az')
         },
         {
             key: 'details' as const,
-            header: 'Təfərrüat',
-            render: (item: WorkflowType) => <span className="truncate">{getDisplayValue(item.details).slice(0, 60)}...</span>
+            header: 'Detallar',
+            render: (item: WorkflowType) => {
+                const text = getTranslationValue(item.details, 'az');
+                return <span className="truncate">{text.slice(0, 60)}{text.length > 60 ? '...' : ''}</span>;
+            }
         },
     ];
 
@@ -163,28 +159,28 @@ const Workflow: React.FC = () => {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'İş Axını Redaktə Et' : 'Yeni İş Axını'}
+                title={selectedItem ? 'İş Axınını Redaktə Et' : 'Yeni İş Axını'}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
-                    <MultiLangInput
-                        label="Başlıq"
+                    <TranslatableInput
                         name="title"
+                        label="Başlıq"
                         value={formData.title}
-                        onChange={(val) => setFormData({ ...formData, title: val })}
-                        placeholder="Addım başlığı"
+                        onChange={(value) => setFormData({ ...formData, title: value })}
+                        placeholder="məs: Planlama, Dizayn, Tikinti"
                         required
-                        languages={languages}
                     />
 
-                    <MultiLangInput
-                        label="Təfərrüat"
+                    <TranslatableInput
                         name="details"
+                        label="Detallar"
                         value={formData.details}
-                        onChange={(val) => setFormData({ ...formData, details: val })}
-                        placeholder="Addım haqqında ətraflı məlumat"
+                        onChange={(value) => setFormData({ ...formData, details: value })}
                         type="textarea"
-                        languages={languages}
+                        placeholder="İş axını haqqında ətraflı məlumat"
+                        rows={4}
+                        required
                     />
 
                     <div className="button-group right">
@@ -202,7 +198,7 @@ const Workflow: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`Bu iş axını addımını silmək istədiyinizə əminsiniz?`}
+                message={`"${getTranslationValue(selectedItem?.title, 'az')}" iş axınını silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>
