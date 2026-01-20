@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
 import { servicesAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
+import { useDisplayText } from '../../hooks/useDisplayText';
 import type { Service, TranslatedString } from '../../types';
-import { createEmptyTranslation, getTranslationValue } from '../../types';
+import { createEmptyTranslation } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
 import TranslatableInput from '../../components/ui/TranslatableInput';
@@ -28,6 +29,7 @@ const Services: React.FC = () => {
 
     const { showToast } = useToast();
     const { languages } = useLanguages();
+    const { getDisplayText } = useDisplayText();
 
     const fetchData = React.useCallback(async () => {
         try {
@@ -125,13 +127,13 @@ const Services: React.FC = () => {
         {
             key: 'title' as const,
             header: 'Başlıq',
-            render: (item: Service) => getTranslationValue(item.title, 'az')
+            render: (item: Service) => getDisplayText(item.title, 'Başlıqsız')
         },
         {
             key: 'info' as const,
             header: 'Məlumat',
             render: (item: Service) => {
-                const text = getTranslationValue(item.info, 'az');
+                const text = getDisplayText(item.info, '');
                 return <span className="truncate">{text.slice(0, 60)}{text.length > 60 ? '...' : ''}</span>;
             }
         },
@@ -199,7 +201,7 @@ const Services: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getTranslationValue(selectedItem?.title, 'az')}" xidmətini silmək istədiyinizə əminsiniz?`}
+                message={`"${getDisplayText(selectedItem?.title, '')}" xidmətini silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

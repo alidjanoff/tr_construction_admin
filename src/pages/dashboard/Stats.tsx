@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
 import { statsAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
+import { useDisplayText } from '../../hooks/useDisplayText';
 import type { Stat, TranslatedString } from '../../types';
-import { createEmptyTranslation, getTranslationValue } from '../../types';
+import { createEmptyTranslation } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
 import TranslatableInput from '../../components/ui/TranslatableInput';
@@ -28,6 +29,7 @@ const Stats: React.FC = () => {
 
     const { showToast } = useToast();
     const { languages } = useLanguages();
+    const { getDisplayText } = useDisplayText();
 
     const fetchData = React.useCallback(async () => {
         try {
@@ -124,12 +126,12 @@ const Stats: React.FC = () => {
         {
             key: 'count' as const,
             header: 'Rəqəm',
-            render: (item: Stat) => <strong>{getTranslationValue(item.count, 'az')}</strong>
+            render: (item: Stat) => <strong>{getDisplayText(item.count, '-')}</strong>
         },
         {
             key: 'detail' as const,
             header: 'Detal',
-            render: (item: Stat) => getTranslationValue(item.detail, 'az')
+            render: (item: Stat) => getDisplayText(item.detail, '-')
         },
     ];
 
@@ -193,7 +195,7 @@ const Stats: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getTranslationValue(selectedItem?.count, 'az')}" statistikasını silmək istədiyinizə əminsiniz?`}
+                message={`"${getDisplayText(selectedItem?.count, '')}" statistikasını silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

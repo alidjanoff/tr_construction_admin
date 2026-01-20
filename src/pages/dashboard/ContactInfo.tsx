@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
 import { contactInfoAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
+import { useDisplayText } from '../../hooks/useDisplayText';
 import type { ContactInfo as ContactInfoType, TranslatedString } from '../../types';
-import { createEmptyTranslation, getTranslationValue } from '../../types';
+import { createEmptyTranslation } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
 import CustomInput from '../../components/ui/CustomInput';
@@ -43,6 +44,7 @@ const ContactInfo: React.FC = () => {
 
     const { showToast } = useToast();
     const { languages } = useLanguages();
+    const { getDisplayText } = useDisplayText();
 
     const fetchData = React.useCallback(async () => {
         try {
@@ -160,12 +162,12 @@ const ContactInfo: React.FC = () => {
         {
             key: 'title' as const,
             header: 'Başlıq',
-            render: (item: ContactInfoType) => getTranslationValue(item.title, 'az')
+            render: (item: ContactInfoType) => getDisplayText(item.title, '-')
         },
         {
             key: 'detail' as const,
             header: 'Detal',
-            render: (item: ContactInfoType) => getTranslationValue(item.detail, 'az')
+            render: (item: ContactInfoType) => getDisplayText(item.detail, '-')
         },
     ];
 
@@ -229,14 +231,16 @@ const ContactInfo: React.FC = () => {
                         required
                     />
 
-                    <CustomInput
-                        name="url"
-                        label="URL (İstəyə bağlı)"
-                        value={formData.url}
-                        onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-                        placeholder="https://..."
-                        type="url"
-                    />
+                    {formData.contact_type === 'address' && (
+                        <CustomInput
+                            name="url"
+                            label="URL (İstəyə bağlı)"
+                            value={formData.url}
+                            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                            placeholder="https://maps.google.com/..."
+                            type="url"
+                        />
+                    )}
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
@@ -253,7 +257,7 @@ const ContactInfo: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getTranslationValue(selectedItem?.title, 'az')}" əlaqə məlumatını silmək istədiyinizə əminsiniz?`}
+                message={`"${getDisplayText(selectedItem?.title, '')}" əlaqə məlumatını silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

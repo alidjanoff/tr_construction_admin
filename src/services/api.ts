@@ -21,6 +21,10 @@ api.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
         }
 
+        // NOTE: We intentionally do NOT send Accept-Language header from dashboard
+        // The dashboard always needs all translations for editing purposes
+        // The displayLanguage setting is only used for client-side display preference
+
         return config;
     },
     (error: AxiosError) => {
@@ -89,7 +93,8 @@ export const authAPI = {
 export const heroAPI = {
     getAll: () => api.get('/hero'),
     create: (formData: FormData) => api.post('/hero', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-    update: (formData: FormData) => api.put('/hero', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+    update: (id: string, formData: FormData) => api.put(`/hero/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+    delete: (id: string) => api.delete(`/hero/${id}`),
 };
 
 // About API

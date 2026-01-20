@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
 import { partnersAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
+import { useDisplayText } from '../../hooks/useDisplayText';
 import type { Partner, TranslatedString } from '../../types';
-import { createEmptyTranslation, getTranslationValue } from '../../types';
+import { createEmptyTranslation } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
 import TranslatableInput from '../../components/ui/TranslatableInput';
@@ -28,6 +29,7 @@ const Partners: React.FC = () => {
 
     const { showToast } = useToast();
     const { languages } = useLanguages();
+    const { getDisplayText } = useDisplayText();
 
     const fetchData = async () => {
         try {
@@ -140,7 +142,7 @@ const Partners: React.FC = () => {
         {
             key: 'title' as const,
             header: 'Ad',
-            render: (item: Partner) => getTranslationValue(item.title, 'az')
+            render: (item: Partner) => getDisplayText(item.title, '-')
         },
     ];
 
@@ -208,7 +210,7 @@ const Partners: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getTranslationValue(selectedItem?.title, 'az')}" partnyorunu silmək istədiyinizə əminsiniz?`}
+                message={`"${getDisplayText(selectedItem?.title, '')}" partnyorunu silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
 import { workflowAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
+import { useDisplayText } from '../../hooks/useDisplayText';
 import type { Workflow as WorkflowType, TranslatedString } from '../../types';
-import { createEmptyTranslation, getTranslationValue } from '../../types';
+import { createEmptyTranslation } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
 import TranslatableInput from '../../components/ui/TranslatableInput';
@@ -28,6 +29,7 @@ const Workflow: React.FC = () => {
 
     const { showToast } = useToast();
     const { languages } = useLanguages();
+    const { getDisplayText } = useDisplayText();
 
     const fetchData = async () => {
         try {
@@ -126,13 +128,13 @@ const Workflow: React.FC = () => {
         {
             key: 'title' as const,
             header: 'Başlıq',
-            render: (item: WorkflowType) => getTranslationValue(item.title, 'az')
+            render: (item: WorkflowType) => getDisplayText(item.title, '-')
         },
         {
             key: 'details' as const,
             header: 'Detallar',
             render: (item: WorkflowType) => {
-                const text = getTranslationValue(item.details, 'az');
+                const text = getDisplayText(item.details, '');
                 return <span className="truncate">{text.slice(0, 60)}{text.length > 60 ? '...' : ''}</span>;
             }
         },
@@ -200,7 +202,7 @@ const Workflow: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getTranslationValue(selectedItem?.title, 'az')}" iş axınını silmək istədiyinizə əminsiniz?`}
+                message={`"${getDisplayText(selectedItem?.title, '')}" iş axınını silmək istədiyinizə əminsiniz?`}
                 loading={formLoading}
             />
         </div>

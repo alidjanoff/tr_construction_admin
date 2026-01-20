@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components/ui/Toast';
 import { testimonialsAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
+import { useDisplayText } from '../../hooks/useDisplayText';
 import type { Testimonial, TranslatedString } from '../../types';
-import { createEmptyTranslation, getTranslationValue } from '../../types';
+import { createEmptyTranslation } from '../../types';
 import DataTable from '../../components/ui/DataTable';
 import CustomButton from '../../components/ui/CustomButton';
 import CustomInput from '../../components/ui/CustomInput';
@@ -34,6 +35,7 @@ const Testimonials: React.FC = () => {
 
     const { showToast } = useToast();
     const { languages } = useLanguages();
+    const { getDisplayText } = useDisplayText();
 
     const fetchData = React.useCallback(async () => {
         try {
@@ -143,13 +145,13 @@ const Testimonials: React.FC = () => {
         {
             key: 'customer_type' as const,
             header: 'Müştəri Tipi',
-            render: (item: Testimonial) => getTranslationValue(item.customer_type, 'az')
+            render: (item: Testimonial) => getDisplayText(item.customer_type, '-')
         },
         {
             key: 'customer_review' as const,
             header: 'Rəy',
             render: (item: Testimonial) => {
-                const text = getTranslationValue(item.customer_review, 'az');
+                const text = getDisplayText(item.customer_review, '');
                 return <span className="truncate">{text.slice(0, 50)}{text.length > 50 ? '...' : ''}</span>;
             }
         },
