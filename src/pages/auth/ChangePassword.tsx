@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useToast } from '../../components/ui/Toast';
 import { authAPI } from '../../services/api';
@@ -9,6 +10,7 @@ import logo from '../../assets/images/logo.jpeg';
 import './ChangePassword.scss';
 
 const ChangePassword: React.FC = () => {
+    const { t } = useTranslation();
     const location = useLocation();
     const initialEmail = (location.state as { email?: string })?.email || '';
 
@@ -27,23 +29,23 @@ const ChangePassword: React.FC = () => {
         const newErrors: Record<string, string> = {};
 
         if (!email.trim()) {
-            newErrors.email = 'Email daxil edin';
+            newErrors.email = t('validation.required');
         }
 
         if (!otp.trim()) {
-            newErrors.otp = 'OTP kodu daxil edin';
+            newErrors.otp = t('validation.required');
         } else if (otp.length !== 6) {
-            newErrors.otp = 'OTP 6 rəqəm olmalıdır';
+            newErrors.otp = t('validation.minLength', { min: 6 });
         }
 
         if (!newPassword) {
-            newErrors.newPassword = 'Yeni şifrə daxil edin';
+            newErrors.newPassword = t('validation.required');
         } else if (newPassword.length < 6) {
-            newErrors.newPassword = 'Şifrə minimum 6 simvol olmalıdır';
+            newErrors.newPassword = t('validation.minLength', { min: 6 });
         }
 
         if (newPassword !== confirmPassword) {
-            newErrors.confirmPassword = 'Şifrələr uyğun gəlmir';
+            newErrors.confirmPassword = t('validation.passwordsMustMatch') || 'Şifrələr uyğun gəlmir';
         }
 
         setErrors(newErrors);
@@ -58,11 +60,11 @@ const ChangePassword: React.FC = () => {
         setLoading(true);
         try {
             await authAPI.changePassword(email, otp, newPassword);
-            showToast('success', 'Şifrəniz uğurla dəyişdirildi');
+            showToast('success', t('pages.profile.passwordSuccess'));
             navigate('/login');
         } catch (error: unknown) {
             const err = error as { response?: { data?: { message?: string } } };
-            showToast('error', err.response?.data?.message || 'Şifrə dəyişdirilə bilmədi');
+            showToast('error', err.response?.data?.message || t('messages.saveError'));
         } finally {
             setLoading(false);
         }
@@ -73,15 +75,15 @@ const ChangePassword: React.FC = () => {
             <div className="change-container">
                 <div className="change-header">
                     <img src={logo} alt="TR Construction" className="change-logo" />
-                    <h1>Şifrəni Dəyiş</h1>
-                    <p>OTP kodu və yeni şifrənizi daxil edin</p>
+                    <h1>{t('pages.profile.changePassword')}</h1>
+                    <p>{t('auth.changePasswordInfo') || 'OTP kodu və yeni şifrənizi daxil edin'}</p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="change-form">
                     <CustomInput
                         type="email"
                         name="email"
-                        label="Email"
+                        label={t('auth.email')}
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         error={errors.email}
@@ -92,7 +94,7 @@ const ChangePassword: React.FC = () => {
                     <CustomInput
                         type="text"
                         name="otp"
-                        label="OTP Kodu"
+                        label={t('auth.otpCode') || 'OTP Kodu'}
                         placeholder="123456"
                         value={otp}
                         onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
@@ -104,7 +106,7 @@ const ChangePassword: React.FC = () => {
                     <CustomInput
                         type={showPassword ? 'text' : 'password'}
                         name="newPassword"
-                        label="Yeni Şifrə"
+                        label={t('pages.profile.newPassword')}
                         placeholder="••••••••"
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
@@ -118,7 +120,7 @@ const ChangePassword: React.FC = () => {
                     <CustomInput
                         type={showPassword ? 'text' : 'password'}
                         name="confirmPassword"
-                        label="Şifrəni Təsdiqlə"
+                        label={t('pages.profile.confirmPassword')}
                         placeholder="••••••••"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
@@ -127,13 +129,15 @@ const ChangePassword: React.FC = () => {
                         required
                     />
 
-                    <CustomButton type="submit" fullWidth loading={loading}>
-                        Şifrəni Dəyiş
-                    </CustomButton>
+                    <div className="button-group" style={{ marginTop: '20px' }}>
+                        <CustomButton type="submit" fullWidth loading={loading}>
+                            {t('pages.profile.changePassword')}
+                        </CustomButton>
+                    </div>
 
                     <Link to="/login" className="back-link">
                         <FiArrowLeft />
-                        Girişə qayıt
+                        {t('common.back')}
                     </Link>
                 </form>
             </div>

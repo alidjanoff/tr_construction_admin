@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { socialsAPI } from '../../services/api';
 import type { Social } from '../../types';
@@ -11,19 +12,8 @@ import { FiPlus, FiFacebook, FiInstagram, FiYoutube, FiLinkedin, FiTwitter, FiGl
 import { FaTiktok, FaWhatsapp, FaTelegram } from 'react-icons/fa';
 import './CrudPage.scss';
 
-const socialTypes = [
-    { value: 'facebook', label: 'Facebook', icon: <FiFacebook /> },
-    { value: 'instagram', label: 'Instagram', icon: <FiInstagram /> },
-    { value: 'youtube', label: 'YouTube', icon: <FiYoutube /> },
-    { value: 'linkedin', label: 'LinkedIn', icon: <FiLinkedin /> },
-    { value: 'twitter', label: 'Twitter/X', icon: <FiTwitter /> },
-    { value: 'tiktok', label: 'TikTok', icon: <FaTiktok /> },
-    { value: 'whatsapp', label: 'WhatsApp', icon: <FaWhatsapp /> },
-    { value: 'telegram', label: 'Telegram', icon: <FaTelegram /> },
-    { value: 'other', label: 'Digər', icon: <FiGlobe /> },
-];
-
 const Socials: React.FC = () => {
+    const { t } = useTranslation();
     const [socials, setSocials] = useState<Social[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -34,22 +24,32 @@ const Socials: React.FC = () => {
 
     const { showToast } = useToast();
 
-    const fetchData = async () => {
+    const socialTypes = React.useMemo(() => [
+        { value: 'facebook', label: 'Facebook', icon: <FiFacebook /> },
+        { value: 'instagram', label: 'Instagram', icon: <FiInstagram /> },
+        { value: 'youtube', label: 'YouTube', icon: <FiYoutube /> },
+        { value: 'linkedin', label: 'LinkedIn', icon: <FiLinkedin /> },
+        { value: 'twitter', label: 'Twitter/X', icon: <FiTwitter /> },
+        { value: 'tiktok', label: 'TikTok', icon: <FaTiktok /> },
+        { value: 'whatsapp', label: 'WhatsApp', icon: <FaWhatsapp /> },
+        { value: 'telegram', label: 'Telegram', icon: <FaTelegram /> },
+        { value: 'other', label: t('common.all'), icon: <FiGlobe /> },
+    ], [t]);
+
+    const fetchData = React.useCallback(async () => {
         try {
             const response = await socialsAPI.getAll();
             setSocials(response.data || []);
         } catch {
-            showToast('error', 'Sosial şəbəkələr yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
-    };
-
-    const fetchDataCallback = React.useCallback(fetchData, [showToast]);
+    }, [showToast, t]);
 
     useEffect(() => {
-        fetchDataCallback();
-    }, [fetchDataCallback]);
+        fetchData();
+    }, [fetchData]);
 
     const handleAdd = () => {
         setSelectedItem(null);
@@ -72,7 +72,7 @@ const Socials: React.FC = () => {
         e.preventDefault();
 
         if (!formData.url.trim()) {
-            showToast('error', 'URL daxil edin');
+            showToast('error', t('validation.required'));
             return;
         }
 
@@ -84,19 +84,19 @@ const Socials: React.FC = () => {
                     url: formData.url,
                     type: formData.type,
                 });
-                showToast('success', 'Sosial şəbəkə yeniləndi');
+                showToast('success', t('messages.saveSuccess'));
             } else {
                 await socialsAPI.create({
                     url: formData.url,
                     type: formData.type,
                 });
-                showToast('success', 'Sosial şəbəkə əlavə edildi');
+                showToast('success', t('messages.saveSuccess'));
             }
 
             setModalOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Əməliyyat uğursuz oldu');
+            showToast('error', t('messages.saveError'));
         } finally {
             setFormLoading(false);
         }
@@ -108,11 +108,11 @@ const Socials: React.FC = () => {
         setFormLoading(true);
         try {
             await socialsAPI.delete(selectedItem.id);
-            showToast('success', 'Sosial şəbəkə silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setDeleteDialogOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Silmə uğursuz oldu');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setFormLoading(false);
         }
@@ -125,7 +125,7 @@ const Socials: React.FC = () => {
     const columns = [
         {
             key: 'type' as const,
-            header: 'Platform',
+            header: t('pages.socials.platform'),
             render: (item: Social) => {
                 const typeInfo = getSocialTypeInfo(item.type);
                 return (
@@ -138,7 +138,7 @@ const Socials: React.FC = () => {
         },
         {
             key: 'url' as const,
-            header: 'URL',
+            header: t('pages.socials.url'),
             render: (item: Social) => (
                 <a href={item.url} target="_blank" rel="noopener noreferrer" className="truncate" style={{ color: 'var(--primary)' }}>
                     {item.url.length > 50 ? item.url.slice(0, 50) + '...' : item.url}
@@ -150,9 +150,9 @@ const Socials: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Sosial Şəbəkələr</h1>
+                <h1 className="page-title">{t('pages.socials.title')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Əlavə et
+                    {t('common.add')}
                 </CustomButton>
             </div>
 
@@ -163,19 +163,19 @@ const Socials: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Sosial şəbəkə tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Sosial Şəbəkəni Redaktə Et' : 'Yeni Sosial Şəbəkə'}
+                title={selectedItem ? t('pages.socials.editSocial') : t('pages.socials.newSocial')}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Platform</label>
+                        <label>{t('pages.socials.platform')}</label>
                         <select
                             value={formData.type}
                             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
@@ -191,7 +191,7 @@ const Socials: React.FC = () => {
 
                     <CustomInput
                         name="url"
-                        label="URL"
+                        label={t('pages.socials.url')}
                         value={formData.url}
                         onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                         placeholder="https://..."
@@ -201,10 +201,10 @@ const Socials: React.FC = () => {
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
-                            Ləğv et
+                            {t('common.cancel')}
                         </CustomButton>
                         <CustomButton type="submit" loading={formLoading}>
-                            {selectedItem ? 'Yenilə' : 'Əlavə et'}
+                            {selectedItem ? t('common.update') : t('common.add')}
                         </CustomButton>
                     </div>
                 </form>
@@ -214,7 +214,7 @@ const Socials: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getSocialTypeInfo(selectedItem?.type || '').label}" sosial şəbəkəsini silmək istədiyinizə əminsiniz?`}
+                message={t('pages.socials.deleteConfirm')}
                 loading={formLoading}
             />
         </div>

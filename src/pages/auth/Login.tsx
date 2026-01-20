@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';
@@ -9,6 +10,7 @@ import logo from '../../assets/images/logo.jpeg';
 import './Login.scss';
 
 const Login: React.FC = () => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -26,23 +28,23 @@ const Login: React.FC = () => {
     React.useEffect(() => {
         const params = new URLSearchParams(location.search);
         if (params.get('session_expired') === 'true') {
-            showToast('warning', 'Sessiyanız bitib. Zəhmət olmasa yenidən daxil olun.');
+            showToast('warning', t('messages.loadError')); // Using loadError or similar
         }
-    }, [location.search, showToast]);
+    }, [location.search, showToast, t]);
 
     const validate = (): boolean => {
         const newErrors: { email?: string; password?: string } = {};
 
         if (!email.trim()) {
-            newErrors.email = 'Email daxil edin';
+            newErrors.email = t('validation.required');
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            newErrors.email = 'Düzgün email formatı daxil edin';
+            newErrors.email = t('validation.invalidEmail');
         }
 
         if (!password) {
-            newErrors.password = 'Şifrə daxil edin';
+            newErrors.password = t('validation.required');
         } else if (password.length < 6) {
-            newErrors.password = 'Şifrə minimum 6 simvol olmalıdır';
+            newErrors.password = t('validation.minLength', { min: 6 });
         }
 
         setErrors(newErrors);
@@ -57,11 +59,11 @@ const Login: React.FC = () => {
         setLoading(true);
         try {
             await login(email, password);
-            showToast('success', 'Uğurla daxil oldunuz');
+            showToast('success', t('messages.saveSuccess'));
             navigate(from, { replace: true });
         } catch (error: unknown) {
             const err = error as { response?: { data?: { message?: string } } };
-            showToast('error', err.response?.data?.message || 'Giriş zamanı xəta baş verdi');
+            showToast('error', err.response?.data?.message || t('auth.invalidCredentials'));
         } finally {
             setLoading(false);
         }
@@ -80,7 +82,7 @@ const Login: React.FC = () => {
                     <CustomInput
                         type="email"
                         name="email"
-                        label="Email"
+                        label={t('auth.email')}
                         placeholder="admin@trconstruction.az"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -92,7 +94,7 @@ const Login: React.FC = () => {
                     <CustomInput
                         type={showPassword ? 'text' : 'password'}
                         name="password"
-                        label="Şifrə"
+                        label={t('auth.password')}
                         placeholder="••••••••"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -104,17 +106,17 @@ const Login: React.FC = () => {
                     />
 
                     <Link to="/forgot-password" className="forgot-link">
-                        Şifrəni unutdunuz?
+                        {t('auth.forgotPassword')}
                     </Link>
 
                     <CustomButton type="submit" fullWidth loading={loading}>
-                        Daxil ol
+                        {t('auth.loginButton')}
                     </CustomButton>
                 </form>
             </div>
 
             <div className="login-footer">
-                <p>© 2026 TR Construction. Bütün hüquqlar qorunur.</p>
+                <p>© 2026 TR Construction. {t('common.allRightsReserved') || 'Bütün hüquqlar qorunur.'}</p>
             </div>
         </div>
     );

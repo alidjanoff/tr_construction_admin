@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { heroAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -43,6 +44,7 @@ const Hero: React.FC = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+    const { t } = useTranslation();
     const { showToast } = useToast();
     const { languages } = useLanguages();
     const { getDisplayText } = useDisplayText();
@@ -53,7 +55,7 @@ const Hero: React.FC = () => {
             const data = Array.isArray(response.data) ? response.data : [];
             setSlides(data);
         } catch {
-            showToast('error', 'Hero bölməsi yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
@@ -187,10 +189,10 @@ const Hero: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Hero Slider</h1>
+                <h1 className="page-title">{t('pages.hero.title')}</h1>
                 {!showForm && (
                     <CustomButton icon={<FiPlus />} onClick={openCreateForm}>
-                        Yeni Slide
+                        {t('pages.hero.newSlide')}
                     </CustomButton>
                 )}
             </div>
@@ -200,7 +202,7 @@ const Hero: React.FC = () => {
                 <div className="card" style={{ marginBottom: '1.5rem' }}>
                     <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <h3 style={{ margin: 0 }}>
-                            {editingSlide ? 'Slide Redaktə Et' : 'Yeni Slide Yarat'}
+                            {editingSlide ? t('pages.hero.editSlide') : t('pages.hero.newSlide')}
                         </h3>
                         <button
                             type="button"

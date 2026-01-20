@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { authAPI } from '../../services/api';
 import type { User } from '../../types';
@@ -11,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import './CrudPage.scss';
 
 const Users: React.FC = () => {
+    const { t } = useTranslation();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -27,13 +29,13 @@ const Users: React.FC = () => {
             const response = await authAPI.getUsers();
             setUsers(response.data || []);
         } catch {
-            showToast('error', 'İstifadəçilər yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchUsersCallback = React.useCallback(fetchUsers, [showToast]);
+    const fetchUsersCallback = React.useCallback(fetchUsers, [showToast, t]);
 
     useEffect(() => {
         fetchUsersCallback();
@@ -60,11 +62,11 @@ const Users: React.FC = () => {
         setFormLoading(true);
         try {
             await authAPI.changeUserRole(selectedUser.id, newRole);
-            showToast('success', 'Rol uğurla dəyişdirildi');
+            showToast('success', t('pages.users.roleChanged'));
             setRoleModalOpen(false);
             fetchUsers();
         } catch {
-            showToast('error', 'Rol dəyişdirilə bilmədi');
+            showToast('error', t('messages.saveError'));
         } finally {
             setFormLoading(false);
         }
@@ -76,11 +78,11 @@ const Users: React.FC = () => {
         setFormLoading(true);
         try {
             await authAPI.deleteUser(selectedUser.id);
-            showToast('success', 'İstifadəçi silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setDeleteDialogOpen(false);
             fetchUsers();
         } catch {
-            showToast('error', 'İstifadəçi silinə bilmədi');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setFormLoading(false);
         }
@@ -101,12 +103,12 @@ const Users: React.FC = () => {
                 )
             ),
         },
-        { key: 'full_name' as const, header: 'Ad Soyad' },
-        { key: 'email' as const, header: 'Email' },
-        { key: 'phone' as const, header: 'Telefon' },
+        { key: 'full_name' as const, header: t('pages.users.fullName') },
+        { key: 'email' as const, header: t('pages.users.email') },
+        { key: 'phone' as const, header: t('pages.users.phone') },
         {
             key: 'role' as const,
-            header: 'Rol',
+            header: t('pages.users.role'),
             render: (user: User) => (
                 <span className={`badge ${user.role === 'superAdmin' ? 'primary' : 'info'}`}>
                     {user.role === 'superAdmin' ? 'Super Admin' : 'Admin'}
@@ -118,9 +120,9 @@ const Users: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">İstifadəçilər</h1>
+                <h1 className="page-title">{t('sidebar.users')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAddUser}>
-                    Yeni İstifadəçi
+                    {t('pages.users.newUser')}
                 </CustomButton>
             </div>
 
@@ -131,35 +133,39 @@ const Users: React.FC = () => {
                     loading={loading}
                     onEdit={handleChangeRole}
                     onDelete={handleDelete}
-                    emptyMessage="İstifadəçi tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
             <Modal
                 isOpen={roleModalOpen}
                 onClose={() => setRoleModalOpen(false)}
-                title="Rol Dəyişdir"
+                title={t('pages.users.changeRole')}
                 size="sm"
             >
                 <div style={{ marginBottom: '16px' }}>
-                    <p><strong>{selectedUser?.full_name}</strong> istifadəçisinin rolunu dəyişmək istəyirsiniz?</p>
-                    <p style={{ marginTop: '8px', color: '#666' }}>
-                        Mövcud rol: <span className={`badge ${selectedUser?.role === 'superAdmin' ? 'primary' : 'info'}`}>
-                            {selectedUser?.role === 'superAdmin' ? 'Super Admin' : 'Admin'}
-                        </span>
-                    </p>
-                    <p style={{ marginTop: '8px', color: '#666' }}>
-                        Yeni rol: <span className={`badge ${newRole === 'superAdmin' ? 'primary' : 'info'}`}>
-                            {newRole === 'superAdmin' ? 'Super Admin' : 'Admin'}
-                        </span>
-                    </p>
+                    <p><strong>{selectedUser?.full_name}</strong> {t('pages.users.changeRoleConfirm')}</p>
+                    <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{t('pages.users.currentRole')}:</span>
+                            <span className={`badge ${selectedUser?.role === 'superAdmin' ? 'primary' : 'info'}`}>
+                                {selectedUser?.role === 'superAdmin' ? 'Super Admin' : 'Admin'}
+                            </span>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>{t('pages.users.newRole')}:</span>
+                            <span className={`badge ${newRole === 'superAdmin' ? 'primary' : 'info'}`}>
+                                {newRole === 'superAdmin' ? 'Super Admin' : 'Admin'}
+                            </span>
+                        </div>
+                    </div>
                 </div>
                 <div className="button-group right">
                     <CustomButton variant="secondary" onClick={() => setRoleModalOpen(false)}>
-                        Ləğv et
+                        {t('common.cancel')}
                     </CustomButton>
                     <CustomButton onClick={handleConfirmRoleChange} loading={formLoading} icon={<FiUserCheck />}>
-                        Təsdiqlə
+                        {t('common.confirm')}
                     </CustomButton>
                 </div>
             </Modal>
@@ -168,7 +174,7 @@ const Users: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${selectedUser?.full_name}" istifadəçisini silmək istədiyinizə əminsiniz?`}
+                message={t('pages.users.deleteConfirm')}
                 loading={formLoading}
             />
         </div>

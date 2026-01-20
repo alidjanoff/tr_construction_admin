@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { servicesAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -27,6 +28,7 @@ const Services: React.FC = () => {
     const [formData, setFormData] = useState<ServiceFormData>({ title: {}, info: {} });
     const [formLoading, setFormLoading] = useState(false);
 
+    const { t } = useTranslation();
     const { showToast } = useToast();
     const { languages } = useLanguages();
     const { getDisplayText } = useDisplayText();
@@ -126,12 +128,12 @@ const Services: React.FC = () => {
     const columns = [
         {
             key: 'title' as const,
-            header: 'Başlıq',
-            render: (item: Service) => getDisplayText(item.title, 'Başlıqsız')
+            header: t('pages.services.serviceTitle'),
+            render: (item: Service) => getDisplayText(item.title, t('common.noData'))
         },
         {
             key: 'info' as const,
-            header: 'Məlumat',
+            header: t('pages.about.info'),
             render: (item: Service) => {
                 const text = getDisplayText(item.info, '');
                 return <span className="truncate">{text.slice(0, 60)}{text.length > 60 ? '...' : ''}</span>;
@@ -142,9 +144,9 @@ const Services: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Xidmətlər</h1>
+                <h1 className="page-title">{t('pages.services.title')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Əlavə et
+                    {t('common.add')}
                 </CustomButton>
             </div>
 
@@ -155,43 +157,43 @@ const Services: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Xidmət tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Xidməti Redaktə Et' : 'Yeni Xidmət'}
+                title={selectedItem ? t('pages.services.editService') : t('pages.services.newService')}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <TranslatableInput
                         name="title"
-                        label="Başlıq"
+                        label={t('pages.services.serviceTitle')}
                         value={formData.title}
                         onChange={(value) => setFormData({ ...formData, title: value })}
-                        placeholder="Xidmət başlığı"
+                        placeholder={t('pages.services.serviceTitle')}
                         required
                     />
 
                     <TranslatableInput
                         name="info"
-                        label="Məlumat"
+                        label={t('pages.about.info')}
                         value={formData.info}
                         onChange={(value) => setFormData({ ...formData, info: value })}
                         type="textarea"
-                        placeholder="Xidmət haqqında məlumat"
+                        placeholder={t('pages.about.info')}
                         rows={4}
                         required
                     />
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
-                            Ləğv et
+                            {t('common.cancel')}
                         </CustomButton>
                         <CustomButton type="submit" loading={formLoading}>
-                            {selectedItem ? 'Yenilə' : 'Əlavə et'}
+                            {selectedItem ? t('common.update') : t('common.add')}
                         </CustomButton>
                     </div>
                 </form>
@@ -201,7 +203,7 @@ const Services: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getDisplayText(selectedItem?.title, '')}" xidmətini silmək istədiyinizə əminsiniz?`}
+                message={t('pages.services.deleteConfirm')}
                 loading={formLoading}
             />
         </div>

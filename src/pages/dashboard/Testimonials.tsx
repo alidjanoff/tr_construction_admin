@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { testimonialsAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -21,6 +22,7 @@ interface TestimonialFormData {
 }
 
 const Testimonials: React.FC = () => {
+    const { t } = useTranslation();
     const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -42,11 +44,11 @@ const Testimonials: React.FC = () => {
             const response = await testimonialsAPI.getAll();
             setTestimonials(response.data || []);
         } catch {
-            showToast('error', 'Müştəri rəyləri yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
-    }, [showToast]);
+    }, [showToast, t]);
 
     useEffect(() => {
         fetchData();
@@ -81,7 +83,7 @@ const Testimonials: React.FC = () => {
         e.preventDefault();
 
         if (!formData.customer_full_name.trim()) {
-            showToast('error', 'Müştəri adını daxil edin');
+            showToast('error', t('validation.required'));
             return;
         }
 
@@ -89,7 +91,7 @@ const Testimonials: React.FC = () => {
         const hasReview = Object.values(formData.customer_review).some(v => v && v.trim());
 
         if (!hasType || !hasReview) {
-            showToast('error', 'Ən azı bir dildə müştəri tipi və rəyi daxil edin');
+            showToast('error', t('validation.atLeastOneLanguage'));
             return;
         }
 
@@ -102,20 +104,20 @@ const Testimonials: React.FC = () => {
                     customer_type: formData.customer_type,
                     customer_review: formData.customer_review,
                 });
-                showToast('success', 'Rəy yeniləndi');
+                showToast('success', t('messages.saveSuccess'));
             } else {
                 await testimonialsAPI.create({
                     customer_full_name: formData.customer_full_name,
                     customer_type: formData.customer_type,
                     customer_review: formData.customer_review,
                 });
-                showToast('success', 'Rəy əlavə edildi');
+                showToast('success', t('messages.saveSuccess'));
             }
 
             setModalOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Əməliyyat uğursuz oldu');
+            showToast('error', t('messages.saveError'));
         } finally {
             setFormLoading(false);
         }
@@ -127,11 +129,11 @@ const Testimonials: React.FC = () => {
         setFormLoading(true);
         try {
             await testimonialsAPI.delete(selectedItem.id);
-            showToast('success', 'Rəy silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setDeleteDialogOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Silmə uğursuz oldu');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setFormLoading(false);
         }
@@ -140,16 +142,16 @@ const Testimonials: React.FC = () => {
     const columns = [
         {
             key: 'customer_full_name' as const,
-            header: 'Müştəri Adı',
+            header: t('pages.testimonials.customerName'),
         },
         {
             key: 'customer_type' as const,
-            header: 'Müştəri Tipi',
+            header: t('pages.testimonials.customerType'),
             render: (item: Testimonial) => getDisplayText(item.customer_type, '-')
         },
         {
             key: 'customer_review' as const,
-            header: 'Rəy',
+            header: t('pages.testimonials.review'),
             render: (item: Testimonial) => {
                 const text = getDisplayText(item.customer_review, '');
                 return <span className="truncate">{text.slice(0, 50)}{text.length > 50 ? '...' : ''}</span>;
@@ -160,9 +162,9 @@ const Testimonials: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Müştəri Rəyləri</h1>
+                <h1 className="page-title">{t('pages.testimonials.title')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Əlavə et
+                    {t('common.add')}
                 </CustomButton>
             </div>
 
@@ -173,29 +175,29 @@ const Testimonials: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Rəy tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Rəyi Redaktə Et' : 'Yeni Rəy'}
+                title={selectedItem ? t('pages.testimonials.editReview') : t('pages.testimonials.newReview')}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <CustomInput
                         name="customer_full_name"
-                        label="Müştəri Adı"
+                        label={t('pages.testimonials.customerName')}
                         value={formData.customer_full_name}
                         onChange={(e) => setFormData({ ...formData, customer_full_name: e.target.value })}
-                        placeholder="Ad Soyad"
+                        placeholder={t('pages.testimonials.customerName')}
                         required
                     />
 
                     <TranslatableInput
                         name="customer_type"
-                        label="Müştəri Tipi"
+                        label={t('pages.testimonials.customerType')}
                         value={formData.customer_type}
                         onChange={(value) => setFormData({ ...formData, customer_type: value })}
                         placeholder="məs: Ev sahibi, Şirkət, Investor"
@@ -204,21 +206,21 @@ const Testimonials: React.FC = () => {
 
                     <TranslatableInput
                         name="customer_review"
-                        label="Rəy"
+                        label={t('pages.testimonials.review')}
                         value={formData.customer_review}
                         onChange={(value) => setFormData({ ...formData, customer_review: value })}
                         type="textarea"
-                        placeholder="Müştəri rəyi..."
+                        placeholder={t('pages.testimonials.review') + "..."}
                         rows={5}
                         required
                     />
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
-                            Ləğv et
+                            {t('common.cancel')}
                         </CustomButton>
                         <CustomButton type="submit" loading={formLoading}>
-                            {selectedItem ? 'Yenilə' : 'Əlavə et'}
+                            {selectedItem ? t('common.update') : t('common.add')}
                         </CustomButton>
                     </div>
                 </form>
@@ -228,7 +230,7 @@ const Testimonials: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${selectedItem?.customer_full_name}" müştərisinin rəyini silmək istədiyinizə əminsiniz?`}
+                message={t('pages.testimonials.deleteConfirm')}
                 loading={formLoading}
             />
         </div>

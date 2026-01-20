@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { statsAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -27,6 +28,7 @@ const Stats: React.FC = () => {
     const [formData, setFormData] = useState<StatFormData>({ count: {}, detail: {} });
     const [formLoading, setFormLoading] = useState(false);
 
+    const { t } = useTranslation();
     const { showToast } = useToast();
     const { languages } = useLanguages();
     const { getDisplayText } = useDisplayText();
@@ -138,9 +140,9 @@ const Stats: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Statistika</h1>
+                <h1 className="page-title">{t('pages.stats.title')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Əlavə et
+                    {t('common.add')}
                 </CustomButton>
             </div>
 
@@ -151,7 +153,7 @@ const Stats: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Statistika tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 

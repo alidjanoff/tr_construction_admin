@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import {
     FiHome,
@@ -33,34 +34,35 @@ interface SidebarProps {
 interface NavItem {
     path: string;
     icon: React.ReactNode;
-    label: string;
+    labelKey: string;
     superAdminOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
-    { path: '/', icon: <FiHome />, label: 'Ana Səhifə' },
-    { path: '/profile', icon: <FiUser />, label: 'Profil' },
-    { path: '/hero', icon: <FiImage />, label: 'Hero' },
-    { path: '/about', icon: <FiInfo />, label: 'Haqqımızda' },
-    { path: '/services', icon: <FiSettings />, label: 'Xidmətlər' },
-    { path: '/stats', icon: <FiBarChart2 />, label: 'Statistika' },
-    { path: '/projects', icon: <FiFolder />, label: 'Layihələr' },
-    { path: '/workflow', icon: <FiGitBranch />, label: 'İş Axını' },
-    { path: '/partners', icon: <FiLayers />, label: 'Partnyorlar' },
-    { path: '/testimonials', icon: <FiStar />, label: 'Rəylər' },
-    { path: '/contact-info', icon: <FiPhone />, label: 'Əlaqə' },
-    { path: '/socials', icon: <FiShare2 />, label: 'Sosial' },
-    { path: '/map-url', icon: <FiMapPin />, label: 'Xəritə' },
-    { path: '/applications', icon: <FiMail />, label: 'Müraciətlər' },
-    { path: '/languages', icon: <FiGlobe />, label: 'Dillər' },
+    { path: '/', icon: <FiHome />, labelKey: 'sidebar.dashboard' },
+    { path: '/profile', icon: <FiUser />, labelKey: 'sidebar.profile' },
+    { path: '/hero', icon: <FiImage />, labelKey: 'sidebar.hero' },
+    { path: '/about', icon: <FiInfo />, labelKey: 'sidebar.about' },
+    { path: '/services', icon: <FiSettings />, labelKey: 'sidebar.services' },
+    { path: '/stats', icon: <FiBarChart2 />, labelKey: 'sidebar.stats' },
+    { path: '/projects', icon: <FiFolder />, labelKey: 'sidebar.projects' },
+    { path: '/workflow', icon: <FiGitBranch />, labelKey: 'sidebar.workflow' },
+    { path: '/partners', icon: <FiLayers />, labelKey: 'sidebar.partners' },
+    { path: '/testimonials', icon: <FiStar />, labelKey: 'sidebar.testimonials' },
+    { path: '/contact-info', icon: <FiPhone />, labelKey: 'sidebar.contact' },
+    { path: '/socials', icon: <FiShare2 />, labelKey: 'sidebar.socials' },
+    { path: '/map-url', icon: <FiMapPin />, labelKey: 'sidebar.mapUrl' },
+    { path: '/applications', icon: <FiMail />, labelKey: 'sidebar.applications' },
+    { path: '/languages', icon: <FiGlobe />, labelKey: 'sidebar.languages' },
 ];
 
 const superAdminNavItems: NavItem[] = [
-    { path: '/users', icon: <FiUsers />, label: 'İstifadəçilər', superAdminOnly: true },
-    { path: '/users/new', icon: <FiUserPlus />, label: 'Yeni İstifadəçi', superAdminOnly: true },
+    { path: '/users', icon: <FiUsers />, labelKey: 'sidebar.users', superAdminOnly: true },
+    { path: '/users/new', icon: <FiUserPlus />, labelKey: 'pages.users.newUser', superAdminOnly: true },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
+    const { t } = useTranslation();
     const { isSuperAdmin } = useAuth();
     const location = useLocation();
 
@@ -84,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                         end={item.path === '/'}
                     >
                         <span className="nav-icon">{item.icon}</span>
-                        {!isCollapsed && <span className="nav-label">{item.label}</span>}
+                        {!isCollapsed && <span className="nav-label">{t(item.labelKey)}</span>}
                     </NavLink>
                 ))}
             </nav>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { mapUrlAPI } from '../../services/api';
 import type { MapUrl as MapUrlType } from '../../types';
@@ -9,6 +10,7 @@ import { FiMapPin, FiSave } from 'react-icons/fi';
 import './CrudPage.scss';
 
 const MapUrl: React.FC = () => {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [formData, setFormData] = useState<MapUrlType>({ long: '', lat: '' });
@@ -25,11 +27,11 @@ const MapUrl: React.FC = () => {
                 });
             }
         } catch {
-            showToast('error', 'Xəritə koordinatları yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
-    }, [showToast]);
+    }, [showToast, t]);
 
     useEffect(() => {
         fetchData();
@@ -39,7 +41,7 @@ const MapUrl: React.FC = () => {
         e.preventDefault();
 
         if (!formData.long.trim() || !formData.lat.trim()) {
-            showToast('error', 'Bütün koordinatları daxil edin');
+            showToast('error', t('validation.required'));
             return;
         }
 
@@ -49,9 +51,9 @@ const MapUrl: React.FC = () => {
                 long: formData.long,
                 lat: formData.lat,
             });
-            showToast('success', 'Xəritə koordinatları yeniləndi');
+            showToast('success', t('pages.mapUrl.saveSuccess'));
         } catch {
-            showToast('error', 'Yeniləmə uğursuz oldu');
+            showToast('error', t('messages.saveError'));
         } finally {
             setSaving(false);
         }
@@ -72,24 +74,21 @@ const MapUrl: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Xəritə Koordinatları</h1>
+                <h1 className="page-title">{t('pages.mapUrl.title')}</h1>
             </div>
 
             <div className="card">
                 <div className="card-body">
                     <div className="info-banner">
                         <FiMapPin />
-                        <p>
-                            Burada şirkətin ofis yerləşməsinin Google Maps koordinatlarını daxil edin.
-                            Bu koordinatlar saytdakı xəritədə göstəriləcək.
-                        </p>
+                        <p>{t('pages.mapUrl.info')}</p>
                     </div>
 
                     <form onSubmit={handleSubmit}>
                         <div className="form-row">
                             <CustomInput
                                 name="lat"
-                                label="Latitude (Enlıq)"
+                                label={t('pages.mapUrl.lat')}
                                 value={formData.lat}
                                 onChange={(e) => setFormData({ ...formData, lat: e.target.value })}
                                 placeholder="məs: 40.4093"
@@ -98,7 +97,7 @@ const MapUrl: React.FC = () => {
 
                             <CustomInput
                                 name="long"
-                                label="Longitude (Boylam)"
+                                label={t('pages.mapUrl.long')}
                                 value={formData.long}
                                 onChange={(e) => setFormData({ ...formData, long: e.target.value })}
                                 placeholder="məs: 49.8671"
@@ -108,7 +107,7 @@ const MapUrl: React.FC = () => {
 
                         {mapPreviewUrl && (
                             <div className="map-preview">
-                                <label>Xəritə Önizləmə</label>
+                                <label>{t('pages.mapUrl.preview')}</label>
                                 <iframe
                                     src={mapPreviewUrl}
                                     width="100%"
@@ -124,7 +123,7 @@ const MapUrl: React.FC = () => {
 
                         <div className="button-group right" style={{ marginTop: '1.5rem' }}>
                             <CustomButton type="submit" icon={<FiSave />} loading={saving}>
-                                Yadda saxla
+                                {t('common.save')}
                             </CustomButton>
                         </div>
                     </form>

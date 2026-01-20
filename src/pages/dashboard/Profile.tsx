@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../components/ui/Toast';
 import { authAPI } from '../../services/api';
@@ -8,6 +9,7 @@ import { FiUser, FiMail, FiPhone, FiCamera } from 'react-icons/fi';
 import './Profile.scss';
 
 const Profile: React.FC = () => {
+    const { t } = useTranslation();
     const { user, updateUser } = useAuth();
     const { showToast } = useToast();
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -34,7 +36,7 @@ const Profile: React.FC = () => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 5 * 1024 * 1024) {
-                showToast('error', 'Şəkil həcmi 5MB-dan böyük olmamalıdır');
+                showToast('error', t('messages.uploadError'));
                 return;
             }
             setProfileImage(file);
@@ -46,13 +48,13 @@ const Profile: React.FC = () => {
         const newErrors: Record<string, string> = {};
 
         if (!formData.full_name.trim()) {
-            newErrors.full_name = 'Ad soyadı daxil edin';
+            newErrors.full_name = t('validation.required');
         }
 
         if (!formData.email.trim()) {
-            newErrors.email = 'Email daxil edin';
+            newErrors.email = t('validation.required');
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Düzgün email formatı daxil edin';
+            newErrors.email = t('validation.invalidEmail');
         }
 
         setErrors(newErrors);
@@ -77,10 +79,10 @@ const Profile: React.FC = () => {
 
             const response = await authAPI.updateMe(formDataToSend);
             updateUser(response.data);
-            showToast('success', 'Profil uğurla yeniləndi');
+            showToast('success', t('pages.profile.updateSuccess'));
         } catch (error: unknown) {
             const err = error as { response?: { data?: { message?: string } } };
-            showToast('error', err.response?.data?.message || 'Profil yenilənə bilmədi');
+            showToast('error', err.response?.data?.message || t('messages.saveError'));
         } finally {
             setLoading(false);
         }
@@ -91,7 +93,7 @@ const Profile: React.FC = () => {
             <div className="profile-container">
                 <div className="card">
                     <div className="card-header">
-                        <h3>Profil Məlumatları</h3>
+                        <h3>{t('pages.profile.title')}</h3>
                     </div>
                     <div className="card-body">
                         <form onSubmit={handleSubmit}>
@@ -119,15 +121,15 @@ const Profile: React.FC = () => {
                                     accept="image/*"
                                     style={{ display: 'none' }}
                                 />
-                                <p className="avatar-hint">Şəkil yükləmək üçün klikləyin</p>
+                                <p className="avatar-hint">{t('pages.hero.selectImage')}</p>
                             </div>
 
                             <div className="form-row">
                                 <CustomInput
                                     type="text"
                                     name="full_name"
-                                    label="Ad Soyad"
-                                    placeholder="Ad Soyad daxil edin"
+                                    label={t('pages.users.fullName')}
+                                    placeholder={t('pages.users.fullName')}
                                     value={formData.full_name}
                                     onChange={handleChange}
                                     error={errors.full_name}
@@ -138,8 +140,8 @@ const Profile: React.FC = () => {
                                 <CustomInput
                                     type="email"
                                     name="email"
-                                    label="Email"
-                                    placeholder="Email daxil edin"
+                                    label={t('auth.email')}
+                                    placeholder={t('auth.email')}
                                     value={formData.email}
                                     onChange={handleChange}
                                     error={errors.email}
@@ -151,7 +153,7 @@ const Profile: React.FC = () => {
                             <CustomInput
                                 type="tel"
                                 name="phone"
-                                label="Telefon"
+                                label={t('pages.applications.phone')}
                                 placeholder="+994 XX XXX XX XX"
                                 value={formData.phone}
                                 onChange={handleChange}
@@ -159,15 +161,15 @@ const Profile: React.FC = () => {
                             />
 
                             <div className="role-display">
-                                <span className="role-label">Rol:</span>
+                                <span className="role-label">{t('pages.users.role')}:</span>
                                 <span className={`role-value ${user?.role}`}>
-                                    {user?.role === 'superAdmin' ? 'Super Admin' : 'Admin'}
+                                    {user?.role === 'superAdmin' ? t('pages.users.roles.superAdmin') : t('pages.users.roles.admin')}
                                 </span>
                             </div>
 
                             <div className="button-group right">
                                 <CustomButton type="submit" loading={loading}>
-                                    Yadda Saxla
+                                    {t('common.save')}
                                 </CustomButton>
                             </div>
                         </form>

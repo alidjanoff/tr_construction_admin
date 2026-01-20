@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { applicationsAPI } from '../../services/api';
 import type { Application } from '../../types';
@@ -11,6 +12,7 @@ import './CrudPage.scss';
 import './Applications.scss';
 
 const Applications: React.FC = () => {
+    const { t } = useTranslation();
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedApp, setSelectedApp] = useState<Application | null>(null);
@@ -25,13 +27,13 @@ const Applications: React.FC = () => {
             const response = await applicationsAPI.getAll();
             setApplications(response.data || []);
         } catch {
-            showToast('error', 'Müraciətlər yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchApplicationsCallback = React.useCallback(fetchApplications, [showToast]);
+    const fetchApplicationsCallback = React.useCallback(fetchApplications, [showToast, t]);
 
     useEffect(() => {
         fetchApplicationsCallback();
@@ -63,11 +65,11 @@ const Applications: React.FC = () => {
         setFormLoading(true);
         try {
             await applicationsAPI.delete(selectedApp.id);
-            showToast('success', 'Müraciət silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setDeleteDialogOpen(false);
             fetchApplications();
         } catch {
-            showToast('error', 'Müraciət silinə bilmədi');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setFormLoading(false);
         }
@@ -79,15 +81,18 @@ const Applications: React.FC = () => {
             header: '',
             width: '40px',
             render: (app: Application) => (
-                <span className={`status-dot ${app.is_viewed ? 'viewed' : 'unread'}`} title={app.is_viewed ? 'Oxunub' : 'Yeni'} />
+                <span
+                    className={`status-dot ${app.is_viewed ? 'viewed' : 'unread'}`}
+                    title={app.is_viewed ? t('common.yes') : t('common.no')}
+                />
             ),
         },
-        { key: 'full_name' as const, header: 'Ad Soyad' },
-        { key: 'email' as const, header: 'Email' },
-        { key: 'phone' as const, header: 'Telefon' },
+        { key: 'full_name' as const, header: t('pages.applications.name') },
+        { key: 'email' as const, header: t('pages.applications.email') },
+        { key: 'phone' as const, header: t('pages.applications.phone') },
         {
             key: 'message' as const,
-            header: 'Mesaj',
+            header: t('pages.applications.message'),
             render: (app: Application) => (
                 <span className="truncate">{app.message.slice(0, 50)}...</span>
             ),
@@ -100,9 +105,9 @@ const Applications: React.FC = () => {
         <div className="page-content crud-page applications-page">
             <div className="page-header">
                 <div>
-                    <h1 className="page-title">Müraciətlər</h1>
+                    <h1 className="page-title">{t('pages.applications.title')}</h1>
                     {unreadCount > 0 && (
-                        <span className="unread-badge">{unreadCount} yeni müraciət</span>
+                        <span className="unread-badge">{unreadCount} {t('pages.applications.unread').toLowerCase()}</span>
                     )}
                 </div>
             </div>
@@ -114,14 +119,14 @@ const Applications: React.FC = () => {
                     loading={loading}
                     onView={handleView}
                     onDelete={handleDelete}
-                    emptyMessage="Müraciət tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
             <Modal
                 isOpen={viewModalOpen}
                 onClose={() => setViewModalOpen(false)}
-                title="Müraciət Detalları"
+                title={t('pages.applications.viewDetails')}
                 size="md"
             >
                 {selectedApp && (
@@ -129,14 +134,14 @@ const Applications: React.FC = () => {
                         <div className="detail-row">
                             <FiUser />
                             <div>
-                                <span className="label">Ad Soyad</span>
+                                <span className="label">{t('pages.applications.name')}</span>
                                 <span className="value">{selectedApp.full_name}</span>
                             </div>
                         </div>
                         <div className="detail-row">
                             <FiMail />
                             <div>
-                                <span className="label">Email</span>
+                                <span className="label">{t('pages.applications.email')}</span>
                                 <a href={`mailto:${selectedApp.email}`} className="value link">
                                     {selectedApp.email}
                                 </a>
@@ -145,7 +150,7 @@ const Applications: React.FC = () => {
                         <div className="detail-row">
                             <FiPhone />
                             <div>
-                                <span className="label">Telefon</span>
+                                <span className="label">{t('pages.applications.phone')}</span>
                                 <a href={`tel:${selectedApp.phone}`} className="value link">
                                     {selectedApp.phone}
                                 </a>
@@ -154,16 +159,16 @@ const Applications: React.FC = () => {
                         <div className="detail-row">
                             <FiMessageCircle />
                             <div>
-                                <span className="label">Mesaj</span>
+                                <span className="label">{t('pages.applications.message')}</span>
                                 <p className="value message">{selectedApp.message}</p>
                             </div>
                         </div>
                         <div className="detail-row">
                             <FiCheck />
                             <div>
-                                <span className="label">Status</span>
+                                <span className="label">{t('pages.applications.status')}</span>
                                 <span className={`badge ${selectedApp.is_viewed ? 'success' : 'warning'}`}>
-                                    {selectedApp.is_viewed ? 'Oxunub' : 'Yeni'}
+                                    {selectedApp.is_viewed ? t('common.allLanguages') : t('pages.applications.unread')}
                                 </span>
                             </div>
                         </div>
@@ -171,7 +176,7 @@ const Applications: React.FC = () => {
                 )}
                 <div className="button-group right" style={{ marginTop: '24px' }}>
                     <CustomButton variant="secondary" onClick={() => setViewModalOpen(false)}>
-                        Bağla
+                        {t('common.close')}
                     </CustomButton>
                 </div>
             </Modal>
@@ -180,7 +185,7 @@ const Applications: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`Bu müraciəti silmək istədiyinizə əminsiniz?`}
+                message={t('pages.applications.deleteConfirm')}
                 loading={formLoading}
             />
         </div>

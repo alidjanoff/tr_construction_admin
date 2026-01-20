@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { projectsAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -28,6 +29,7 @@ interface GalleryImage {
 }
 
 const Projects: React.FC = () => {
+    const { t } = useTranslation();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -58,17 +60,16 @@ const Projects: React.FC = () => {
             const response = await projectsAPI.getAll();
             setProjects(response.data.data || []);
         } catch {
-            showToast('error', 'Layihələr yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
-    }, [showToast]);
+    }, [showToast, t]);
 
     useEffect(() => {
         fetchData();
     }, [fetchData]);
 
-    // Fetch project detail with gallery
     const fetchProjectDetail = async (projectId: string) => {
         try {
             const response = await projectsAPI.getOne(projectId);
@@ -76,7 +77,7 @@ const Projects: React.FC = () => {
                 setGalleryImages(response.data.image_gallery || []);
             }
         } catch {
-            showToast('error', 'Layihə detalları yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         }
     };
 
@@ -95,7 +96,6 @@ const Projects: React.FC = () => {
 
     const handleEdit = async (item: Project) => {
         setSelectedItem(item);
-        // Start with list data as initial values
         setFormData({
             title: item.title || createEmptyTranslation(languages),
             details: item.details || createEmptyTranslation(languages),
@@ -106,7 +106,6 @@ const Projects: React.FC = () => {
         setCoverFile(null);
         setModalOpen(true);
 
-        // Fetch full project details
         try {
             const response = await projectsAPI.getOne(item.id);
             if (response.data) {
@@ -118,11 +117,10 @@ const Projects: React.FC = () => {
                     address: projectDetail.address || createEmptyTranslation(languages),
                     map_url: projectDetail.map_url || '',
                 });
-                // Update selectedItem with full data including cover_image
                 setSelectedItem(prev => prev ? { ...prev, ...projectDetail } : null);
             }
         } catch {
-            showToast('error', 'Layihə detalları yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         }
     };
 
@@ -146,12 +144,12 @@ const Projects: React.FC = () => {
         const hasDetails = Object.values(formData.details).some(v => v && v.trim());
 
         if (!hasTitle || !hasDetails) {
-            showToast('error', 'Ən azı bir dildə başlıq və detalları daxil edin');
+            showToast('error', t('validation.atLeastOneLanguage'));
             return;
         }
 
         if (!selectedItem && !coverFile) {
-            showToast('error', 'Örtük şəkli yükləyin');
+            showToast('error', t('pages.projects.coverImage') + ' ' + t('validation.required').toLowerCase());
             return;
         }
 
@@ -174,16 +172,16 @@ const Projects: React.FC = () => {
 
             if (selectedItem) {
                 await projectsAPI.update(data);
-                showToast('success', 'Layihə yeniləndi');
+                showToast('success', t('messages.saveSuccess'));
             } else {
                 await projectsAPI.create(data);
-                showToast('success', 'Layihə əlavə edildi');
+                showToast('success', t('messages.saveSuccess'));
             }
 
             setModalOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Əməliyyat uğursuz oldu');
+            showToast('error', t('messages.saveError'));
         } finally {
             setFormLoading(false);
         }
@@ -195,17 +193,16 @@ const Projects: React.FC = () => {
         setFormLoading(true);
         try {
             await projectsAPI.delete(selectedItem.id);
-            showToast('success', 'Layihə silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setDeleteDialogOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Silmə uğursuz oldu');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setFormLoading(false);
         }
     };
 
-    // Gallery handlers
     const handleAddGalleryImages = async () => {
         if (!galleryProject || galleryFiles.length === 0) return;
 
@@ -217,11 +214,11 @@ const Projects: React.FC = () => {
             });
 
             await projectsAPI.addImages(galleryProject.id, data);
-            showToast('success', `${galleryFiles.length} şəkil əlavə edildi`);
+            showToast('success', t('messages.uploadSuccess'));
             setGalleryFiles([]);
             await fetchProjectDetail(galleryProject.id);
         } catch {
-            showToast('error', 'Şəkillər əlavə edilə bilmədi');
+            showToast('error', t('messages.uploadError'));
         } finally {
             setGalleryLoading(false);
         }
@@ -233,10 +230,10 @@ const Projects: React.FC = () => {
         setDeletingImageId(imageId);
         try {
             await projectsAPI.deleteImage(galleryProject.id, imageId);
-            showToast('success', 'Şəkil silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setGalleryImages(prev => prev.filter(img => img.id !== imageId));
         } catch {
-            showToast('error', 'Şəkil silinə bilmədi');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setDeletingImageId(null);
         }
@@ -244,17 +241,11 @@ const Projects: React.FC = () => {
 
     const handleGalleryFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
-        console.log('Files selected:', files);
         if (files && files.length > 0) {
             const fileArray = Array.from(files);
-            console.log('File array:', fileArray);
-            setGalleryFiles(prevFiles => {
-                const newFiles = [...prevFiles, ...fileArray];
-                console.log('New galleryFiles state:', newFiles);
-                return newFiles;
-            });
+            setGalleryFiles(prevFiles => [...prevFiles, ...fileArray]);
         }
-        e.target.value = ''; // Reset input
+        e.target.value = '';
     };
 
     const removeNewGalleryFile = (index: number) => {
@@ -264,7 +255,7 @@ const Projects: React.FC = () => {
     const columns = [
         {
             key: 'cover_image' as const,
-            header: 'Şəkil',
+            header: t('pages.projects.coverImage'),
             render: (item: Project) =>
                 item.cover_image ? (
                     <img
@@ -277,19 +268,19 @@ const Projects: React.FC = () => {
         },
         {
             key: 'title' as const,
-            header: 'Başlıq',
+            header: t('pages.projects.projectTitle'),
             render: (item: Project) => getDisplayText(item.title, '-')
         },
         {
             key: 'badge' as const,
-            header: 'Nişan',
+            header: t('pages.projects.badge'),
             render: (item: Project) => (
                 <span className="badge">{getDisplayText(item.badge, '-')}</span>
             )
         },
         {
             key: 'gallery' as const,
-            header: 'Qalereya',
+            header: t('pages.projects.gallery'),
             render: (item: Project) => (
                 <div onClick={(e) => e.stopPropagation()}>
                     <CustomButton
@@ -298,7 +289,7 @@ const Projects: React.FC = () => {
                         icon={<FiImage />}
                         onClick={() => handleOpenGallery(item)}
                     >
-                        Şəkillər
+                        {t('sidebar.projects')}
                     </CustomButton>
                 </div>
             )
@@ -308,9 +299,9 @@ const Projects: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Layihələr</h1>
+                <h1 className="page-title">{t('pages.projects.title')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Əlavə et
+                    {t('common.add')}
                 </CustomButton>
             </div>
 
@@ -321,15 +312,14 @@ const Projects: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Layihə tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
-            {/* Project Form Modal */}
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Layihəni Redaktə Et' : 'Yeni Layihə'}
+                title={selectedItem ? t('pages.projects.editProject') : t('pages.projects.newProject')}
                 size="lg"
             >
                 <form onSubmit={handleSubmit}>
@@ -337,17 +327,17 @@ const Projects: React.FC = () => {
                         <div className="form-col">
                             <TranslatableInput
                                 name="title"
-                                label="Başlıq"
+                                label={t('pages.projects.projectTitle')}
                                 value={formData.title}
                                 onChange={(value) => setFormData({ ...formData, title: value })}
-                                placeholder="Layihə başlığı"
+                                placeholder={t('pages.projects.projectTitle')}
                                 required
                             />
                         </div>
                         <div className="form-col">
                             <TranslatableInput
                                 name="badge"
-                                label="Nişan (Badge)"
+                                label={t('pages.projects.badge')}
                                 value={formData.badge}
                                 onChange={(value) => setFormData({ ...formData, badge: value })}
                                 placeholder="məs: Yeni, VIP, Tamamlandı"
@@ -357,11 +347,11 @@ const Projects: React.FC = () => {
 
                     <TranslatableInput
                         name="details"
-                        label="Detallar"
+                        label={t('pages.projects.details')}
                         value={formData.details}
                         onChange={(value) => setFormData({ ...formData, details: value })}
                         type="textarea"
-                        placeholder="Layihə haqqında ətraflı məlumat"
+                        placeholder={t('pages.projects.details')}
                         rows={4}
                         required
                     />
@@ -370,16 +360,16 @@ const Projects: React.FC = () => {
                         <div className="form-col">
                             <TranslatableInput
                                 name="address"
-                                label="Ünvan"
+                                label={t('pages.projects.address')}
                                 value={formData.address}
                                 onChange={(value) => setFormData({ ...formData, address: value })}
-                                placeholder="Layihə ünvanı"
+                                placeholder={t('pages.projects.address')}
                             />
                         </div>
                         <div className="form-col">
                             <CustomInput
                                 name="map_url"
-                                label="Xəritə URL"
+                                label={t('pages.projects.mapUrl')}
                                 value={formData.map_url}
                                 onChange={(e) => setFormData({ ...formData, map_url: e.target.value })}
                                 placeholder="Google Maps URL"
@@ -390,7 +380,7 @@ const Projects: React.FC = () => {
                     <div className="form-group">
                         <label>
                             <FiImage style={{ marginRight: '8px' }} />
-                            Örtük Şəkli
+                            {t('pages.projects.coverImage')}
                         </label>
                         <input
                             type="file"
@@ -412,27 +402,25 @@ const Projects: React.FC = () => {
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
-                            Ləğv et
+                            {t('common.cancel')}
                         </CustomButton>
                         <CustomButton type="submit" loading={formLoading}>
-                            {selectedItem ? 'Yenilə' : 'Əlavə et'}
+                            {selectedItem ? t('common.update') : t('common.add')}
                         </CustomButton>
                     </div>
                 </form>
             </Modal>
 
-            {/* Gallery Modal */}
             <Modal
                 isOpen={galleryModalOpen}
                 onClose={() => setGalleryModalOpen(false)}
-                title={`Qalereya - ${getDisplayText(galleryProject?.title, 'Layihə')}`}
+                title={`${t('pages.projects.gallery')} - ${getDisplayText(galleryProject?.title, t('sidebar.projects'))}`}
                 size="lg"
             >
                 <div className="gallery-modal-content">
-                    {/* Existing Images */}
                     <div className="gallery-section">
                         <h4 style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>
-                            Mövcud şəkillər ({galleryImages.length})
+                            {t('pages.projects.existingImages')} ({galleryImages.length})
                         </h4>
 
                         {galleryImages.length === 0 ? (
@@ -444,7 +432,7 @@ const Projects: React.FC = () => {
                                 color: 'var(--text-muted)'
                             }}>
                                 <FiImage size={32} style={{ marginBottom: '0.5rem', opacity: 0.5 }} />
-                                <p>Bu layihəyə hələ şəkil əlavə edilməyib</p>
+                                <p>{t('pages.projects.noImages')}</p>
                             </div>
                         ) : (
                             <div style={{
@@ -497,10 +485,9 @@ const Projects: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Add New Images */}
                     <div className="gallery-section" style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--medium-gray)' }}>
                         <h4 style={{ marginBottom: '1rem', color: 'var(--text-primary)' }}>
-                            Yeni şəkillər əlavə et
+                            {t('pages.projects.addNewImages')}
                         </h4>
 
                         <div style={{ marginBottom: '1rem' }}>
@@ -523,7 +510,7 @@ const Projects: React.FC = () => {
                                 onMouseLeave={(e) => e.currentTarget.style.background = '#1B5E3A'}
                             >
                                 <FiPlus size={18} />
-                                Şəkil seç
+                                {t('pages.projects.addImages')}
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -534,11 +521,6 @@ const Projects: React.FC = () => {
                             </label>
                         </div>
 
-                        {/* Debug info */}
-                        <p style={{ fontSize: '0.75rem', color: '#888', marginBottom: '0.5rem' }}>
-                            Seçilmiş fayl sayı: {galleryFiles.length}
-                        </p>
-
                         {galleryFiles.length > 0 && (
                             <div style={{
                                 marginTop: '1rem',
@@ -547,7 +529,7 @@ const Projects: React.FC = () => {
                                 borderRadius: '8px'
                             }}>
                                 <p style={{ marginBottom: '1rem', fontWeight: 500, color: 'var(--text-primary)' }}>
-                                    Seçilmiş şəkillər ({galleryFiles.length}):
+                                    {t('pages.projects.selectedImages')} ({galleryFiles.length}):
                                 </p>
                                 <div style={{
                                     display: 'grid',
@@ -606,7 +588,7 @@ const Projects: React.FC = () => {
                                     onClick={handleAddGalleryImages}
                                     loading={galleryLoading}
                                 >
-                                    {galleryFiles.length} şəkil yüklə
+                                    {t('pages.projects.uploadImages')}
                                 </CustomButton>
                             </div>
                         )}
@@ -618,7 +600,7 @@ const Projects: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getDisplayText(selectedItem?.title, '')}" layihəsini silmək istədiyinizə əminsiniz? Bu əməliyyat layihəyə aid bütün şəkilləri də siləcək.`}
+                message={t('pages.projects.deleteConfirm')}
                 loading={formLoading}
             />
         </div>

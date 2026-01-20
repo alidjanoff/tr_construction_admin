@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { workflowAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -27,6 +28,7 @@ const Workflow: React.FC = () => {
     const [formData, setFormData] = useState<WorkflowFormData>({ title: {}, details: {} });
     const [formLoading, setFormLoading] = useState(false);
 
+    const { t } = useTranslation();
     const { showToast } = useToast();
     const { languages } = useLanguages();
     const { getDisplayText } = useDisplayText();
@@ -143,7 +145,7 @@ const Workflow: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">İş Axını</h1>
+                <h1 className="page-title">{t('pages.workflow.title')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
                     Əlavə et
                 </CustomButton>
@@ -163,7 +165,7 @@ const Workflow: React.FC = () => {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'İş Axınını Redaktə Et' : 'Yeni İş Axını'}
+                title={selectedItem ? t('pages.workflow.editStep') : t('pages.workflow.newStep')}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>

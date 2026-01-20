@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { partnersAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -27,6 +28,7 @@ const Partners: React.FC = () => {
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [formLoading, setFormLoading] = useState(false);
 
+    const { t } = useTranslation();
     const { showToast } = useToast();
     const { languages } = useLanguages();
     const { getDisplayText } = useDisplayText();
@@ -36,13 +38,13 @@ const Partners: React.FC = () => {
             const response = await partnersAPI.getAll();
             setPartners(response.data || []);
         } catch {
-            showToast('error', 'Partnyorlar yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
     };
 
-    const fetchDataCallback = React.useCallback(fetchData, [showToast]);
+    const fetchDataCallback = React.useCallback(fetchData, [showToast, t]);
 
     useEffect(() => {
         fetchDataCallback();
@@ -77,12 +79,12 @@ const Partners: React.FC = () => {
         const hasTitle = Object.values(formData.title).some(v => v && v.trim());
 
         if (!hasTitle) {
-            showToast('error', 'Ən azı bir dildə başlıq daxil edin');
+            showToast('error', t('validation.atLeastOneLanguage'));
             return;
         }
 
         if (!selectedItem && !imageFile) {
-            showToast('error', 'Şəkil yükləyin');
+            showToast('error', t('pages.partners.logo') + ' ' + t('validation.required').toLowerCase());
             return;
         }
 
@@ -101,16 +103,16 @@ const Partners: React.FC = () => {
 
             if (selectedItem) {
                 await partnersAPI.update(data);
-                showToast('success', 'Partnyor yeniləndi');
+                showToast('success', t('messages.saveSuccess'));
             } else {
                 await partnersAPI.create(data);
-                showToast('success', 'Partnyor əlavə edildi');
+                showToast('success', t('messages.saveSuccess'));
             }
 
             setModalOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Əməliyyat uğursuz oldu');
+            showToast('error', t('messages.saveError'));
         } finally {
             setFormLoading(false);
         }
@@ -122,11 +124,11 @@ const Partners: React.FC = () => {
         setFormLoading(true);
         try {
             await partnersAPI.delete(selectedItem.id);
-            showToast('success', 'Partnyor silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setDeleteDialogOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Silmə uğursuz oldu');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setFormLoading(false);
         }
@@ -135,13 +137,13 @@ const Partners: React.FC = () => {
     const columns = [
         {
             key: 'image' as const,
-            header: 'Logo',
+            header: t('pages.partners.logo'),
             render: (item: Partner) =>
                 item.image ? <img src={item.image} alt="" className="table-icon" style={{ width: 60, height: 40, objectFit: 'contain' }} /> : '-'
         },
         {
             key: 'title' as const,
-            header: 'Ad',
+            header: t('pages.partners.partnerName'),
             render: (item: Partner) => getDisplayText(item.title, '-')
         },
     ];
@@ -149,9 +151,9 @@ const Partners: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Partnyorlar</h1>
+                <h1 className="page-title">{t('sidebar.partners')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Əlavə et
+                    {t('common.add')}
                 </CustomButton>
             </div>
 
@@ -162,28 +164,28 @@ const Partners: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Partnyor tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Partnyoru Redaktə Et' : 'Yeni Partnyor'}
+                title={selectedItem ? t('pages.partners.editPartner') : t('pages.partners.newPartner')}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <TranslatableInput
                         name="title"
-                        label="Ad"
+                        label={t('pages.partners.partnerName')}
                         value={formData.title}
                         onChange={(value) => setFormData({ ...formData, title: value })}
-                        placeholder="Partnyor şirkət adı"
+                        placeholder={t('pages.partners.partnerName')}
                         required
                     />
 
                     <div className="form-group">
-                        <label>Logo</label>
+                        <label>{t('pages.partners.logo')}</label>
                         <input
                             type="file"
                             accept="image/*"
@@ -197,10 +199,10 @@ const Partners: React.FC = () => {
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
-                            Ləğv et
+                            {t('common.cancel')}
                         </CustomButton>
                         <CustomButton type="submit" loading={formLoading}>
-                            {selectedItem ? 'Yenilə' : 'Əlavə et'}
+                            {selectedItem ? t('common.update') : t('common.add')}
                         </CustomButton>
                     </div>
                 </form>
@@ -210,7 +212,7 @@ const Partners: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getDisplayText(selectedItem?.title, '')}" partnyorunu silmək istədiyinizə əminsiniz?`}
+                message={t('pages.partners.deleteConfirm')}
                 loading={formLoading}
             />
         </div>

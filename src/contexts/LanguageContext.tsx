@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { languagesAPI } from '../services/api';
 import { getDisplayLanguage, setDisplayLanguage as setDisplayLang } from '../utils/displayLanguage';
 import type { Language } from '../types';
@@ -16,6 +17,7 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+    const { i18n } = useTranslation();
     const [languages, setLanguages] = useState<Language[]>([]);
     const [loading, setLoading] = useState(true);
     const [displayLanguage, setDisplayLanguageState] = useState<string | null>(() => {
@@ -58,6 +60,14 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     const setDisplayLanguage = (lang: string | null) => {
         setDisplayLanguageState(lang);
         setDisplayLang(lang); // Sync with utils module for axios interceptor
+
+        // Change i18n language for static text translations
+        if (lang) {
+            i18n.changeLanguage(lang);
+        } else {
+            // If null (ALL), use 'az' as default for UI
+            i18n.changeLanguage('az');
+        }
     };
 
     return (

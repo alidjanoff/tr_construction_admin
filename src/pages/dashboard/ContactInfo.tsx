@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { contactInfoAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -21,14 +22,8 @@ interface ContactInfoFormData {
     contact_type: string;
 }
 
-const contactTypes = [
-    { value: 'address', label: 'Ünvan', icon: <FiMapPin /> },
-    { value: 'phone', label: 'Telefon', icon: <FiPhone /> },
-    { value: 'email', label: 'E-poçt', icon: <FiMail /> },
-    { value: 'working_hours', label: 'İş Saatları', icon: <FiClock /> },
-];
-
 const ContactInfo: React.FC = () => {
+    const { t } = useTranslation();
     const [contactInfos, setContactInfos] = useState<ContactInfoType[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -46,16 +41,23 @@ const ContactInfo: React.FC = () => {
     const { languages } = useLanguages();
     const { getDisplayText } = useDisplayText();
 
+    const contactTypes = React.useMemo(() => [
+        { value: 'address', label: t('pages.contact.types.address'), icon: <FiMapPin /> },
+        { value: 'phone', label: t('pages.contact.types.phone'), icon: <FiPhone /> },
+        { value: 'email', label: t('pages.contact.types.email'), icon: <FiMail /> },
+        { value: 'working_hours', label: t('pages.contact.types.workingHours'), icon: <FiClock /> },
+    ], [t]);
+
     const fetchData = React.useCallback(async () => {
         try {
             const response = await contactInfoAPI.getAll();
             setContactInfos(response.data || []);
         } catch {
-            showToast('error', 'Əlaqə məlumatları yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
-    }, [showToast]);
+    }, [showToast, t]);
 
     useEffect(() => {
         fetchData();
@@ -95,7 +97,7 @@ const ContactInfo: React.FC = () => {
         const hasDetail = Object.values(formData.detail).some(v => v && v.trim());
 
         if (!hasTitle || !hasDetail) {
-            showToast('error', 'Ən azı bir dildə başlıq və detal daxil edin');
+            showToast('error', t('validation.atLeastOneLanguage'));
             return;
         }
 
@@ -110,16 +112,16 @@ const ContactInfo: React.FC = () => {
 
             if (selectedItem) {
                 await contactInfoAPI.update({ id: selectedItem.id, ...payload });
-                showToast('success', 'Əlaqə məlumatı yeniləndi');
+                showToast('success', t('messages.saveSuccess'));
             } else {
                 await contactInfoAPI.create(payload);
-                showToast('success', 'Əlaqə məlumatı əlavə edildi');
+                showToast('success', t('messages.saveSuccess'));
             }
 
             setModalOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Əməliyyat uğursuz oldu');
+            showToast('error', t('messages.saveError'));
         } finally {
             setFormLoading(false);
         }
@@ -131,11 +133,11 @@ const ContactInfo: React.FC = () => {
         setFormLoading(true);
         try {
             await contactInfoAPI.delete(selectedItem.id);
-            showToast('success', 'Əlaqə məlumatı silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setDeleteDialogOpen(false);
             fetchData();
         } catch {
-            showToast('error', 'Silmə uğursuz oldu');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setFormLoading(false);
         }
@@ -148,7 +150,7 @@ const ContactInfo: React.FC = () => {
     const columns = [
         {
             key: 'contact_type' as const,
-            header: 'Tip',
+            header: t('pages.contact.type'),
             render: (item: ContactInfoType) => {
                 const typeInfo = getContactTypeInfo(item.contact_type);
                 return (
@@ -161,12 +163,12 @@ const ContactInfo: React.FC = () => {
         },
         {
             key: 'title' as const,
-            header: 'Başlıq',
+            header: t('pages.contact.contactTitle'),
             render: (item: ContactInfoType) => getDisplayText(item.title, '-')
         },
         {
             key: 'detail' as const,
-            header: 'Detal',
+            header: t('pages.contact.detail'),
             render: (item: ContactInfoType) => getDisplayText(item.detail, '-')
         },
     ];
@@ -174,9 +176,9 @@ const ContactInfo: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Əlaqə Məlumatları</h1>
+                <h1 className="page-title">{t('pages.contact.title')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Əlavə et
+                    {t('common.add')}
                 </CustomButton>
             </div>
 
@@ -187,19 +189,19 @@ const ContactInfo: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Əlaqə məlumatı tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Əlaqə Məlumatını Redaktə Et' : 'Yeni Əlaqə Məlumatı'}
+                title={selectedItem ? t('pages.contact.editContact') : t('pages.contact.newContact')}
                 size="md"
             >
                 <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Tip</label>
+                        <label>{t('pages.contact.type')}</label>
                         <select
                             value={formData.contact_type}
                             onChange={(e) => setFormData({ ...formData, contact_type: e.target.value })}
@@ -215,26 +217,26 @@ const ContactInfo: React.FC = () => {
 
                     <TranslatableInput
                         name="title"
-                        label="Başlıq"
+                        label={t('pages.contact.contactTitle')}
                         value={formData.title}
                         onChange={(value) => setFormData({ ...formData, title: value })}
-                        placeholder="məs: Ünvan, Telefon, E-poçt"
+                        placeholder={t('pages.contact.contactTitle')}
                         required
                     />
 
                     <TranslatableInput
                         name="detail"
-                        label="Detal"
+                        label={t('pages.contact.detail')}
                         value={formData.detail}
                         onChange={(value) => setFormData({ ...formData, detail: value })}
-                        placeholder="Əlaqə məlumatı"
+                        placeholder={t('pages.contact.detail')}
                         required
                     />
 
                     {formData.contact_type === 'address' && (
                         <CustomInput
                             name="url"
-                            label="URL (İstəyə bağlı)"
+                            label={t('pages.contact.url')}
                             value={formData.url}
                             onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                             placeholder="https://maps.google.com/..."
@@ -244,10 +246,10 @@ const ContactInfo: React.FC = () => {
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
-                            Ləğv et
+                            {t('common.cancel')}
                         </CustomButton>
                         <CustomButton type="submit" loading={formLoading}>
-                            {selectedItem ? 'Yenilə' : 'Əlavə et'}
+                            {selectedItem ? t('common.update') : t('common.add')}
                         </CustomButton>
                     </div>
                 </form>
@@ -257,7 +259,7 @@ const ContactInfo: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${getDisplayText(selectedItem?.title, '')}" əlaqə məlumatını silmək istədiyinizə əminsiniz?`}
+                message={t('pages.contact.deleteConfirm')}
                 loading={formLoading}
             />
         </div>

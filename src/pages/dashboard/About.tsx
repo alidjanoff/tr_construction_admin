@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { aboutAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -31,6 +32,7 @@ const About: React.FC = () => {
     const [currentImage, setCurrentImage] = useState<string>('');
     const [imageFile, setImageFile] = useState<File | null>(null);
 
+    const { t } = useTranslation();
     const { showToast } = useToast();
     const { languages } = useLanguages();
 
@@ -56,7 +58,7 @@ const About: React.FC = () => {
                 });
             }
         } catch {
-            showToast('error', 'Haqqımızda bölməsi yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
@@ -97,11 +99,11 @@ const About: React.FC = () => {
                 await aboutAPI.create(data);
             }
 
-            showToast('success', 'Haqqımızda bölməsi yeniləndi');
+            showToast('success', t('messages.saveSuccess'));
             fetchData();
             setImageFile(null);
         } catch {
-            showToast('error', 'Yeniləmə uğursuz oldu');
+            showToast('error', t('messages.saveError'));
         } finally {
             setSaving(false);
         }
@@ -118,7 +120,7 @@ const About: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Haqqımızda</h1>
+                <h1 className="page-title">{t('pages.about.title')}</h1>
             </div>
 
             <div className="card">
@@ -206,7 +208,7 @@ const About: React.FC = () => {
 
                         <div className="button-group right" style={{ marginTop: '1.5rem' }}>
                             <CustomButton type="submit" icon={<FiSave />} loading={saving}>
-                                Yadda saxla
+                                {t('common.save')}
                             </CustomButton>
                         </div>
                     </form>

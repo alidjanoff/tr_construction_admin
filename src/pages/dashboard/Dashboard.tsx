@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { projectsAPI, applicationsAPI } from '../../services/api';
 import {
@@ -17,6 +18,7 @@ interface Stats {
 }
 
 const Dashboard: React.FC = () => {
+    const { t } = useTranslation();
     const { user, isSuperAdmin } = useAuth();
     const [loading, setLoading] = useState(true);
     const [stats, setStats] = useState<Stats>({
@@ -62,9 +64,9 @@ const Dashboard: React.FC = () => {
     return (
         <div className="page-content dashboard">
             <div className="welcome-section">
-                <h2>Xoş gəldiniz, {user?.full_name}!</h2>
+                <h2>{t('pages.dashboard.welcome')}, {user?.full_name}!</h2>
                 <p className="role-badge">
-                    {isSuperAdmin ? 'Super Admin' : 'Admin'}
+                    {isSuperAdmin ? t('pages.users.roles.superAdmin') : t('pages.users.roles.admin')}
                 </p>
             </div>
 
@@ -75,7 +77,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="stat-content">
                         <span className="stat-value">{stats.projects}</span>
-                        <span className="stat-label">Layihələr</span>
+                        <span className="stat-label">{t('sidebar.projects')}</span>
                     </div>
                 </div>
 
@@ -85,7 +87,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="stat-content">
                         <span className="stat-value">{stats.applications}</span>
-                        <span className="stat-label">Müraciətlər</span>
+                        <span className="stat-label">{t('sidebar.applications')}</span>
                     </div>
                 </div>
 
@@ -95,7 +97,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="stat-content">
                         <span className="stat-value">{stats.unreadApplications}</span>
-                        <span className="stat-label">Oxunmamış Müraciət</span>
+                        <span className="stat-label">{t('pages.applications.unread')}</span>
                     </div>
                 </div>
 
@@ -106,7 +108,7 @@ const Dashboard: React.FC = () => {
                         </div>
                         <div className="stat-content">
                             <span className="stat-value">-</span>
-                            <span className="stat-label">İstifadəçilər</span>
+                            <span className="stat-label">{t('sidebar.users')}</span>
                         </div>
                     </div>
                 )}
@@ -115,21 +117,21 @@ const Dashboard: React.FC = () => {
             <div className="quick-info">
                 <div className="card">
                     <div className="card-header">
-                        <h3>Sistem Məlumatları</h3>
+                        <h3>{t('pages.dashboard.systemInfo')}</h3>
                     </div>
                     <div className="card-body">
                         <div className="info-grid">
                             <div className="info-item">
-                                <span className="info-label">Admin Email:</span>
+                                <span className="info-label">{t('auth.email')}:</span>
                                 <span className="info-value">{user?.email}</span>
                             </div>
                             <div className="info-item">
-                                <span className="info-label">Rol:</span>
+                                <span className="info-label">{t('pages.users.role')}:</span>
                                 <span className="info-value">{user?.role}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">API Status:</span>
-                                <span className="badge success">Aktiv</span>
+                                <span className="badge success">{t('pages.dashboard.active')}</span>
                             </div>
                         </div>
                     </div>

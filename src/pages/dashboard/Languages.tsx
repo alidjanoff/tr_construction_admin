@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { languagesAPI } from '../../services/api';
 import { useLanguages } from '../../contexts/LanguageContext';
@@ -23,6 +24,7 @@ const getIdString = (id: unknown): string => {
 };
 
 const Languages: React.FC = () => {
+    const { t } = useTranslation();
     const [languages, setLanguages] = useState<Language[]>([]);
     const [loading, setLoading] = useState(true);
     const [modalOpen, setModalOpen] = useState(false);
@@ -39,11 +41,11 @@ const Languages: React.FC = () => {
             const response = await languagesAPI.getAll();
             setLanguages(response.data || []);
         } catch {
-            showToast('error', 'Dillər yüklənə bilmədi');
+            showToast('error', t('messages.loadError'));
         } finally {
             setLoading(false);
         }
-    }, [showToast]);
+    }, [showToast, t]);
 
     useEffect(() => {
         fetchData();
@@ -72,12 +74,12 @@ const Languages: React.FC = () => {
         const langCode = formData.lang.trim().toLowerCase();
 
         if (!langCode || langCode.length < 2 || langCode.length > 3) {
-            showToast('error', 'Dil kodu 2-3 simvoldan ibarət olmalıdır (məs: az, en, tr)');
+            showToast('error', t('validation.required'));
             return;
         }
 
         if (!/^[a-z]{2,3}$/.test(langCode)) {
-            showToast('error', 'Dil kodu yalnız kiçik hərflərdən ibarət olmalıdır');
+            showToast('error', t('validation.required'));
             return;
         }
 
@@ -88,18 +90,18 @@ const Languages: React.FC = () => {
                     id: selectedItem.id,
                     lang: langCode,
                 });
-                showToast('success', 'Dil yeniləndi');
+                showToast('success', t('messages.saveSuccess'));
             } else {
                 await languagesAPI.create({ lang: langCode });
-                showToast('success', 'Dil əlavə edildi');
+                showToast('success', t('messages.saveSuccess'));
             }
 
             setModalOpen(false);
             fetchData();
-            refreshLanguages(); // Refresh global language context
+            refreshLanguages();
         } catch (error: unknown) {
             const err = error as { response?: { data?: { message?: string } } };
-            const message = err.response?.data?.message || 'Əməliyyat uğursuz oldu';
+            const message = err.response?.data?.message || t('messages.saveError');
             showToast('error', message);
         } finally {
             setFormLoading(false);
@@ -112,12 +114,12 @@ const Languages: React.FC = () => {
         setFormLoading(true);
         try {
             await languagesAPI.delete(selectedItem.id);
-            showToast('success', 'Dil silindi');
+            showToast('success', t('messages.deleteSuccess'));
             setDeleteDialogOpen(false);
             fetchData();
-            refreshLanguages(); // Refresh global language context
+            refreshLanguages();
         } catch {
-            showToast('error', 'Silmə uğursuz oldu');
+            showToast('error', t('messages.deleteError'));
         } finally {
             setFormLoading(false);
         }
@@ -126,7 +128,7 @@ const Languages: React.FC = () => {
     const columns = [
         {
             key: 'lang' as const,
-            header: 'Dil Kodu',
+            header: t('pages.languages.langCode'),
             render: (item: Language) => (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <FiGlobe />
@@ -148,18 +150,15 @@ const Languages: React.FC = () => {
     return (
         <div className="page-content crud-page">
             <div className="page-header">
-                <h1 className="page-title">Dillər</h1>
+                <h1 className="page-title">{t('sidebar.languages')}</h1>
                 <CustomButton icon={<FiPlus />} onClick={handleAdd}>
-                    Yeni Dil
+                    {t('pages.languages.newLanguage')}
                 </CustomButton>
             </div>
 
             <div className="info-banner">
                 <FiGlobe />
-                <p>
-                    Burada əlavə etdiyiniz dillər bütün məzmun idarəetmə səhifələrində görünəcək.
-                    Hər bir məzmun sahəsində (başlıq, təsvir və s.) bu dillərdə məlumat daxil edə biləcəksiniz.
-                </p>
+                <p>{t('pages.languages.info')}</p>
             </div>
 
             <div className="card">
@@ -169,20 +168,20 @@ const Languages: React.FC = () => {
                     loading={loading}
                     onEdit={handleEdit}
                     onDelete={handleDelete}
-                    emptyMessage="Dil tapılmadı"
+                    emptyMessage={t('common.noData')}
                 />
             </div>
 
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={selectedItem ? 'Dili Redaktə Et' : 'Yeni Dil'}
+                title={selectedItem ? t('pages.languages.editLanguage') : t('pages.languages.newLanguage')}
                 size="sm"
             >
                 <form onSubmit={handleSubmit}>
                     <CustomInput
                         name="lang"
-                        label="Dil Kodu"
+                        label={t('pages.languages.langCode')}
                         placeholder="məs: az, en, tr, ru"
                         value={formData.lang}
                         onChange={(e) => setFormData({ lang: e.target.value.toLowerCase() })}
@@ -190,16 +189,16 @@ const Languages: React.FC = () => {
                     />
 
                     <div className="form-hint">
-                        <p>İSO 639-1 standartına uyğun 2-3 simvollu dil kodu daxil edin.</p>
-                        <p>Nümunələr: az (Azərbaycan), en (İngilis), tr (Türk), ru (Rus)</p>
+                        <p>{t('pages.languages.hint')}</p>
+                        <p>{t('pages.languages.examples')}</p>
                     </div>
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>
-                            Ləğv et
+                            {t('common.cancel')}
                         </CustomButton>
                         <CustomButton type="submit" loading={formLoading}>
-                            {selectedItem ? 'Yenilə' : 'Əlavə et'}
+                            {selectedItem ? t('common.update') : t('common.add')}
                         </CustomButton>
                     </div>
                 </form>
@@ -209,7 +208,7 @@ const Languages: React.FC = () => {
                 isOpen={deleteDialogOpen}
                 onClose={() => setDeleteDialogOpen(false)}
                 onConfirm={handleConfirmDelete}
-                message={`"${selectedItem?.lang.toUpperCase()}" dilini silmək istədiyinizə əminsiniz? Bu dildəki bütün tərcümələr əlçatmaz olacaq.`}
+                message={t('pages.languages.deleteConfirm')}
                 loading={formLoading}
             />
         </div>
