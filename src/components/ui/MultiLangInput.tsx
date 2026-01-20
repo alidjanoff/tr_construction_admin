@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import type { MultiLang } from '../../types';
+// import type { MultiLang } from '../../types';
 import './MultiLangInput.scss';
 
 interface MultiLangInputProps {
     label: string;
     name: string;
-    value: MultiLang;
-    onChange: (value: MultiLang) => void;
+    // value: MultiLang;
+    value: any;
+    onChange: (value: any) => void;
+    // onChange: (value: MultiLang) => void;
     placeholder?: string;
     required?: boolean;
     type?: 'input' | 'textarea';

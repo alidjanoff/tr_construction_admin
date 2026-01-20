@@ -12,7 +12,7 @@ export default defineConfig({
     host: true,
     port: 4175,
     allowedHosts: [
-      'stg-api-admin.trmmc.az'
+     'admin.trmmc.az' ,'stg-api-admin.trmmc.az'
     ]
   },
 })

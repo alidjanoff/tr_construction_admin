@@ -1,0 +1,8 @@
+echo "Installing dependencies..."
+npm install
+echo "✅ Dependency installation completed"
+
+echo "Building the project..."
+npm run build
+echo "✅ Build completed successfully"
+echo "🚀 Build ready for deployment"
