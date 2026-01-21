@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../assets/scss/variables' as *;
 @use '../../assets/scss/mixins' as *;
 
@@ -49,7 +50,7 @@
             position: absolute;
             inset: 0;
             border-radius: $radius-full;
-            background: rgba($black, 0.5);
+            background: color.change($black, $alpha: 0.5);
             @include flex-center;
             opacity: 0;
             transition: opacity $transition-base;

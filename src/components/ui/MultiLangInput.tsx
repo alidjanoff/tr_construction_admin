@@ -5,9 +5,8 @@ import './MultiLangInput.scss';
 interface MultiLangInputProps {
     label: string;
     name: string;
-    // value: MultiLang;
-    value: any;
-    onChange: (value: any) => void;
+    value: Record<string, string>;
+    onChange: (value: Record<string, string>) => void;
     // onChange: (value: MultiLang) => void;
     placeholder?: string;
     required?: boolean;

@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../assets/scss/variables' as *;
 @use '../../assets/scss/mixins' as *;
 
@@ -94,7 +95,7 @@
             transition: all $transition-fast;
 
             &:hover {
-                background: darken($light-gray, 5%);
+                background: color.adjust($light-gray, $lightness: -5%);
                 border-color: $medium-gray;
             }
 
@@ -163,7 +164,7 @@
             }
 
             &.active {
-                background: rgba($primary-color, 0.1);
+                background: color.change($primary-color, $alpha: 0.1);
 
                 .lang-code {
                     background: $primary-color;

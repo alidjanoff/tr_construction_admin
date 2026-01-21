@@ -1,3 +1,4 @@
+@use 'sass:color';
 @use '../../assets/scss/variables' as *;
 @use '../../assets/scss/mixins' as *;
 
@@ -54,7 +55,7 @@
         display: flex;
         align-items: center;
         padding: $spacing-5 $spacing-6;
-        border-bottom: 1px solid rgba($white, 0.1);
+        border-bottom: 1px solid color.change($white, $alpha: 0.1);
     }
 
     &-logo {
@@ -86,7 +87,7 @@
         padding: $spacing-3 $spacing-4;
         margin-bottom: $spacing-1;
         border-radius: $radius-md;
-        color: rgba($white, 0.7);
+        color: color.change($white, $alpha: 0.7);
         text-decoration: none;
         transition: all $transition-fast;
 

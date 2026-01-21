@@ -62,7 +62,7 @@ const About: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [languages, showToast]);
+    }, [languages, showToast, t]);
 
     useEffect(() => {
         if (languages.length > 0) {

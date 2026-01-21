@@ -2,6 +2,7 @@
 // TR Construction Dashboard - SCSS Mixins
 // ===================================
 
+@use 'sass:color';
 @use 'variables' as *;
 
 // Flexbox
@@ -67,7 +68,7 @@
     border: 1px solid $primary-color;
 
     &:hover:not(:disabled) {
-        background: rgba($primary-color, 0.1);
+        background: color.change($primary-color, $alpha: 0.1);
     }
 }
 
@@ -77,7 +78,7 @@
     color: $white;
 
     &:hover:not(:disabled) {
-        background: darken($error, 10%);
+        background: color.adjust($error, $lightness: -10%);
         box-shadow: $shadow-md;
     }
 }
@@ -101,7 +102,7 @@
 
     &:focus {
         border-color: $primary-color;
-        box-shadow: 0 0 0 3px rgba($primary-color, 0.1);
+        box-shadow: 0 0 0 3px color.change($primary-color, $alpha: 0.1);
     }
 
     &:disabled {
@@ -113,7 +114,7 @@
         border-color: $error;
 
         &:focus {
-            box-shadow: 0 0 0 3px rgba($error, 0.1);
+            box-shadow: 0 0 0 3px color.change($error, $alpha: 0.1);
         }
     }
 }
@@ -195,11 +196,11 @@
     }
 
     &::-webkit-scrollbar-thumb {
-        background: rgba($dark-gray, 0.3);
+        background: color.change($dark-gray, $alpha: 0.3);
         border-radius: $radius-full;
 
         &:hover {
-            background: rgba($dark-gray, 0.5);
+            background: color.change($dark-gray, $alpha: 0.5);
         }
     }
 }
@@ -239,7 +240,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba($black, 0.5);
+    background: color.change($black, $alpha: 0.5);
     backdrop-filter: blur(4px);
     z-index: $z-modal-backdrop;
     @include flex-center;

@@ -59,7 +59,7 @@ const Hero: React.FC = () => {
         } finally {
             setLoading(false);
         }
-    }, [showToast]);
+    }, [showToast, t]);
 
     useEffect(() => {
         if (languages.length > 0) {

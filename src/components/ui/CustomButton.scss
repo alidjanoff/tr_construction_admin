@@ -27,7 +27,7 @@
         border: 1px solid $primary-color;
 
         &:hover:not(:disabled) {
-            background: rgba($primary-color, 0.1);
+            background: color.change($primary-color, $alpha: 0.1);
         }
     }
 
