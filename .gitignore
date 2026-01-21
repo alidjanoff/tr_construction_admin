@@ -93,7 +93,6 @@ dist
 
 # Gatsby files
 .cache/
-public
 
 # vuepress build output
 .vuepress/dist
@@ -158,7 +157,3 @@ postman/
 # Documentation files
 *.docx
 *.doc
-
-# Uploaded files (keep directory structure)
-public/uploads/*
-!public/uploads/.gitkeep

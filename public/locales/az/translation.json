@@ -1,0 +1,244 @@
+{
+    "common": {
+        "add": "Əlavə et",
+        "edit": "Redaktə et",
+        "delete": "Sil",
+        "save": "Yadda saxla",
+        "cancel": "Ləğv et",
+        "update": "Yenilə",
+        "close": "Bağla",
+        "loading": "Yüklənir...",
+        "search": "Axtar",
+        "actions": "Əməliyyatlar",
+        "yes": "Hə",
+        "no": "Yox",
+        "confirm": "Təsdiqlə",
+        "all": "Hamısı",
+        "noData": "Məlumat tapılmadı",
+        "error": "Xəta baş verdi",
+        "success": "Əməliyyat uğurla tamamlandı",
+        "logout": "Çıxış",
+        "allLanguages": "Bütün dillər",
+        "back": "Geri",
+        "allRightsReserved": "Bütün hüquqlar qorunur."
+    },
+    "sidebar": {
+        "dashboard": "İdarə Paneli",
+        "hero": "Əsas Slayder",
+        "about": "Haqqımızda",
+        "stats": "Statistika",
+        "services": "Xidmətlər",
+        "testimonials": "Rəylər",
+        "workflow": "İş Prosesi",
+        "projects": "Layihələr",
+        "partners": "Tərəfdaşlar",
+        "contact": "Əlaqə Məlumatları",
+        "socials": "Sosial Şəbəkələr",
+        "languages": "Dillər",
+        "applications": "Müraciətlər",
+        "mapUrl": "Xəritə Koordinatları",
+        "users": "İstifadəçilər",
+        "profile": "Profil",
+        "settings": "Tənzimləmələr"
+    },
+    "pages": {
+        "hero": {
+            "title": "Əsas Slayder",
+            "slides": "Slaydlar",
+            "noSlides": "Slayd tapılmadı",
+            "addSlide": "Yeni slayd əlavə et",
+            "editSlide": "Slaydı redaktə et",
+            "newSlide": "Yeni Slayd",
+            "slideTitle": "Slayd Başlığı",
+            "slideInfo": "Slayd Məlumatı",
+            "buttonText": "Düymə Mətni",
+            "buttonUrl": "Düymə Linki",
+            "image": "Şəkil",
+            "selectImage": "Şəkil seçin",
+            "deleteConfirm": "Bu slaydı silmək istədiyinizə əminsiniz?"
+        },
+        "about": {
+            "title": "Haqqımızda",
+            "heading": "Başlıq",
+            "info": "Məlumat",
+            "image": "Şəkil"
+        },
+        "stats": {
+            "title": "Statistika",
+            "count": "Say",
+            "detail": "Təfərrüat",
+            "newStat": "Yeni Statistika",
+            "editStat": "Statistikanı Redaktə et",
+            "deleteConfirm": "Bu statistikanı silmək istədiyinizə əminsiniz?"
+        },
+        "services": {
+            "title": "Xidmətlər",
+            "serviceTitle": "Xidmət Adı",
+            "info": "Məlumat",
+            "newService": "Yeni Xidmət",
+            "editService": "Xidməti Redaktə et",
+            "deleteConfirm": "Bu xidməti silmək istədiyinizə əminsiniz?"
+        },
+        "testimonials": {
+            "title": "Rəylər",
+            "customerName": "Müştəri Adı",
+            "customerType": "Müştəri Növü",
+            "review": "Rəy",
+            "newReview": "Yeni Rəy",
+            "editReview": "Rəyi Redaktə et",
+            "deleteConfirm": "Bu rəyi silmək istədiyinizə əminsiniz?"
+        },
+        "workflow": {
+            "title": "İş Prosesi",
+            "stepTitle": "Mərhələ Adı",
+            "details": "Detallar",
+            "newStep": "Yeni Mərhələ",
+            "editStep": "Mərhələni Redaktə et",
+            "deleteConfirm": "Bu mərhələni silmək istədiyinizə əminsiniz?"
+        },
+        "projects": {
+            "title": "Layihələr",
+            "projectTitle": "Layihə Adı",
+            "details": "Detallar",
+            "badge": "Nişan (Etiket)",
+            "address": "Ünvan",
+            "mapUrl": "Xəritə Linki",
+            "coverImage": "Üz qabığı şəkli",
+            "gallery": "Qalereya",
+            "images": "Şəkillər",
+            "newProject": "Yeni Layihə",
+            "editProject": "Layihəni Redaktə et",
+            "addImages": "Şəkil əlavə et",
+            "uploadImages": "şəkilləri yüklə",
+            "selectedImages": "Seçilmiş şəkillər",
+            "existingImages": "Mövcud şəkillər",
+            "addNewImages": "Yeni şəkillər əlavə et",
+            "noImages": "Bu layihəyə hələ heç bir şəkil əlavə edilməyib",
+            "deleteConfirm": "Bu layihəni silmək istədiyinizə əminsiniz? Bu, əlaqəli bütün şəkilləri də siləcək."
+        },
+        "partners": {
+            "title": "Tərəfdaşlar",
+            "partnerName": "Tərəfdaş Adı",
+            "logo": "Loqo",
+            "newPartner": "Yeni Tərəfdaş",
+            "editPartner": "Tərəfdaşı Redaktə et",
+            "deleteConfirm": "Bu tərəfdaşı silmək istədiyinizə əminsiniz?"
+        },
+        "contact": {
+            "title": "Əlaqə Məlumatları",
+            "contactTitle": "Başlıq",
+            "detail": "Təfərrüat",
+            "type": "Növ",
+            "url": "Link (Könüllü)",
+            "types": {
+                "address": "Ünvan",
+                "phone": "Telefon",
+                "email": "E-poçt",
+                "workingHours": "İş Saatları"
+            },
+            "newContact": "Yeni Əlaqə Məlumatı",
+            "editContact": "Əlaqə Məlumatını Redaktə et",
+            "deleteConfirm": "Bu əlaqə məlumatını silmək istədiyinizə əminsiniz?"
+        },
+        "socials": {
+            "title": "Sosial Şəbəkələr",
+            "platform": "Platforma",
+            "url": "Link",
+            "newSocial": "Yeni Sosial Şəbəkə",
+            "editSocial": "Sosial Şəbəkəni Redaktə et",
+            "deleteConfirm": "Bu sosial şəbəkəni silmək istədiyinizə əminsiniz?"
+        },
+        "languages": {
+            "title": "Dillər",
+            "languageCode": "Dil Kodu",
+            "newLanguage": "Yeni Dil",
+            "editLanguage": "Dili Redaktə et",
+            "deleteConfirm": "Bu dili silmək istədiyinizə əminsiniz?"
+        },
+        "applications": {
+            "title": "Müraciətlər",
+            "name": "Ad",
+            "phone": "Telefon",
+            "email": "E-poçt",
+            "subject": "Mövzu",
+            "message": "Mesaj",
+            "date": "Tarix",
+            "status": "Status",
+            "viewDetails": "Ətraflı Bax",
+            "unread": "Oxunmamış Müraciət",
+            "markAsRead": "Oxunmuş kimi işarələ",
+            "deleteConfirm": "Bu müraciəti silmək istədiyinizə əminsiniz?"
+        },
+        "mapUrl": {
+            "title": "Xəritə Koordinatları",
+            "lat": "En (Latitude)",
+            "long": "Uzunluq (Longitude)",
+            "info": "Burada şirkətin ofis yerləşməsinin Google Maps koordinatlarını daxil edin. Bu koordinatlar saytdakı xəritədə göstəriləcək.",
+            "preview": "Xəritə Önizləmə",
+            "saveSuccess": "Xəritə koordinatları yadda saxlanıldı"
+        },
+        "users": {
+            "title": "İstifadəçilər",
+            "fullName": "Tam Ad",
+            "email": "E-poçt",
+            "role": "Rol",
+            "password": "Şifrə",
+            "newUser": "Yeni İstifadəçi",
+            "createUser": "Yeni İstifadəçi Yarat",
+            "editUser": "İstifadəçini Redaktə et",
+            "deleteConfirm": "Bu istifadəçini silmək istədiyinizə əminsiniz?",
+            "roles": {
+                "admin": "Admin",
+                "superAdmin": "Super Admin"
+            }
+        },
+        "profile": {
+            "title": "Profil",
+            "changePassword": "Şifrəni Dəyiş",
+            "currentPassword": "Cari Şifrə",
+            "newPassword": "Yeni Şifrə",
+            "confirmPassword": "Şifrəni Təsdiqlə",
+            "updateSuccess": "Profil yeniləndi",
+            "passwordSuccess": "Şifrə dəyişdirildi"
+        },
+        "dashboard": {
+            "title": "İdarə Paneli",
+            "welcome": "Xoş gəlmisiniz",
+            "totalProjects": "Cəmi Layihələr",
+            "totalServices": "Cəmi Xidmətlər",
+            "totalApplications": "Cəmi Müraciətlər",
+            "recentApplications": "Son Müraciətlər",
+            "systemInfo": "Sistem Məlumatları",
+            "active": "Aktiv"
+        }
+    },
+    "auth": {
+        "login": "Giriş",
+        "email": "E-poçt",
+        "password": "Şifrə",
+        "loginButton": "Daxil ol",
+        "forgotPassword": "Şifrəni unutmusunuz?",
+        "invalidCredentials": "Yanlış e-poçt və ya şifrə",
+        "forgotPasswordInfo": "Email ünvanınıza OTP kodu göndəriləcək",
+        "sendOtp": "OTP Göndər",
+        "otpCode": "OTP Kodu",
+        "changePasswordInfo": "OTP kodu və yeni şifrənizi daxil edin"
+    },
+    "validation": {
+        "required": "Bu sahə mütləqdir",
+        "minLength": "Ən azı {{min}} simvol daxil edin",
+        "maxLength": "Maksimum {{max}} simvol icazəlidir",
+        "invalidEmail": "Düzgün e-poçt daxil edin",
+        "atLeastOneLanguage": "Ən azı bir dil doldurulmalıdır",
+        "passwordsMustMatch": "Şifrələr uyğun gəlmir"
+    },
+    "messages": {
+        "saveSuccess": "Uğurla yadda saxlanıldı",
+        "saveError": "Məlumatları yadda saxlamaq mümkün olmadı",
+        "deleteSuccess": "Uğurla silindi",
+        "deleteError": "Məlumatı silmək mümkün olmadı",
+        "loadError": "Məlumatları yükləmək mümkün olmadı",
+        "uploadSuccess": "Şəkil uğurla yükləndi",
+        "uploadError": "Şəkli yükləmək mümkün olmadı"
+    }
+}

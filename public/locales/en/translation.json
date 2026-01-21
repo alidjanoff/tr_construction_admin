@@ -1,0 +1,244 @@
+{
+    "common": {
+        "add": "Add",
+        "edit": "Edit",
+        "delete": "Delete",
+        "save": "Save",
+        "cancel": "Cancel",
+        "update": "Update",
+        "close": "Close",
+        "loading": "Loading...",
+        "search": "Search",
+        "actions": "Actions",
+        "yes": "Yes",
+        "no": "No",
+        "confirm": "Confirm",
+        "all": "All",
+        "noData": "No data found",
+        "error": "An error occurred",
+        "success": "Operation successful",
+        "logout": "Logout",
+        "allLanguages": "All languages",
+        "back": "Back",
+        "allRightsReserved": "All rights reserved."
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "hero": "Hero Slider",
+        "about": "About Us",
+        "stats": "Statistics",
+        "services": "Services",
+        "testimonials": "Testimonials",
+        "workflow": "Workflow",
+        "projects": "Projects",
+        "partners": "Partners",
+        "contact": "Contact Info",
+        "socials": "Social Networks",
+        "languages": "Languages",
+        "applications": "Applications",
+        "mapUrl": "Map Coordinates",
+        "users": "Users",
+        "profile": "Profile",
+        "settings": "Settings"
+    },
+    "pages": {
+        "hero": {
+            "title": "Hero Slider",
+            "slides": "Slides",
+            "noSlides": "No slides found",
+            "addSlide": "Add new slide",
+            "editSlide": "Edit Slide",
+            "newSlide": "New Slide",
+            "slideTitle": "Slide Title",
+            "slideInfo": "Slide Info",
+            "buttonText": "Button Text",
+            "buttonUrl": "Button URL",
+            "image": "Image",
+            "selectImage": "Select image",
+            "deleteConfirm": "Are you sure you want to delete this slide?"
+        },
+        "about": {
+            "title": "About Us",
+            "heading": "Heading",
+            "info": "Information",
+            "image": "Image"
+        },
+        "stats": {
+            "title": "Statistics",
+            "count": "Count",
+            "detail": "Detail",
+            "newStat": "New Statistic",
+            "editStat": "Edit Statistic",
+            "deleteConfirm": "Are you sure you want to delete this statistic?"
+        },
+        "services": {
+            "title": "Services",
+            "serviceTitle": "Service Title",
+            "info": "Information",
+            "newService": "New Service",
+            "editService": "Edit Service",
+            "deleteConfirm": "Are you sure you want to delete this service?"
+        },
+        "testimonials": {
+            "title": "Testimonials",
+            "customerName": "Customer Name",
+            "customerType": "Customer Type",
+            "review": "Review",
+            "newReview": "New Review",
+            "editReview": "Edit Review",
+            "deleteConfirm": "Are you sure you want to delete this review?"
+        },
+        "workflow": {
+            "title": "Workflow",
+            "stepTitle": "Step Title",
+            "details": "Details",
+            "newStep": "New Step",
+            "editStep": "Edit Step",
+            "deleteConfirm": "Are you sure you want to delete this step?"
+        },
+        "projects": {
+            "title": "Projects",
+            "projectTitle": "Project Title",
+            "details": "Details",
+            "badge": "Badge",
+            "address": "Address",
+            "mapUrl": "Map URL",
+            "coverImage": "Cover Image",
+            "gallery": "Gallery",
+            "images": "Images",
+            "newProject": "New Project",
+            "editProject": "Edit Project",
+            "addImages": "Add images",
+            "uploadImages": "upload images",
+            "selectedImages": "Selected images",
+            "existingImages": "Existing images",
+            "addNewImages": "Add new images",
+            "noImages": "No images added to this project yet",
+            "deleteConfirm": "Are you sure you want to delete this project? This will also delete all associated images."
+        },
+        "partners": {
+            "title": "Partners",
+            "partnerName": "Partner Name",
+            "logo": "Logo",
+            "newPartner": "New Partner",
+            "editPartner": "Edit Partner",
+            "deleteConfirm": "Are you sure you want to delete this partner?"
+        },
+        "contact": {
+            "title": "Contact Information",
+            "contactTitle": "Title",
+            "detail": "Detail",
+            "type": "Type",
+            "url": "URL (Optional)",
+            "types": {
+                "address": "Address",
+                "phone": "Phone",
+                "email": "Email",
+                "workingHours": "Working Hours"
+            },
+            "newContact": "New Contact Info",
+            "editContact": "Edit Contact Info",
+            "deleteConfirm": "Are you sure you want to delete this contact info?"
+        },
+        "socials": {
+            "title": "Social Networks",
+            "platform": "Platform",
+            "url": "URL",
+            "newSocial": "New Social Network",
+            "editSocial": "Edit Social Network",
+            "deleteConfirm": "Are you sure you want to delete this social network?"
+        },
+        "languages": {
+            "title": "Languages",
+            "languageCode": "Language Code",
+            "newLanguage": "New Language",
+            "editLanguage": "Edit Language",
+            "deleteConfirm": "Are you sure you want to delete this language?"
+        },
+        "applications": {
+            "title": "Applications",
+            "name": "Name",
+            "phone": "Phone",
+            "email": "Email",
+            "subject": "Subject",
+            "message": "Message",
+            "date": "Date",
+            "status": "Status",
+            "viewDetails": "View Details",
+            "unread": "Unread Applications",
+            "markAsRead": "Mark as read",
+            "deleteConfirm": "Are you sure you want to delete this application?"
+        },
+        "mapUrl": {
+            "title": "Map Coordinates",
+            "lat": "Latitude",
+            "long": "Longitude",
+            "info": "Enter the Google Maps coordinates of the company's office location here. These coordinates will be displayed on the map on the website.",
+            "preview": "Map Preview",
+            "saveSuccess": "Map coordinates saved successfully"
+        },
+        "users": {
+            "title": "Users",
+            "fullName": "Full Name",
+            "email": "Email",
+            "role": "Role",
+            "password": "Password",
+            "newUser": "New User",
+            "createUser": "Create New User",
+            "editUser": "Edit User",
+            "deleteConfirm": "Are you sure you want to delete this user?",
+            "roles": {
+                "admin": "Admin",
+                "superAdmin": "Super Admin"
+            }
+        },
+        "profile": {
+            "title": "Profile",
+            "changePassword": "Change Password",
+            "currentPassword": "Current Password",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm Password",
+            "updateSuccess": "Profile updated",
+            "passwordSuccess": "Password changed"
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "welcome": "Welcome",
+            "totalProjects": "Total Projects",
+            "totalServices": "Total Services",
+            "totalApplications": "Total Applications",
+            "recentApplications": "Recent Applications",
+            "systemInfo": "System Information",
+            "active": "Active"
+        }
+    },
+    "auth": {
+        "login": "Login",
+        "email": "Email",
+        "password": "Password",
+        "loginButton": "Sign In",
+        "forgotPassword": "Forgot password?",
+        "invalidCredentials": "Invalid email or password",
+        "forgotPasswordInfo": "An OTP code will be sent to your email address",
+        "sendOtp": "Send OTP",
+        "otpCode": "OTP Code",
+        "changePasswordInfo": "Enter the OTP code and your new password"
+    },
+    "validation": {
+        "required": "This field is required",
+        "minLength": "Enter at least {{min}} characters",
+        "maxLength": "Maximum {{max}} characters allowed",
+        "invalidEmail": "Enter a valid email",
+        "atLeastOneLanguage": "At least one language must be filled",
+        "passwordsMustMatch": "Passwords do not match"
+    },
+    "messages": {
+        "saveSuccess": "Saved successfully",
+        "saveError": "Error saving data",
+        "deleteSuccess": "Deleted successfully",
+        "deleteError": "Error deleting data",
+        "loadError": "Could not load data",
+        "uploadSuccess": "Image uploaded successfully",
+        "uploadError": "Could not upload image"
+    }
+}

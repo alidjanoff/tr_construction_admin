@@ -1,0 +1,244 @@
+{
+    "common": {
+        "add": "Ekle",
+        "edit": "Düzenle",
+        "delete": "Sil",
+        "save": "Kaydet",
+        "cancel": "İptal",
+        "update": "Güncelle",
+        "close": "Kapat",
+        "loading": "Yükleniyor...",
+        "search": "Ara",
+        "actions": "İşlemler",
+        "yes": "Evet",
+        "no": "Hayır",
+        "confirm": "Onayla",
+        "all": "Tümü",
+        "noData": "Veri bulunamadı",
+        "error": "Bir hata oluştu",
+        "success": "İşlem başarılı",
+        "logout": "Çıkış Yap",
+        "allLanguages": "Tüm diller",
+        "back": "Geri",
+        "allRightsReserved": "Tüm hakları saklıdır."
+    },
+    "sidebar": {
+        "dashboard": "Yönetim Paneli",
+        "hero": "Ana Slider",
+        "about": "Hakkımızda",
+        "stats": "İstatistikler",
+        "services": "Hizmetler",
+        "testimonials": "Müşteri Yorumları",
+        "workflow": "İş Akışı",
+        "projects": "Projeler",
+        "partners": "İş Ortakları",
+        "contact": "İletişim Bilgileri",
+        "socials": "Sosyal Medya",
+        "languages": "Diller",
+        "applications": "Başvurular",
+        "mapUrl": "Harita Koordinatları",
+        "users": "Kullanıcılar",
+        "profile": "Profil",
+        "settings": "Ayarlar"
+    },
+    "pages": {
+        "hero": {
+            "title": "Ana Slider",
+            "slides": "Slaytlar",
+            "noSlides": "Slayt bulunamadı",
+            "addSlide": "Yeni slayt ekle",
+            "editSlide": "Slaytı Düzenle",
+            "newSlide": "Yeni Slayt",
+            "slideTitle": "Slayt Başlığı",
+            "slideInfo": "Slayt Bilgisi",
+            "buttonText": "Buton Metni",
+            "buttonUrl": "Buton URL",
+            "image": "Görsel",
+            "selectImage": "Görsel seç",
+            "deleteConfirm": "Bu slaytı silmek istediğinizden emin misiniz?"
+        },
+        "about": {
+            "title": "Hakkımızda",
+            "heading": "Başlık",
+            "info": "Bilgi",
+            "image": "Görsel"
+        },
+        "stats": {
+            "title": "İstatistikler",
+            "count": "Sayı",
+            "detail": "Detay",
+            "newStat": "Yeni İstatistik",
+            "editStat": "İstatistiği Düzenle",
+            "deleteConfirm": "Bu istatistiği silmek istediğinizden emin misiniz?"
+        },
+        "services": {
+            "title": "Hizmetler",
+            "serviceTitle": "Hizmet Başlığı",
+            "info": "Bilgi",
+            "newService": "Yeni Hizmet",
+            "editService": "Hizmeti Düzenle",
+            "deleteConfirm": "Bu hizmeti silmek istediğinizden emin misiniz?"
+        },
+        "testimonials": {
+            "title": "Müşteri Yorumları",
+            "customerName": "Müşteri Adı",
+            "customerType": "Müşteri Tipi",
+            "review": "Yorum",
+            "newReview": "Yeni Yorum",
+            "editReview": "Yorumu Düzenle",
+            "deleteConfirm": "Bu yorumu silmek istediğinizden emin misiniz?"
+        },
+        "workflow": {
+            "title": "İş Akışı",
+            "stepTitle": "Adım Başlığı",
+            "details": "Detaylar",
+            "newStep": "Yeni Adım",
+            "editStep": "Adımı Düzenle",
+            "deleteConfirm": "Bu adımı silmek istediğinizden emin misiniz?"
+        },
+        "projects": {
+            "title": "Projeler",
+            "projectTitle": "Proje Başlığı",
+            "details": "Detaylar",
+            "badge": "Rozet",
+            "address": "Adres",
+            "mapUrl": "Harita URL",
+            "coverImage": "Kapak Resmi",
+            "gallery": "Galeri",
+            "images": "Görseller",
+            "newProject": "Yeni Proje",
+            "editProject": "Projeyi Düzenle",
+            "addImages": "Görsel ekle",
+            "uploadImages": "görsel yükle",
+            "selectedImages": "Seçilen görseller",
+            "existingImages": "Mevcut görseller",
+            "addNewImages": "Yeni görseller ekle",
+            "noImages": "Bu projeye henüz görsel eklenmedi",
+            "deleteConfirm": "Bu projeyi silmek istediğinizden emin misiniz? Bu işlem, ilişkili tüm görselleri de silecektir."
+        },
+        "partners": {
+            "title": "İş Ortakları",
+            "partnerName": "Ortak Adı",
+            "logo": "Logo",
+            "newPartner": "Yeni İş Ortağı",
+            "editPartner": "İş Ortağını Düzenle",
+            "deleteConfirm": "Bu iş ortağını silmek istediğinizden emin misiniz?"
+        },
+        "contact": {
+            "title": "İletişim Bilgileri",
+            "contactTitle": "Başlık",
+            "detail": "Detay",
+            "type": "Tür",
+            "url": "URL (İsteğe Bağlı)",
+            "types": {
+                "address": "Adres",
+                "phone": "Telefon",
+                "email": "E-posta",
+                "workingHours": "Çalışma Saatleri"
+            },
+            "newContact": "Yeni İletişim Bilgisi",
+            "editContact": "İletişim Bilgisini Düzenle",
+            "deleteConfirm": "Bu iletişim bilgisini silmek istediğinizden emin misiniz?"
+        },
+        "socials": {
+            "title": "Sosyal Medya",
+            "platform": "Platform",
+            "url": "URL",
+            "newSocial": "Yeni Sosyal Ağ",
+            "editSocial": "Sosyal Ağı Düzenle",
+            "deleteConfirm": "Bu sosyal ağı silmek istediğinizden emin misiniz?"
+        },
+        "languages": {
+            "title": "Diller",
+            "languageCode": "Dil Kodu",
+            "newLanguage": "Yeni Dil",
+            "editLanguage": "Dili Düzenle",
+            "deleteConfirm": "Bu dili silmek istediğinizden emin misiniz?"
+        },
+        "applications": {
+            "title": "Başvurular",
+            "name": "İsim",
+            "phone": "Telefon",
+            "email": "E-posta",
+            "subject": "Konu",
+            "message": "Mesaj",
+            "date": "Tarih",
+            "status": "Durum",
+            "viewDetails": "Detayları Gör",
+            "unread": "Okunmamış Başvuru",
+            "markAsRead": "Okundu olarak işaretle",
+            "deleteConfirm": "Bu başvuruyu silmek istediğinizden emin misiniz?"
+        },
+        "mapUrl": {
+            "title": "Harita Koordinatları",
+            "lat": "Enlem (Latitude)",
+            "long": "Boylam (Longitude)",
+            "info": "Şirketin ofis konumunun Google Haritalar koordinatlarını buraya girin. Bu koordinatlar web sitesindeki haritada gösterilecektir.",
+            "preview": "Harita Önizleme",
+            "saveSuccess": "Harita koordinatları başarıyla kaydedildi"
+        },
+        "users": {
+            "title": "Kullanıcılar",
+            "fullName": "Ad Soyad",
+            "email": "E-posta",
+            "role": "Rol",
+            "password": "Şifre",
+            "newUser": "Yeni Kullanıcı",
+            "createUser": "Yeni Kullanıcı Oluştur",
+            "editUser": "Kullanıcıyı Düzenle",
+            "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?",
+            "roles": {
+                "admin": "Yönetici",
+                "superAdmin": "Süper Yönetici"
+            }
+        },
+        "profile": {
+            "title": "Profil",
+            "changePassword": "Şifre Değiştir",
+            "currentPassword": "Mevcut Şifre",
+            "newPassword": "Yeni Şifre",
+            "confirmPassword": "Şifreyi Onayla",
+            "updateSuccess": "Profil güncellendi",
+            "passwordSuccess": "Şifre değiştirildi"
+        },
+        "dashboard": {
+            "title": "Yönetim Paneli",
+            "welcome": "Hoş geldiniz",
+            "totalProjects": "Toplam Proje",
+            "totalServices": "Toplam Hizmet",
+            "totalApplications": "Toplam Başvuru",
+            "recentApplications": "Son Başvurular",
+            "systemInfo": "Sistem Bilgileri",
+            "active": "Aktif"
+        }
+    },
+    "auth": {
+        "login": "Giriş",
+        "email": "E-posta",
+        "password": "Şifre",
+        "loginButton": "Oturum Aç",
+        "forgotPassword": "Şifrenizi mi unuttunuz?",
+        "invalidCredentials": "Geçersiz e-posta veya şifre",
+        "forgotPasswordInfo": "E-posta adresinize bir OTP kodu gönderilecektir",
+        "sendOtp": "OTP Gönder",
+        "otpCode": "OTP Kodu",
+        "changePasswordInfo": "OTP kodunu ve yeni şifrenizi girin"
+    },
+    "validation": {
+        "required": "Bu alan zorunludur",
+        "minLength": "En az {{min}} karakter girin",
+        "maxLength": "Maksimum {{max}} karaktere izin verilir",
+        "invalidEmail": "Geçerli bir e-posta girin",
+        "atLeastOneLanguage": "En az bir dil doldurulmalıdır",
+        "passwordsMustMatch": "Şifreler uyuşmuyor"
+    },
+    "messages": {
+        "saveSuccess": "Başarıyla kaydedildi",
+        "saveError": "Veri kaydedilirken hata oluştu",
+        "deleteSuccess": "Başarıyla silindi",
+        "deleteError": "Veri silinirken hata oluştu",
+        "loadError": "Veriler yüklenemedi",
+        "uploadSuccess": "Görsel başarıyla yüklendi",
+        "uploadError": "Görsel yüklenemedi"
+    }
+}
