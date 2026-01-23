@@ -44,7 +44,9 @@ const MainLayout: React.FC = () => {
         <div className={`layout ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
             <Sidebar
                 isCollapsed={isSidebarCollapsed}
+                isOpen={isMobileMenuOpen}
                 onToggle={toggleSidebar}
+                onClose={() => setIsMobileMenuOpen(false)}
             />
 
             {isMobileMenuOpen && (

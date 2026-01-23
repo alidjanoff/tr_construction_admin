@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     z-index: $z-sidebar;
-    transition: width $transition-base;
+    transition: width $transition-base, transform $transition-base, visibility $transition-base;
     @include custom-scrollbar;
 
     &.collapsed {
@@ -188,10 +188,84 @@
 
     @include responsive(md) {
         transform: translateX(-100%);
-        width: $sidebar-width;
+        visibility: hidden; // Hide it completely when retracted
+        width: 100%; // Full screen on mobile
+        height: 100vh;
+        z-index: $z-sidebar;
+        transition: transform $transition-base, visibility $transition-base;
 
         &.open {
             transform: translateX(0);
+            visibility: visible;
+            z-index: 1000; // Ensure it's above everything (header, modals, etc.) when open
+        }
+
+        .sidebar-header {
+            padding: $spacing-5 $spacing-6;
+            @include flex-between; // Space between logo and close button
+            width: 100%;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-logo {
+            width: 44px;
+            height: 44px;
+        }
+
+        .sidebar-title {
+            display: block;
+            margin-left: $spacing-3;
+        }
+
+        .sidebar-close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: color.change($white, $alpha: 0.1);
+            border: none;
+            border-radius: $radius-md;
+            color: $white;
+            cursor: pointer;
+            transition: background $transition-fast;
+
+            &:hover {
+                background: color.change($white, $alpha: 0.2);
+            }
+
+            svg {
+                width: 24px;
+                height: 24px;
+            }
+        }
+
+        .nav-item {
+            justify-content: flex-start;
+            padding: $spacing-4 $spacing-6; // Slightly larger padding for mobile touch
+            margin-bottom: $spacing-2;
+
+            .nav-icon {
+                margin-right: $spacing-4;
+
+                svg {
+                    width: 22px;
+                    height: 22px;
+                }
+            }
+
+            .nav-label {
+                display: block;
+                font-size: $font-size-base; // Slightly larger text for mobile
+            }
+        }
+
+        .sidebar-toggle {
+            display: none;
         }
     }
 }

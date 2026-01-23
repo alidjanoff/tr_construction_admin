@@ -21,13 +21,16 @@ import {
     FiUserPlus,
     FiChevronLeft,
     FiChevronRight,
+    FiX,
 } from 'react-icons/fi';
 import logo from '../../assets/images/logo.jpeg';
 import './Sidebar.scss';
 
 interface SidebarProps {
     isCollapsed: boolean;
+    isOpen?: boolean;
     onToggle: () => void;
+    onClose?: () => void;
 }
 
 interface NavItem {
@@ -59,7 +62,7 @@ const superAdminNavItems: NavItem[] = [
     { path: '/users/new', icon: <FiUserPlus />, labelKey: 'pages.users.newUser', superAdminOnly: true },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, isOpen, onToggle, onClose }) => {
     const { t } = useTranslation();
     const { isSuperAdmin } = useAuth();
     const location = useLocation();
@@ -67,10 +70,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
     const allNavItems = isSuperAdmin ? [...navItems, ...superAdminNavItems] : navItems;
 
     return (
-        <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+        <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''} ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
-                <img src={logo} alt="TR Construction" className="sidebar-logo" />
-                {!isCollapsed && <span className="sidebar-title">TR Construction</span>}
+                <div className="sidebar-brand">
+                    <img src={logo} alt="TR Construction" className="sidebar-logo" />
+                    {!isCollapsed && <span className="sidebar-title">TR Construction</span>}
+                </div>
+                {isOpen && (
+                    <button className="sidebar-close" onClick={onClose}>
+                        <FiX />
+                    </button>
+                )}
             </div>
 
             <nav className="sidebar-nav">
@@ -82,6 +92,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                             `nav-item ${isActive || (item.path === '/' && location.pathname === '/') ? 'active' : ''}`
                         }
                         end={item.path === '/'}
+                        onClick={() => onClose?.()}
                     >
                         <span className="nav-icon">{item.icon}</span>
                         {!isCollapsed && <span className="nav-label">{t(item.labelKey)}</span>}
