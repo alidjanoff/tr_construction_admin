@@ -115,8 +115,8 @@
             "addNewImages": "Yeni görseller ekle",
             "noImages": "Bu projeye henüz görsel eklenmedi",
             "deleteConfirm": "Bu projeyi silmek istediğinizden emin misiniz? Bu işlem, ilişkili tüm görselleri de silecektir.",
-            "fileTooLarge": "Bazı görseller 1 MB limitini aşıyor. Lütfen büyük görselleri silin veya daha küçük görseller seçin.",
-            "removeOversizedFiles": "Yüklemek için 1 MB'dan büyük görselleri silin."
+            "fileTooLarge": "Bazı görseller 10 MB limitini aşıyor. Lütfen büyük görselleri silin veya daha küçük görseller seçin.",
+            "removeOversizedFiles": "Yüklemek için 10 MB'dan büyük görselleri silin."
         },
         "partners": {
             "title": "İş Ortakları",

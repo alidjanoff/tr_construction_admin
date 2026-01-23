@@ -115,8 +115,8 @@
             "addNewImages": "Yeni şəkillər əlavə et",
             "noImages": "Bu layihəyə hələ heç bir şəkil əlavə edilməyib",
             "deleteConfirm": "Bu layihəni silmək istədiyinizə əminsiniz? Bu, əlaqəli bütün şəkilləri də siləcək.",
-            "fileTooLarge": "Bəzi şəkillər 1 MB limitini keçir. Lütfən, böyük şəkilləri silin və ya kiçik şəkillər seçin.",
-            "removeOversizedFiles": "Şəkilləri yükləmək üçün 1 MB-dan böyük olan şəkilləri silin."
+            "fileTooLarge": "Bəzi şəkillər 10 MB limitini keçir. Lütfən, böyük şəkilləri silin və ya kiçik şəkillər seçin.",
+            "removeOversizedFiles": "Şəkilləri yükləmək üçün 10 MB-dan böyük olan şəkilləri silin."
         },
         "partners": {
             "title": "Tərəfdaşlar",

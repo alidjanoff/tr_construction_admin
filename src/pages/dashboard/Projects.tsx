@@ -28,6 +28,16 @@ interface GalleryImage {
     image_url: string;
 }
 
+interface FormErrors {
+    title?: string;
+    details?: string;
+    address?: string;
+    cover_image?: string;
+    map_url?: string;
+}
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
 const Projects: React.FC = () => {
     const { t } = useTranslation();
     const [projects, setProjects] = useState<Project[]>([]);
@@ -45,6 +55,7 @@ const Projects: React.FC = () => {
         address: {},
         map_url: '',
     });
+    const [errors, setErrors] = useState<FormErrors>({});
     const [coverFile, setCoverFile] = useState<File | null>(null);
     const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
     const [formLoading, setFormLoading] = useState(false);
@@ -91,6 +102,7 @@ const Projects: React.FC = () => {
             map_url: '',
         });
         setCoverFile(null);
+        setErrors({});
         setModalOpen(true);
     };
 
@@ -104,6 +116,7 @@ const Projects: React.FC = () => {
             map_url: item.map_url || '',
         });
         setCoverFile(null);
+        setErrors({});
         setModalOpen(true);
 
         try {
@@ -137,19 +150,45 @@ const Projects: React.FC = () => {
         await fetchProjectDetail(item.id);
     };
 
+    const validateForm = (): boolean => {
+        const newErrors: FormErrors = {};
+
+        // Title: at least one language required
+        const hasTitle = Object.values(formData.title).some(v => v && v.trim());
+        if (!hasTitle) {
+            newErrors.title = t('validation.required');
+        }
+
+        // Details: at least one language required
+        const hasDetails = Object.values(formData.details).some(v => v && v.trim());
+        if (!hasDetails) {
+            newErrors.details = t('validation.required');
+        }
+
+        // Address: at least one language required
+        const hasAddress = Object.values(formData.address).some(v => v && v.trim());
+        if (!hasAddress) {
+            newErrors.address = t('validation.required');
+        }
+
+        // Cover Image: required for new projects
+        if (!selectedItem && !coverFile) {
+            newErrors.cover_image = t('validation.required');
+        }
+
+        // If cover file is selected, check size
+        if (coverFile && coverFile.size > MAX_FILE_SIZE) {
+            newErrors.cover_image = t('pages.projects.fileTooLarge');
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const hasTitle = Object.values(formData.title).some(v => v && v.trim());
-        const hasDetails = Object.values(formData.details).some(v => v && v.trim());
-
-        if (!hasTitle || !hasDetails) {
-            showToast('error', t('validation.atLeastOneLanguage'));
-            return;
-        }
-
-        if (!selectedItem && !coverFile) {
-            showToast('error', t('pages.projects.coverImage') + ' ' + t('validation.required').toLowerCase());
+        if (!validateForm()) {
             return;
         }
 
@@ -180,8 +219,9 @@ const Projects: React.FC = () => {
 
             setModalOpen(false);
             fetchData();
-        } catch {
-            showToast('error', t('messages.saveError'));
+        } catch (error: any) {
+            const errorMessage = error.response?.data?.message || t('messages.saveError');
+            showToast('error', errorMessage);
         } finally {
             setFormLoading(false);
         }
@@ -261,10 +301,9 @@ const Projects: React.FC = () => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    // Check if file is oversized (> 1MB)
+    // Check if file is oversized (> 10MB)
     const isOversized = (file: File): boolean => {
-        const maxSize = 1 * 1024 * 1024; // 1MB
-        return file.size > maxSize;
+        return file.size > MAX_FILE_SIZE;
     };
 
     // Check if any file is oversized
@@ -340,16 +379,20 @@ const Projects: React.FC = () => {
                 title={selectedItem ? t('pages.projects.editProject') : t('pages.projects.newProject')}
                 size="lg"
             >
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} noValidate>
                     <div className="form-row">
                         <div className="form-col">
                             <TranslatableInput
                                 name="title"
                                 label={t('pages.projects.projectTitle')}
                                 value={formData.title}
-                                onChange={(value) => setFormData({ ...formData, title: value })}
+                                onChange={(value) => {
+                                    setFormData({ ...formData, title: value });
+                                    if (errors.title) setErrors({ ...errors, title: '' });
+                                }}
                                 placeholder={t('pages.projects.projectTitle')}
                                 required
+                                error={errors.title}
                             />
                         </div>
                         <div className="form-col">
@@ -367,11 +410,15 @@ const Projects: React.FC = () => {
                         name="details"
                         label={t('pages.projects.details')}
                         value={formData.details}
-                        onChange={(value) => setFormData({ ...formData, details: value })}
+                        onChange={(value) => {
+                            setFormData({ ...formData, details: value });
+                            if (errors.details) setErrors({ ...errors, details: '' });
+                        }}
                         type="textarea"
                         placeholder={t('pages.projects.details')}
                         rows={4}
                         required
+                        error={errors.details}
                     />
 
                     <div className="form-row">
@@ -380,8 +427,13 @@ const Projects: React.FC = () => {
                                 name="address"
                                 label={t('pages.projects.address')}
                                 value={formData.address}
-                                onChange={(value) => setFormData({ ...formData, address: value })}
+                                onChange={(value) => {
+                                    setFormData({ ...formData, address: value });
+                                    if (errors.address) setErrors({ ...errors, address: '' });
+                                }}
                                 placeholder={t('pages.projects.address')}
+                                required
+                                error={errors.address}
                             />
                         </div>
                         <div className="form-col">
@@ -395,17 +447,27 @@ const Projects: React.FC = () => {
                         </div>
                     </div>
 
-                    <div className="form-group">
+                    <div className={`form-group ${errors.cover_image ? 'has-error' : ''}`}>
                         <label>
                             <FiImage style={{ marginRight: '8px' }} />
                             {t('pages.projects.coverImage')}
+                            <span className="required" style={{ color: 'var(--error)', marginLeft: '4px' }}>*</span>
                         </label>
                         <input
                             type="file"
                             accept="image/*"
-                            onChange={(e) => setCoverFile(e.target.files?.[0] || null)}
-                            className="file-input"
+                            onChange={(e) => {
+                                const file = e.target.files?.[0] || null;
+                                setCoverFile(file);
+                                if (errors.cover_image) setErrors({ ...errors, cover_image: '' });
+                            }}
+                            className={`file-input ${errors.cover_image ? 'error' : ''}`}
                         />
+                        {errors.cover_image && (
+                            <span className="error-message" style={{ display: 'block', marginTop: '4px', fontSize: '12px', color: 'var(--error)' }}>
+                                {errors.cover_image}
+                            </span>
+                        )}
                         {(selectedItem?.cover_image || coverFile) && (
                             <div className="preview-image-container" style={{ marginTop: '1rem' }}>
                                 <img
@@ -628,7 +690,7 @@ const Projects: React.FC = () => {
                                                             fontWeight: 400,
                                                             marginTop: '1px'
                                                         }}>
-                                                            Max: 1 MB
+                                                            Max: 10 MB
                                                         </span>
                                                     )}
                                                 </div>
