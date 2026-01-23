@@ -81,7 +81,7 @@ const RegisterUser: React.FC = () => {
                 </CustomButton>
             </div>
 
-            <div className="card" style={{ maxWidth: '600px' }}>
+            <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
                 <div className="card-header">
                     <h3>{t('pages.users.newUser')}</h3>
                 </div>

@@ -114,7 +114,9 @@
             "existingImages": "Mevcut görseller",
             "addNewImages": "Yeni görseller ekle",
             "noImages": "Bu projeye henüz görsel eklenmedi",
-            "deleteConfirm": "Bu projeyi silmek istediğinizden emin misiniz? Bu işlem, ilişkili tüm görselleri de silecektir."
+            "deleteConfirm": "Bu projeyi silmek istediğinizden emin misiniz? Bu işlem, ilişkili tüm görselleri de silecektir.",
+            "fileTooLarge": "Bazı görseller 1 MB limitini aşıyor. Lütfen büyük görselleri silin veya daha küçük görseller seçin.",
+            "removeOversizedFiles": "Yüklemek için 1 MB'dan büyük görselleri silin."
         },
         "partners": {
             "title": "İş Ortakları",
@@ -151,6 +153,8 @@
         "languages": {
             "title": "Diller",
             "languageCode": "Dil Kodu",
+            "langCode": "Dil Kodu",
+            "info": "Burada web sitesinde desteklenecek dilleri yönetebilirsiniz.",
             "newLanguage": "Yeni Dil",
             "editLanguage": "Dili Düzenle",
             "deleteConfirm": "Bu dili silmek istediğinizden emin misiniz?"
@@ -166,8 +170,24 @@
             "status": "Durum",
             "viewDetails": "Detayları Gör",
             "unread": "Okunmamış Başvuru",
+            "read": "Okunmuş",
             "markAsRead": "Okundu olarak işaretle",
-            "deleteConfirm": "Bu başvuruyu silmek istediğinizden emin misiniz?"
+            "deleteConfirm": "Bu başvuruyu silmek istediğinizden emin misiniz?",
+            "sort": "Sıralama",
+            "sortDefault": "Varsayılan",
+            "sortAZ": "A → Z",
+            "sortZA": "Z → A",
+            "filterAll": "Tümü",
+            "filterRead": "Okunmuş",
+            "filterUnread": "Okunmamış",
+            "searchBy": "Arama",
+            "searchByName": "İsme göre",
+            "searchByEmail": "E-postaya göre",
+            "searchByPhone": "Telefona göre",
+            "enterName": "İsim girin...",
+            "enterEmail": "E-posta girin...",
+            "enterPhone": "Telefon girin...",
+            "noResults": "Sonuç bulunamadı"
         },
         "mapUrl": {
             "title": "Harita Koordinatları",
@@ -183,10 +203,15 @@
             "email": "E-posta",
             "role": "Rol",
             "password": "Şifre",
+            "phone": "Telefon",
             "newUser": "Yeni Kullanıcı",
             "createUser": "Yeni Kullanıcı Oluştur",
             "editUser": "Kullanıcıyı Düzenle",
             "deleteConfirm": "Bu kullanıcıyı silmek istediğinizden emin misiniz?",
+            "changeRole": "Rolü Değiştir",
+            "changeRoleConfirm": "Bu kullanıcının rolünü değiştirmek istediğinizden emin misiniz?",
+            "currentRole": "Mevcut Rol",
+            "newRole": "Yeni Rol",
             "roles": {
                 "admin": "Yönetici",
                 "superAdmin": "Süper Yönetici"
@@ -209,7 +234,65 @@
             "totalApplications": "Toplam Başvuru",
             "recentApplications": "Son Başvurular",
             "systemInfo": "Sistem Bilgileri",
-            "active": "Aktif"
+            "active": "Aktif",
+            "deviceInfo": {
+                "title": "Giriş yaptığınız cihazın bilgileri",
+                "deviceType": {
+                    "desktop": "Bilgisayar",
+                    "mobile": "Mobil",
+                    "tablet": "Tablet"
+                },
+                "system": {
+                    "title": "Sistem Bilgileri",
+                    "os": "İşletim Sistemi",
+                    "platform": "Platform",
+                    "deviceType": "Cihaz Tipi",
+                    "deviceModel": "Cihaz Modeli"
+                },
+                "browser": {
+                    "title": "Tarayıcı Bilgileri",
+                    "name": "Tarayıcı",
+                    "version": "Tarayıcı Sürümü",
+                    "language": "Dil",
+                    "timezone": "Saat Dilimi"
+                },
+                "screen": {
+                    "title": "Ekran Bilgileri",
+                    "size": "Ekran Boyutu",
+                    "pixelRatio": "Piksel Yoğunluğu",
+                    "colorDepth": "Renk Derinliği",
+                    "touchSupport": "Dokunmatik Desteği"
+                },
+                "hardware": {
+                    "title": "Donanım Bilgileri",
+                    "cpuCores": "CPU Çekirdekleri",
+                    "ram": "RAM",
+                    "unknown": "Bilinmiyor"
+                },
+                "network": {
+                    "title": "Ağ Bilgileri",
+                    "ipAddress": "IP Adresi",
+                    "city": "Şehir",
+                    "connectionType": "Bağlantı Türü",
+                    "speed": "Hız"
+                },
+                "location": {
+                    "title": "Konum Bilgileri",
+                    "coordinates": "Koordinatlar",
+                    "getLocation": "Tam Konum Al"
+                },
+                "other": {
+                    "title": "Diğer Bilgiler",
+                    "cookies": "Çerezler",
+                    "doNotTrack": "Do Not Track",
+                    "languages": "Diller",
+                    "enabled": "Etkin",
+                    "disabled": "Devre Dışı",
+                    "yes": "Evet",
+                    "no": "Hayır"
+                },
+                "loadError": "Cihaz bilgileri yüklenemedi."
+            }
         }
     },
     "auth": {

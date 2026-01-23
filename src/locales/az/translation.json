@@ -114,7 +114,9 @@
             "existingImages": "Mövcud şəkillər",
             "addNewImages": "Yeni şəkillər əlavə et",
             "noImages": "Bu layihəyə hələ heç bir şəkil əlavə edilməyib",
-            "deleteConfirm": "Bu layihəni silmək istədiyinizə əminsiniz? Bu, əlaqəli bütün şəkilləri də siləcək."
+            "deleteConfirm": "Bu layihəni silmək istədiyinizə əminsiniz? Bu, əlaqəli bütün şəkilləri də siləcək.",
+            "fileTooLarge": "Bəzi şəkillər 1 MB limitini keçir. Lütfən, böyük şəkilləri silin və ya kiçik şəkillər seçin.",
+            "removeOversizedFiles": "Şəkilləri yükləmək üçün 1 MB-dan böyük olan şəkilləri silin."
         },
         "partners": {
             "title": "Tərəfdaşlar",
@@ -151,6 +153,8 @@
         "languages": {
             "title": "Dillər",
             "languageCode": "Dil Kodu",
+            "langCode": "Dil Kodu",
+            "info": "Burada saytda dəstəklənəcək dilləri idarə edə bilərsiniz.",
             "newLanguage": "Yeni Dil",
             "editLanguage": "Dili Redaktə et",
             "deleteConfirm": "Bu dili silmək istədiyinizə əminsiniz?"
@@ -166,8 +170,24 @@
             "status": "Status",
             "viewDetails": "Ətraflı Bax",
             "unread": "Oxunmamış Müraciət",
+            "read": "Oxunmuş",
             "markAsRead": "Oxunmuş kimi işarələ",
-            "deleteConfirm": "Bu müraciəti silmək istədiyinizə əminsiniz?"
+            "deleteConfirm": "Bu müraciəti silmək istədiyinizə əminsiniz?",
+            "sort": "Sıralama",
+            "sortDefault": "Standart",
+            "sortAZ": "A → Z",
+            "sortZA": "Z → A",
+            "filterAll": "Hamısı",
+            "filterRead": "Oxunmuş",
+            "filterUnread": "Oxunmamış",
+            "searchBy": "Axtarış",
+            "searchByName": "Ad üzrə",
+            "searchByEmail": "Email üzrə",
+            "searchByPhone": "Telefon üzrə",
+            "enterName": "Ad daxil edin...",
+            "enterEmail": "Email daxil edin...",
+            "enterPhone": "Telefon daxil edin...",
+            "noResults": "Nəticə tapılmadı"
         },
         "mapUrl": {
             "title": "Xəritə Koordinatları",
@@ -183,10 +203,15 @@
             "email": "E-poçt",
             "role": "Rol",
             "password": "Şifrə",
+            "phone": "Telefon",
             "newUser": "Yeni İstifadəçi",
             "createUser": "Yeni İstifadəçi Yarat",
             "editUser": "İstifadəçini Redaktə et",
             "deleteConfirm": "Bu istifadəçini silmək istədiyinizə əminsiniz?",
+            "changeRole": "Rolu dəyiş",
+            "changeRoleConfirm": "İstifadəçinin rolunu dəyişmək istədiyinizə əminsiniz?",
+            "currentRole": "Cari rol",
+            "newRole": "Yeni rol",
             "roles": {
                 "admin": "Admin",
                 "superAdmin": "Super Admin"
@@ -209,7 +234,65 @@
             "totalApplications": "Cəmi Müraciətlər",
             "recentApplications": "Son Müraciətlər",
             "systemInfo": "Sistem Məlumatları",
-            "active": "Aktiv"
+            "active": "Aktiv",
+            "deviceInfo": {
+                "title": "Daxil olduğunuz cihazın məlumatları",
+                "deviceType": {
+                    "desktop": "Kompyuter",
+                    "mobile": "Mobil",
+                    "tablet": "Planşet"
+                },
+                "system": {
+                    "title": "Sistem Məlumatları",
+                    "os": "Əməliyyat Sistemi",
+                    "platform": "Platform",
+                    "deviceType": "Cihaz Növü",
+                    "deviceModel": "Cihaz Modeli"
+                },
+                "browser": {
+                    "title": "Brauzer Məlumatları",
+                    "name": "Brauzer",
+                    "version": "Brauzer Versiyası",
+                    "language": "Dil",
+                    "timezone": "Saat Qurşağı"
+                },
+                "screen": {
+                    "title": "Ekran Məlumatları",
+                    "size": "Ekran Ölçüsü",
+                    "pixelRatio": "Piksel Sıxlığı",
+                    "colorDepth": "Rəng Dərinliyi",
+                    "touchSupport": "Toxunma Dəstəyi"
+                },
+                "hardware": {
+                    "title": "Avadanlıq Məlumatları",
+                    "cpuCores": "CPU Nüvələri",
+                    "ram": "RAM",
+                    "unknown": "Məlum deyil"
+                },
+                "network": {
+                    "title": "Şəbəkə Məlumatları",
+                    "ipAddress": "IP Ünvan",
+                    "city": "Şəhər",
+                    "connectionType": "Bağlantı Növü",
+                    "speed": "Sürət"
+                },
+                "location": {
+                    "title": "Məkan Məlumatları",
+                    "coordinates": "Koordinatlar",
+                    "getLocation": "Dəqiq Məkan Al"
+                },
+                "other": {
+                    "title": "Digər Məlumatlar",
+                    "cookies": "Cookies",
+                    "doNotTrack": "Do Not Track",
+                    "languages": "Dillər",
+                    "enabled": "Aktiv",
+                    "disabled": "Deaktiv",
+                    "yes": "Bəli",
+                    "no": "Yox"
+                },
+                "loadError": "Cihaz məlumatları yüklənə bilmədi."
+            }
         }
     },
     "auth": {

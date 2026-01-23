@@ -28,6 +28,66 @@
             background: $success;
         }
     }
+
+    .filter-search-section {
+        display: flex;
+        align-items: flex-end;
+        gap: $spacing-3;
+        background: $light-gray;
+        border-radius: $radius-lg;
+        padding: $spacing-4;
+        margin-bottom: $spacing-4;
+        border: 1px solid $medium-gray;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-1;
+
+        label {
+            font-size: $font-size-xs;
+            font-weight: $font-weight-medium;
+            color: $text-secondary;
+            white-space: nowrap;
+        }
+
+        .custom-select {
+            width: 100%;
+            max-width: 200px;
+            min-width: 140px;
+        }
+    }
+
+    .search-input-wrapper {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: $text-muted;
+            width: 18px;
+            height: 18px;
+        }
+
+        .search-input {
+            @include input-base;
+            width: 100%;
+            padding-left: 40px;
+        }
+    }
+
+    .results-count {
+        font-size: $font-size-sm;
+        color: $text-muted;
+        white-space: nowrap;
+        padding: $spacing-2 0;
+    }
 }
 
 .application-details {

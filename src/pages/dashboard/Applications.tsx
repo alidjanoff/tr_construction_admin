@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useToast } from '../../components/ui/Toast';
 import { applicationsAPI } from '../../services/api';
@@ -7,9 +7,13 @@ import DataTable from '../../components/ui/DataTable';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
 import CustomButton from '../../components/ui/CustomButton';
-import { FiMail, FiPhone, FiUser, FiMessageCircle, FiCheck } from 'react-icons/fi';
+import { FiMail, FiPhone, FiUser, FiMessageCircle, FiCheck, FiSearch } from 'react-icons/fi';
 import './CrudPage.scss';
 import './Applications.scss';
+
+type SortOrder = 'az' | 'za' | 'default';
+type ViewedFilter = 'all' | 'viewed' | 'unread';
+type SearchField = 'full_name' | 'email' | 'phone';
 
 const Applications: React.FC = () => {
     const { t } = useTranslation();
@@ -19,6 +23,12 @@ const Applications: React.FC = () => {
     const [viewModalOpen, setViewModalOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [formLoading, setFormLoading] = useState(false);
+
+    // Filter and search state
+    const [sortOrder, setSortOrder] = useState<SortOrder>('default');
+    const [viewedFilter, setViewedFilter] = useState<ViewedFilter>('all');
+    const [searchField, setSearchField] = useState<SearchField>('full_name');
+    const [searchQuery, setSearchQuery] = useState('');
 
     const { showToast } = useToast();
 
@@ -38,6 +48,36 @@ const Applications: React.FC = () => {
     useEffect(() => {
         fetchApplicationsCallback();
     }, [fetchApplicationsCallback]);
+
+    // Filtered and sorted applications
+    const filteredApplications = useMemo(() => {
+        let result = [...applications];
+
+        // Apply viewed filter
+        if (viewedFilter === 'viewed') {
+            result = result.filter(app => app.is_viewed);
+        } else if (viewedFilter === 'unread') {
+            result = result.filter(app => !app.is_viewed);
+        }
+
+        // Apply search filter
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase().trim();
+            result = result.filter(app => {
+                const fieldValue = app[searchField]?.toLowerCase() || '';
+                return fieldValue.includes(query);
+            });
+        }
+
+        // Apply sort
+        if (sortOrder === 'az') {
+            result.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''));
+        } else if (sortOrder === 'za') {
+            result.sort((a, b) => (b.full_name || '').localeCompare(a.full_name || ''));
+        }
+
+        return result;
+    }, [applications, sortOrder, viewedFilter, searchField, searchQuery]);
 
     const handleView = async (app: Application) => {
         setSelectedApp(app);
@@ -112,14 +152,81 @@ const Applications: React.FC = () => {
                 </div>
             </div>
 
+            {/* Filter and Search Section */}
+            <div className="filter-search-section">
+                {/* Sort Filter */}
+                <div className="filter-group">
+                    <label>{t('pages.applications.sort')}</label>
+                    <select
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value as SortOrder)}
+                        className="custom-select"
+                    >
+                        <option value="default">{t('pages.applications.sortDefault')}</option>
+                        <option value="az">{t('pages.applications.sortAZ')}</option>
+                        <option value="za">{t('pages.applications.sortZA')}</option>
+                    </select>
+                </div>
+
+                {/* Viewed Status Filter */}
+                <div className="filter-group">
+                    <label>{t('pages.applications.status')}</label>
+                    <select
+                        value={viewedFilter}
+                        onChange={(e) => setViewedFilter(e.target.value as ViewedFilter)}
+                        className="custom-select"
+                    >
+                        <option value="all">{t('pages.applications.filterAll')}</option>
+                        <option value="viewed">{t('pages.applications.filterRead')}</option>
+                        <option value="unread">{t('pages.applications.filterUnread')}</option>
+                    </select>
+                </div>
+
+                {/* Search Field Select */}
+                <div className="filter-group">
+                    <label>{t('pages.applications.searchBy')}</label>
+                    <select
+                        value={searchField}
+                        onChange={(e) => setSearchField(e.target.value as SearchField)}
+                        className="custom-select"
+                    >
+                        <option value="full_name">{t('pages.applications.searchByName')}</option>
+                        <option value="email">{t('pages.applications.searchByEmail')}</option>
+                        <option value="phone">{t('pages.applications.searchByPhone')}</option>
+                    </select>
+                </div>
+
+                {/* Search Input */}
+                <div className="search-input-wrapper">
+                    <FiSearch className="search-icon" />
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder={
+                            searchField === 'full_name'
+                                ? t('pages.applications.enterName')
+                                : searchField === 'email'
+                                    ? t('pages.applications.enterEmail')
+                                    : t('pages.applications.enterPhone')
+                        }
+                        className="search-input"
+                    />
+                </div>
+
+                <span className="results-count">
+                    {filteredApplications.length} / {applications.length}
+                </span>
+            </div>
+
             <div className="card">
                 <DataTable
                     columns={columns}
-                    data={applications}
+                    data={filteredApplications}
                     loading={loading}
                     onView={handleView}
                     onDelete={handleDelete}
-                    emptyMessage={t('common.noData')}
+                    emptyMessage={searchQuery || viewedFilter !== 'all' ? t('pages.applications.noResults') : t('common.noData')}
                 />
             </div>
 

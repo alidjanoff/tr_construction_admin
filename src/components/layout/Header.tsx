@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguages } from '../../contexts/LanguageContext';
 import { FiMenu, FiUser, FiLogOut, FiChevronDown, FiGlobe } from 'react-icons/fi';
@@ -20,6 +22,8 @@ const languageNames: Record<string, string> = {
 };
 
 const Header: React.FC<HeaderProps> = ({ pageTitle, onMobileMenuToggle }) => {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
     const { user, logout } = useAuth();
     const { languages, displayLanguage, setDisplayLanguage } = useLanguages();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -44,6 +48,11 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, onMobileMenuToggle }) => {
 
     const handleLogout = async () => {
         await logout();
+    };
+
+    const handleProfileClick = () => {
+        setIsDropdownOpen(false);
+        navigate('/profile');
     };
 
     const handleLanguageSelect = (lang: string | null) => {
@@ -85,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, onMobileMenuToggle }) => {
                                 onClick={() => handleLanguageSelect(null)}
                             >
                                 <span className="lang-code">ALL</span>
-                                <span className="lang-name">Bütün dillər</span>
+                                <span className="lang-name">{t('common.allLanguages')}</span>
                             </button>
                             {languages.map((lang) => (
                                 <button
@@ -117,7 +126,7 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, onMobileMenuToggle }) => {
                         <div className="user-info">
                             <span className="user-name">{user?.full_name}</span>
                             <span className={`user-role ${user?.role}`}>
-                                {user?.role === 'superAdmin' ? 'Super Admin' : 'Admin'}
+                                {user?.role === 'superAdmin' ? t('pages.users.roles.superAdmin') : t('pages.users.roles.admin')}
                             </span>
                         </div>
                         <FiChevronDown className={`dropdown-icon ${isDropdownOpen ? 'open' : ''}`} />
@@ -125,9 +134,13 @@ const Header: React.FC<HeaderProps> = ({ pageTitle, onMobileMenuToggle }) => {
 
                     {isDropdownOpen && (
                         <div className="user-dropdown">
+                            <button className="dropdown-item" onClick={handleProfileClick}>
+                                <FiUser />
+                                <span>{t('sidebar.profile')}</span>
+                            </button>
                             <button className="dropdown-item logout" onClick={handleLogout}>
                                 <FiLogOut />
-                                <span>Çıxış</span>
+                                <span>{t('common.logout')}</span>
                             </button>
                         </div>
                     )}

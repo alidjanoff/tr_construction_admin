@@ -21,7 +21,6 @@ import {
     FiUserPlus,
     FiChevronLeft,
     FiChevronRight,
-    FiUser,
 } from 'react-icons/fi';
 import logo from '../../assets/images/logo.jpeg';
 import './Sidebar.scss';
@@ -40,7 +39,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
     { path: '/', icon: <FiHome />, labelKey: 'sidebar.dashboard' },
-    { path: '/profile', icon: <FiUser />, labelKey: 'sidebar.profile' },
+    { path: '/applications', icon: <FiMail />, labelKey: 'sidebar.applications' },
     { path: '/hero', icon: <FiImage />, labelKey: 'sidebar.hero' },
     { path: '/about', icon: <FiInfo />, labelKey: 'sidebar.about' },
     { path: '/services', icon: <FiSettings />, labelKey: 'sidebar.services' },
@@ -52,7 +51,6 @@ const navItems: NavItem[] = [
     { path: '/contact-info', icon: <FiPhone />, labelKey: 'sidebar.contact' },
     { path: '/socials', icon: <FiShare2 />, labelKey: 'sidebar.socials' },
     { path: '/map-url', icon: <FiMapPin />, labelKey: 'sidebar.mapUrl' },
-    { path: '/applications', icon: <FiMail />, labelKey: 'sidebar.applications' },
     { path: '/languages', icon: <FiGlobe />, labelKey: 'sidebar.languages' },
 ];
 

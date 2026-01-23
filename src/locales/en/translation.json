@@ -114,7 +114,9 @@
             "existingImages": "Existing images",
             "addNewImages": "Add new images",
             "noImages": "No images added to this project yet",
-            "deleteConfirm": "Are you sure you want to delete this project? This will also delete all associated images."
+            "deleteConfirm": "Are you sure you want to delete this project? This will also delete all associated images.",
+            "fileTooLarge": "Some images exceed the 1 MB limit. Please remove large images or choose smaller ones.",
+            "removeOversizedFiles": "Remove images larger than 1 MB to upload."
         },
         "partners": {
             "title": "Partners",
@@ -151,6 +153,8 @@
         "languages": {
             "title": "Languages",
             "languageCode": "Language Code",
+            "langCode": "Language Code",
+            "info": "Here you can manage the languages supported on the website.",
             "newLanguage": "New Language",
             "editLanguage": "Edit Language",
             "deleteConfirm": "Are you sure you want to delete this language?"
@@ -166,8 +170,24 @@
             "status": "Status",
             "viewDetails": "View Details",
             "unread": "Unread Applications",
+            "read": "Read",
             "markAsRead": "Mark as read",
-            "deleteConfirm": "Are you sure you want to delete this application?"
+            "deleteConfirm": "Are you sure you want to delete this application?",
+            "sort": "Sort",
+            "sortDefault": "Default",
+            "sortAZ": "A → Z",
+            "sortZA": "Z → A",
+            "filterAll": "All",
+            "filterRead": "Read",
+            "filterUnread": "Unread",
+            "searchBy": "Search",
+            "searchByName": "By Name",
+            "searchByEmail": "By Email",
+            "searchByPhone": "By Phone",
+            "enterName": "Enter name...",
+            "enterEmail": "Enter email...",
+            "enterPhone": "Enter phone...",
+            "noResults": "No results found"
         },
         "mapUrl": {
             "title": "Map Coordinates",
@@ -183,10 +203,15 @@
             "email": "Email",
             "role": "Role",
             "password": "Password",
+            "phone": "Phone",
             "newUser": "New User",
             "createUser": "Create New User",
             "editUser": "Edit User",
             "deleteConfirm": "Are you sure you want to delete this user?",
+            "changeRole": "Change Role",
+            "changeRoleConfirm": "Are you sure you want to change this user's role?",
+            "currentRole": "Current Role",
+            "newRole": "New Role",
             "roles": {
                 "admin": "Admin",
                 "superAdmin": "Super Admin"
@@ -209,7 +234,65 @@
             "totalApplications": "Total Applications",
             "recentApplications": "Recent Applications",
             "systemInfo": "System Information",
-            "active": "Active"
+            "active": "Active",
+            "deviceInfo": {
+                "title": "Your Device Information",
+                "deviceType": {
+                    "desktop": "Desktop",
+                    "mobile": "Mobile",
+                    "tablet": "Tablet"
+                },
+                "system": {
+                    "title": "System Information",
+                    "os": "Operating System",
+                    "platform": "Platform",
+                    "deviceType": "Device Type",
+                    "deviceModel": "Device Model"
+                },
+                "browser": {
+                    "title": "Browser Information",
+                    "name": "Browser",
+                    "version": "Browser Version",
+                    "language": "Language",
+                    "timezone": "Timezone"
+                },
+                "screen": {
+                    "title": "Screen Information",
+                    "size": "Screen Size",
+                    "pixelRatio": "Pixel Ratio",
+                    "colorDepth": "Color Depth",
+                    "touchSupport": "Touch Support"
+                },
+                "hardware": {
+                    "title": "Hardware Information",
+                    "cpuCores": "CPU Cores",
+                    "ram": "RAM",
+                    "unknown": "Unknown"
+                },
+                "network": {
+                    "title": "Network Information",
+                    "ipAddress": "IP Address",
+                    "city": "City",
+                    "connectionType": "Connection Type",
+                    "speed": "Speed"
+                },
+                "location": {
+                    "title": "Location Information",
+                    "coordinates": "Coordinates",
+                    "getLocation": "Get Exact Location"
+                },
+                "other": {
+                    "title": "Other Information",
+                    "cookies": "Cookies",
+                    "doNotTrack": "Do Not Track",
+                    "languages": "Languages",
+                    "enabled": "Enabled",
+                    "disabled": "Disabled",
+                    "yes": "Yes",
+                    "no": "No"
+                },
+                "loadError": "Failed to load device information."
+            }
         }
     },
     "auth": {

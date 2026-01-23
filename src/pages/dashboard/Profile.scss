@@ -3,8 +3,16 @@
 @use '../../assets/scss/mixins' as *;
 
 .profile-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: calc(100vh - 150px);
+    padding-top: $spacing-8;
+
     .profile-container {
         max-width: 720px;
+        width: 100%;
+        margin: 0 auto;
     }
 
     .profile-image-section {

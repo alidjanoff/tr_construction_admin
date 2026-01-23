@@ -1,10 +1,10 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-// Import translation files
-import azTranslation from '../../public/locales/az/translation.json';
-import enTranslation from '../../public/locales/en/translation.json';
-import trTranslation from '../../public/locales/tr/translation.json';
+// Import translation files from src/locales
+import azTranslation from '../locales/az/translation.json';
+import enTranslation from '../locales/en/translation.json';
+import trTranslation from '../locales/tr/translation.json';
 
 // Get saved language or default to 'az'
 const savedLanguage = localStorage.getItem('displayLanguage') || 'az';

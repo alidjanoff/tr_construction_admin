@@ -101,14 +101,7 @@ const Hero: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const hasTitle = Object.values(formData.title).some(v => v && v.trim());
-        const hasInfo = Object.values(formData.info).some(v => v && v.trim());
-
-        if (!hasTitle || !hasInfo) {
-            showToast('error', 'Ən azı bir dildə başlıq və məlumat daxil edin');
-            return;
-        }
-
+        // Only image is required for new slides
         if (isCreating && !imageFile) {
             showToast('error', 'Yeni slide üçün şəkil tələb olunur');
             return;
@@ -226,7 +219,6 @@ const Hero: React.FC = () => {
                                 value={formData.title}
                                 onChange={(value) => setFormData({ ...formData, title: value })}
                                 placeholder="Slide başlığı"
-                                required
                             />
 
                             <TranslatableInput
@@ -237,7 +229,6 @@ const Hero: React.FC = () => {
                                 type="textarea"
                                 placeholder="Slide məlumatı"
                                 rows={3}
-                                required
                             />
 
                             <TranslatableInput

@@ -39,6 +39,10 @@
         gap: $spacing-4;
         transition: transform $transition-fast, box-shadow $transition-fast;
 
+        &.clickable {
+            cursor: pointer;
+        }
+
         &:hover {
             transform: translateY(-4px);
             box-shadow: $shadow-lg;
@@ -94,6 +98,10 @@
     }
 
     .quick-info {
+        display: flex;
+        flex-direction: column;
+        gap: $spacing-6;
+
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -116,6 +124,93 @@
                 font-size: $font-size-base;
                 color: $text-primary;
                 font-weight: $font-weight-medium;
+            }
+        }
+    }
+
+    .device-info-card {
+        .card-header {
+            h3 {
+                display: flex;
+                align-items: center;
+                gap: $spacing-2;
+
+                .device-icon {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 32px;
+                    height: 32px;
+                    background: $primary-gradient;
+                    border-radius: $radius-md;
+                    color: $white;
+
+                    svg {
+                        width: 18px;
+                        height: 18px;
+                    }
+                }
+            }
+        }
+
+        .device-info-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: $spacing-6;
+        }
+
+        .device-section {
+            background: $light-gray;
+            border-radius: $radius-md;
+            padding: $spacing-4;
+
+            h4 {
+                display: flex;
+                align-items: center;
+                font-size: $font-size-sm;
+                font-weight: $font-weight-semibold;
+                color: $primary-color;
+                margin-bottom: $spacing-3;
+                padding-bottom: $spacing-2;
+                border-bottom: 1px solid $medium-gray;
+            }
+
+            .info-list {
+                display: flex;
+                flex-direction: column;
+                gap: $spacing-2;
+            }
+
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: $spacing-3;
+                padding: $spacing-1 0;
+
+                .label {
+                    font-size: $font-size-sm;
+                    color: $text-muted;
+                    flex-shrink: 0;
+                }
+
+                .value {
+                    font-size: $font-size-sm;
+                    color: $text-primary;
+                    font-weight: $font-weight-medium;
+                    text-align: right;
+                    word-break: break-word;
+                }
+            }
+
+            .location-permission {
+                padding: $spacing-3 0;
+
+                .error-text {
+                    color: $error;
+                    font-size: $font-size-sm;
+                    margin: 0;
+                }
             }
         }
     }

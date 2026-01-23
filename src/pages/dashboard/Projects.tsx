@@ -252,6 +252,24 @@ const Projects: React.FC = () => {
         setGalleryFiles(prev => prev.filter((_, i) => i !== index));
     };
 
+    // Format file size to human readable format
+    const formatFileSize = (bytes: number): string => {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
+    // Check if file is oversized (> 1MB)
+    const isOversized = (file: File): boolean => {
+        const maxSize = 1 * 1024 * 1024; // 1MB
+        return file.size > maxSize;
+    };
+
+    // Check if any file is oversized
+    const hasOversizedFiles = galleryFiles.some(file => isOversized(file));
+
     const columns = [
         {
             key: 'cover_image' as const,
@@ -289,7 +307,7 @@ const Projects: React.FC = () => {
                         icon={<FiImage />}
                         onClick={() => handleOpenGallery(item)}
                     >
-                        {t('sidebar.projects')}
+                        {t('pages.projects.images')}
                     </CustomButton>
                 </div>
             )
@@ -531,70 +549,140 @@ const Projects: React.FC = () => {
                                 <p style={{ marginBottom: '1rem', fontWeight: 500, color: 'var(--text-primary)' }}>
                                     {t('pages.projects.selectedImages')} ({galleryFiles.length}):
                                 </p>
+
+                                {/* Warning if any file is oversized */}
+                                {hasOversizedFiles && (
+                                    <div style={{
+                                        marginBottom: '1rem',
+                                        padding: '0.75rem 1rem',
+                                        background: 'rgba(239, 68, 68, 0.1)',
+                                        border: '1px solid #EF4444',
+                                        borderRadius: '8px',
+                                        color: '#DC2626',
+                                        fontSize: '0.875rem',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.5rem'
+                                    }}>
+                                        <FiImage size={18} />
+                                        <span>{t('pages.projects.fileTooLarge')}</span>
+                                    </div>
+                                )}
+
                                 <div style={{
                                     display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+                                    gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
                                     gap: '1rem',
                                     marginBottom: '1rem'
                                 }}>
-                                    {galleryFiles.map((file, index) => (
-                                        <div
-                                            key={index}
-                                            style={{
-                                                position: 'relative',
-                                                borderRadius: '8px',
-                                                overflow: 'hidden',
-                                                aspectRatio: '4/3',
-                                                border: '2px solid #1B5E3A',
-                                                background: '#fff'
-                                            }}
-                                        >
-                                            <img
-                                                src={URL.createObjectURL(file)}
-                                                alt={`Preview ${index + 1}`}
+                                    {galleryFiles.map((file, index) => {
+                                        const oversized = isOversized(file);
+                                        const borderColor = oversized ? '#EF4444' : '#1B5E3A';
+
+                                        return (
+                                            <div
+                                                key={index}
                                                 style={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'cover'
-                                                }}
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeNewGalleryFile(index)}
-                                                style={{
-                                                    position: 'absolute',
-                                                    top: '4px',
-                                                    right: '4px',
-                                                    background: '#EF4444',
-                                                    border: 'none',
-                                                    borderRadius: '50%',
-                                                    width: '24px',
-                                                    height: '24px',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    cursor: 'pointer',
-                                                    color: 'white'
+                                                    position: 'relative',
+                                                    borderRadius: '8px',
+                                                    overflow: 'hidden',
+                                                    aspectRatio: '4/3',
+                                                    border: `3px solid ${borderColor}`,
+                                                    background: '#fff',
+                                                    boxShadow: oversized ? '0 0 8px rgba(239, 68, 68, 0.3)' : 'none'
                                                 }}
                                             >
-                                                <FiX size={14} />
-                                            </button>
-                                        </div>
-                                    ))}
+                                                <img
+                                                    src={URL.createObjectURL(file)}
+                                                    alt={`Preview ${index + 1}`}
+                                                    style={{
+                                                        width: '100%',
+                                                        height: '100%',
+                                                        objectFit: 'cover'
+                                                    }}
+                                                />
+
+                                                {/* File size label */}
+                                                <div
+                                                    style={{
+                                                        position: 'absolute',
+                                                        bottom: '0',
+                                                        left: '0',
+                                                        right: '0',
+                                                        padding: '4px 8px',
+                                                        background: oversized
+                                                            ? 'linear-gradient(to top, rgba(239, 68, 68, 0.95), rgba(239, 68, 68, 0.8))'
+                                                            : 'linear-gradient(to top, rgba(27, 94, 58, 0.95), rgba(27, 94, 58, 0.8))',
+                                                        color: '#fff',
+                                                        fontSize: '0.7rem',
+                                                        fontWeight: 600,
+                                                        textAlign: 'center',
+                                                        letterSpacing: '0.5px'
+                                                    }}
+                                                >
+                                                    {formatFileSize(file.size)}
+                                                    {oversized && (
+                                                        <span style={{
+                                                            display: 'block',
+                                                            fontSize: '0.6rem',
+                                                            fontWeight: 400,
+                                                            marginTop: '1px'
+                                                        }}>
+                                                            Max: 1 MB
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                {/* Delete button */}
+                                                <button
+                                                    type="button"
+                                                    onClick={() => removeNewGalleryFile(index)}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '4px',
+                                                        right: '4px',
+                                                        background: '#EF4444',
+                                                        border: 'none',
+                                                        borderRadius: '50%',
+                                                        width: '24px',
+                                                        height: '24px',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        cursor: 'pointer',
+                                                        color: 'white'
+                                                    }}
+                                                >
+                                                    <FiX size={14} />
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
 
                                 <CustomButton
                                     icon={<FiPlus />}
                                     onClick={handleAddGalleryImages}
                                     loading={galleryLoading}
+                                    disabled={hasOversizedFiles}
                                 >
                                     {t('pages.projects.uploadImages')}
                                 </CustomButton>
+
+                                {hasOversizedFiles && (
+                                    <p style={{
+                                        marginTop: '0.5rem',
+                                        fontSize: '0.75rem',
+                                        color: '#DC2626'
+                                    }}>
+                                        {t('pages.projects.removeOversizedFiles')}
+                                    </p>
+                                )}
                             </div>
                         )}
                     </div>
                 </div>
-            </Modal>
+            </Modal >
 
             <ConfirmDialog
                 isOpen={deleteDialogOpen}
@@ -603,7 +691,7 @@ const Projects: React.FC = () => {
                 message={t('pages.projects.deleteConfirm')}
                 loading={formLoading}
             />
-        </div>
+        </div >
     );
 };
 
