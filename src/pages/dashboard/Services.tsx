@@ -11,7 +11,7 @@ import CustomButton from '../../components/ui/CustomButton';
 import TranslatableInput from '../../components/ui/TranslatableInput';
 import Modal from '../../components/ui/Modal';
 import ConfirmDialog from '../../components/ui/ConfirmDialog';
-import { FiPlus } from 'react-icons/fi';
+import { FiPlus, FiImage } from 'react-icons/fi';
 import './CrudPage.scss';
 
 interface ServiceFormData {
@@ -26,6 +26,7 @@ const Services: React.FC = () => {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Service | null>(null);
     const [formData, setFormData] = useState<ServiceFormData>({ title: {}, info: {} });
+    const [imageFile, setImageFile] = useState<File | null>(null);
     const [formLoading, setFormLoading] = useState(false);
 
     const { t } = useTranslation();
@@ -54,6 +55,7 @@ const Services: React.FC = () => {
             title: createEmptyTranslation(languages),
             info: createEmptyTranslation(languages),
         });
+        setImageFile(null);
         setModalOpen(true);
     };
 
@@ -63,6 +65,7 @@ const Services: React.FC = () => {
             title: item.title || {},
             info: item.info || {},
         });
+        setImageFile(null);
         setModalOpen(true);
     };
 
@@ -85,18 +88,20 @@ const Services: React.FC = () => {
 
         setFormLoading(true);
         try {
+            const data = new FormData();
+            data.append('title', JSON.stringify(formData.title));
+            data.append('info', JSON.stringify(formData.info));
+
+            if (imageFile) {
+                data.append('image', imageFile);
+            }
+
             if (selectedItem) {
-                await servicesAPI.update({
-                    id: selectedItem.id,
-                    title: formData.title,
-                    info: formData.info,
-                });
+                data.append('id', selectedItem.id);
+                await servicesAPI.update(data);
                 showToast('success', 'Xidmət yeniləndi');
             } else {
-                await servicesAPI.create({
-                    title: formData.title,
-                    info: formData.info,
-                });
+                await servicesAPI.create(data);
                 showToast('success', 'Xidmət əlavə edildi');
             }
 
@@ -126,6 +131,19 @@ const Services: React.FC = () => {
     };
 
     const columns = [
+        {
+            key: 'image' as const,
+            header: t('pages.projects.coverImage'),
+            render: (item: Service) =>
+                item.image ? (
+                    <img
+                        src={item.image}
+                        alt=""
+                        className="table-icon"
+                        style={{ width: 80, height: 50, objectFit: 'cover', borderRadius: '4px' }}
+                    />
+                ) : '-'
+        },
         {
             key: 'title' as const,
             header: t('pages.services.serviceTitle'),
@@ -187,6 +205,41 @@ const Services: React.FC = () => {
                         rows={4}
                         required
                     />
+
+                    <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                        <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: 'var(--text-primary)' }}>
+                            <FiImage style={{ marginRight: '8px' }} />
+                            {t('pages.projects.coverImage')}
+                        </label>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                            className="file-input"
+                            style={{
+                                width: '100%',
+                                padding: '0.5rem',
+                                border: '1px solid var(--medium-gray)',
+                                borderRadius: '4px',
+                                background: 'var(--bg-secondary)'
+                            }}
+                        />
+                        {(selectedItem?.image || imageFile) && (
+                            <div className="preview-image-container" style={{ marginTop: '1rem' }}>
+                                <img
+                                    src={imageFile ? URL.createObjectURL(imageFile) : selectedItem?.image || ''}
+                                    alt="Preview"
+                                    className="preview-image"
+                                    style={{
+                                        maxHeight: '150px',
+                                        borderRadius: '8px',
+                                        border: '1px solid var(--medium-gray)',
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
 
                     <div className="button-group right">
                         <CustomButton variant="secondary" onClick={() => setModalOpen(false)}>

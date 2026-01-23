@@ -107,14 +107,14 @@ export const aboutAPI = {
     update: (formData: FormData) => api.put('/about', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
-// Services API (updated for translations)
+// Services API (updated for translations and image)
 export const servicesAPI = {
     getAll: () => api.get('/services'),
     getOne: (id: string) => api.get(`/services/${id}`),
-    create: (data: { title: TranslatedString; info: TranslatedString }) =>
-        api.post('/services', data),
-    update: (data: { id: string; title: TranslatedString; info: TranslatedString }) =>
-        api.put('/services', data),
+    create: (formData: FormData) =>
+        api.post('/services', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+    update: (formData: FormData) =>
+        api.put('/services', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
     delete: (id: string) => api.delete(`/services/${id}`),
 };
 
