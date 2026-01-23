@@ -8,7 +8,6 @@ import MainLayout from './components/layout/MainLayout';
 // Auth Pages
 import Login from './pages/auth/Login';
 import ForgotPassword from './pages/auth/ForgotPassword';
-import ChangePassword from './pages/auth/ChangePassword';
 
 // Dashboard Pages
 import Dashboard from './pages/dashboard/Dashboard';
@@ -44,7 +43,6 @@ function App() {
               {/* Auth Routes */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/change-password" element={<ChangePassword />} />
 
               {/* Protected Dashboard Routes */}
               <Route

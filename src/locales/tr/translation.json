@@ -302,10 +302,18 @@
         "loginButton": "Oturum Aç",
         "forgotPassword": "Şifrenizi mi unuttunuz?",
         "invalidCredentials": "Geçersiz e-posta veya şifre",
-        "forgotPasswordInfo": "E-posta adresinize bir OTP kodu gönderilecektir",
-        "sendOtp": "OTP Gönder",
+        "forgotPasswordInfo": "E-posta adresinize bir güvenlik kodu gönderilecektir",
+        "sendOtp": "Kod Gönder",
         "otpCode": "OTP Kodu",
-        "changePasswordInfo": "OTP kodunu ve yeni şifrenizi girin"
+        "otpSent": "Güvenlik kodu e-posta adresinize gönderildi",
+        "otpVerified": "Güvenlik kodu başarıyla doğrulandı",
+        "enterOtpInfo": "E-postanıza gelen 6 haneli kodu girin",
+        "setNewPasswordInfo": "Yeni şifrenizi belirleyin",
+        "verifyButton": "Kodu Doğrula",
+        "changeEmail": "E-postayı Değiştir",
+        "resetPasswordButton": "Şifreyi Güncelle",
+        "invalidOtp": "Geçersiz güvenlik kodu",
+        "changePasswordInfo": "OTP kodunu ve yeni şifrənizi daxil edin"
     },
     "validation": {
         "required": "Bu alan zorunludur",

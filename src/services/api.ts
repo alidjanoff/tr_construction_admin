@@ -85,6 +85,9 @@ export const authAPI = {
     sendOtp: (email: string) =>
         api.post('/auth/send_otp_to_email_for_change_password', { email }),
 
+    verifyOtp: (email: string, otp: string) =>
+        api.post('/auth/verify_otp', { email, otp }),
+
     changePassword: (email: string, otp: string, new_password: string) =>
         api.post('/auth/change_password', { email, otp, new_password }),
 };
