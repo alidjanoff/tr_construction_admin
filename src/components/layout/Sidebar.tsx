@@ -23,7 +23,7 @@ import {
     FiChevronRight,
     FiX,
 } from 'react-icons/fi';
-import logo from '../../assets/images/logo.jpeg';
+import logo from '../../assets/images/logo.png';
 import './Sidebar.scss';
 
 interface SidebarProps {

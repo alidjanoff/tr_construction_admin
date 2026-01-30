@@ -6,7 +6,7 @@ import { useToast } from '../../components/ui/Toast';
 import CustomInput from '../../components/ui/CustomInput';
 import CustomButton from '../../components/ui/CustomButton';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
-import logo from '../../assets/images/logo.jpeg';
+import logo from '../../assets/images/logo.png';
 import './Login.scss';
 
 const Login: React.FC = () => {

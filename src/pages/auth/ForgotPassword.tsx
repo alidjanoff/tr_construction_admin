@@ -6,7 +6,7 @@ import { authAPI } from '../../services/api';
 import CustomInput from '../../components/ui/CustomInput';
 import CustomButton from '../../components/ui/CustomButton';
 import { FiMail, FiArrowLeft, FiKey, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
-import logo from '../../assets/images/logo.jpeg';
+import logo from '../../assets/images/logo.png';
 import './ForgotPassword.scss';
 
 const ForgotPassword: React.FC = () => {
